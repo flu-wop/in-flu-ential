@@ -1,7 +1,4 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
@@ -11,6 +8,16 @@ export async function POST(req: Request) {
     if (!name || !email || !project || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
+
+    // Lazy-init Resend so build doesn't fail without env var
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      console.error("RESEND_API_KEY not set");
+      return NextResponse.json({ error: "Email service not configured" }, { status: 500 });
+    }
+
+    const { Resend } = await import("resend");
+    const resend = new Resend(apiKey);
 
     // ── Email to James ────────────────────────
     await resend.emails.send({
@@ -23,7 +30,6 @@ export async function POST(req: Request) {
             <p style="font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #C9A84C; margin: 0 0 8px;">IN-FLU-ENTIAL LLC</p>
             <h1 style="font-size: 22px; font-weight: 300; margin: 0; color: #F5F0E8;">New Booking Request</h1>
           </div>
-
           <table style="width: 100%; border-collapse: collapse;">
             <tr><td style="padding: 10px 0; border-bottom: 1px solid #1a1a1a; font-size: 11px; color: #9A9A9A; text-transform: uppercase; letter-spacing: 0.1em; width: 120px;">Session</td><td style="padding: 10px 0; border-bottom: 1px solid #1a1a1a; font-size: 13px; color: #C9A84C;">${label}</td></tr>
             <tr><td style="padding: 10px 0; border-bottom: 1px solid #1a1a1a; font-size: 11px; color: #9A9A9A; text-transform: uppercase; letter-spacing: 0.1em;">Name</td><td style="padding: 10px 0; border-bottom: 1px solid #1a1a1a; font-size: 13px; color: #F5F0E8;">${name}</td></tr>
@@ -31,16 +37,12 @@ export async function POST(req: Request) {
             <tr><td style="padding: 10px 0; border-bottom: 1px solid #1a1a1a; font-size: 11px; color: #9A9A9A; text-transform: uppercase; letter-spacing: 0.1em;">Project</td><td style="padding: 10px 0; border-bottom: 1px solid #1a1a1a; font-size: 13px; color: #F5F0E8;">${project}</td></tr>
             <tr><td style="padding: 10px 0; border-bottom: 1px solid #1a1a1a; font-size: 11px; color: #9A9A9A; text-transform: uppercase; letter-spacing: 0.1em;">Timeline</td><td style="padding: 10px 0; border-bottom: 1px solid #1a1a1a; font-size: 13px; color: #F5F0E8;">${timeline || "Not specified"}</td></tr>
           </table>
-
           <div style="margin-top: 24px; padding: 20px; background: #141414; border-left: 2px solid #C9A84C;">
             <p style="font-size: 11px; color: #9A9A9A; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 10px;">Message</p>
             <p style="font-size: 13px; color: #F5F0E8; line-height: 1.6; margin: 0;">${message.replace(/\n/g, "<br/>")}</p>
           </div>
-
           <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid #222;">
-            <a href="mailto:${email}" style="display: inline-block; background: #C9A84C; color: #0A0A0A; padding: 12px 28px; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; font-weight: 600;">
-              Reply to ${name}
-            </a>
+            <a href="mailto:${email}" style="display: inline-block; background: #C9A84C; color: #0A0A0A; padding: 12px 28px; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; font-weight: 600;">Reply to ${name}</a>
           </div>
         </div>
       `,
