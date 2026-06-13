@@ -5,7 +5,8 @@ import Footer from "@/components/Footer";
 import dynamic from "next/dynamic";
 import "./globals.css";
 const Cursor      = dynamic(() => import("@/components/Cursor"),      { ssr: false });
-const SmoothScroll = dynamic(() => import("@/components/SmoothScroll"), { ssr: false });
+const SmoothScroll    = dynamic(() => import("@/components/SmoothScroll"),    { ssr: false });
+const PageTransition  = dynamic(() => import("@/components/PageTransition"),  { ssr: false });
 
 export const metadata: Metadata = {
   title: {
@@ -45,9 +46,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen bg-ink text-cream antialiased">
         <Cursor />
         <SmoothScroll>
-          <Nav />
-          <main>{children}</main>
-          <Footer />
+          <PageTransition>
+            <Nav />
+            <main>{children}</main>
+            <Footer />
+          </PageTransition>
         </SmoothScroll>
       </body>
     </html>

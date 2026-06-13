@@ -1,5 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import dynamic from "next/dynamic";
+const VaultDoor = dynamic(() => import("@/components/VaultDoor"), { ssr: false });
 import { VAULT_ITEMS, VAULT_PASSWORD } from "@/lib/vault-items";
 import type { VaultItem } from "@/lib/vault-items";
 
@@ -255,52 +257,14 @@ export default function VaultClient() {
   const categories   = ["All", ...Array.from(new Set(nonMusic.map(i => i.category)))];
   const visible      = filter === "All" ? nonMusic : nonMusic.filter(i => i.category === filter);
 
-  // ── LOCKED ──────────────────────────────────
+  // ── LOCKED — vault door ─────────────────────
   if (!unlocked) {
     return (
-      <section className="min-h-screen flex items-center justify-center px-6 relative">
-        <div className="absolute inset-0 opacity-[0.025]"
-          style={{ backgroundImage:"radial-gradient(circle, #C9A84C 1px, transparent 1px)", backgroundSize:"40px 40px" }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gold/5 rounded-full blur-[100px] pointer-events-none" />
-
-        <div className="relative w-full max-w-md text-center">
-          <div className="w-14 h-14 border border-gold/30 mx-auto mb-8 flex items-center justify-center">
-            <svg className="w-6 h-6 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-            </svg>
-          </div>
-
-          <p className="font-sans text-xs text-gold tracking-widest uppercase mb-3">Private Vault</p>
-          <h1 className="font-display text-4xl text-cream font-light mb-2">Access Restricted</h1>
-          <p className="font-sans text-sm text-mist mb-10 leading-relaxed">
-            Pitch decks, unreleased music, works in progress, and strategy documents.<br />
-            Authorized access only.
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <input type="password" value={input}
-              onChange={e => { setInput(e.target.value); setError(false); }}
-              placeholder="Enter access password"
-              autoComplete="current-password"
-              className={`w-full bg-ink border px-5 py-4 text-sm text-cream placeholder:text-mist/40 font-sans focus:outline-none transition-colors text-center tracking-widest ${
-                error ? "border-red-500/60" : "border-white/10 focus:border-gold/50"
-              }`}
-            />
-            {error && <p className="font-sans text-xs text-red-400 tracking-wide">Incorrect. Try again.</p>}
-            <button type="submit"
-              className="w-full bg-gold text-ink py-4 text-xs tracking-widest uppercase font-sans hover:bg-gold-light transition-colors duration-300">
-              Unlock Vault
-            </button>
-          </form>
-
-          <p className="font-sans text-[11px] text-mist/30 mt-8">
-            Need access?{" "}
-            <a href="mailto:hello@influential.llc" className="text-mist/50 hover:text-mist transition-colors">
-              Contact us
-            </a>
-          </p>
-        </div>
-      </section>
+      <VaultDoor
+        onUnlock={() => setUnlocked(true)}
+        error={error}
+        onErrorClear={() => setError(false)}
+      />
     );
   }
 

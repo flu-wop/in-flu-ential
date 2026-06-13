@@ -28,18 +28,33 @@ function Stat({ number, label }: { number: string; label: string }) {
   );
 }
 
-// ── Service card ─────────────────────────────────────
-function ServiceCard({ title, desc, href }: { title: string; desc: string; href: string }) {
+// ── Room card — each service is a door/room in the HQ ──
+function ServiceCard({ title, desc, href, room }: { title: string; desc: string; href: string; room: string }) {
   return (
     <Link
       href={href}
-      className="group block border border-white/8 bg-ink-2 p-8 hover:border-gold/40 transition-all duration-400 hover:-translate-y-1"
+      data-cursor="Enter"
+      className="group relative block border border-white/8 bg-ink-2 p-8 hover:border-gold/30 transition-all duration-400 hover:-translate-y-1 overflow-hidden"
     >
-      <p className="font-display text-xl text-cream mb-3 group-hover:text-gold transition-colors duration-300">{title}</p>
-      <p className="font-sans text-sm text-mist leading-relaxed">{desc}</p>
-      <p className="mt-5 text-xs text-gold tracking-widest uppercase font-sans opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        Explore →
-      </p>
+      {/* Room number plate */}
+      <div className="absolute top-5 right-5 border border-white/10 px-2.5 py-1">
+        <span className="font-sans text-[9px] text-mist/30 tracking-widest">{room}</span>
+      </div>
+      {/* Door hinge marks */}
+      <div className="absolute left-2 top-8 w-1.5 h-6 border border-white/8 rounded-sm bg-ink" />
+      <div className="absolute left-2 bottom-8 w-1.5 h-6 border border-white/8 rounded-sm bg-ink" />
+      {/* Glow on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gold/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      {/* Content */}
+      <div className="relative">
+        <p className="font-sans text-[9px] text-gold/50 tracking-widest uppercase mb-4">Room {room}</p>
+        <p className="font-display text-xl text-cream mb-3 group-hover:text-gold transition-colors duration-300">{title}</p>
+        <p className="font-sans text-sm text-mist leading-relaxed">{desc}</p>
+        <p className="mt-6 text-xs text-gold tracking-widest uppercase font-sans flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-[-4px] group-hover:translate-x-0">
+          <span>Enter</span>
+          <span>→</span>
+        </p>
+      </div>
     </Link>
   );
 }
@@ -149,26 +164,10 @@ export default function Home() {
           Four lanes. One vision.
         </TextReveal>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-          <ServiceCard
-            title="Music & Production"
-            desc="Recording engineering, artist development, studio liaison work, and music supervision for film and brand."
-            href="/music"
-          />
-          <ServiceCard
-            title="Business & Branding"
-            desc="Full-spectrum brand strategy, visual identity, pitch decks, digital ecosystems, and executive consulting."
-            href="/business"
-          />
-          <ServiceCard
-            title="Website Starter Kits"
-            desc="DIY guide + template or done-with-you buildout. Real booking, real Stripe, real emails. From $47."
-            href="/products"
-          />
-          <ServiceCard
-            title="Portfolio Work"
-            desc="Websites, campaigns, visuals, resumes, and identity systems — production-grade creative output."
-            href="/portfolio"
-          />
+          <ServiceCard title="Music & Production"    room="01" desc="Recording engineering, artist development, studio liaison work, and music supervision for film and brand." href="/music" />
+          <ServiceCard title="Business & Branding"   room="02" desc="Full-spectrum brand strategy, visual identity, pitch decks, digital ecosystems, and executive consulting." href="/business" />
+          <ServiceCard title="Website Starter Kits"  room="03" desc="DIY guide + template or done-with-you buildout. Real booking, real Stripe, real emails. From $47." href="/products" />
+          <ServiceCard title="Portfolio Work"         room="04" desc="Websites, campaigns, visuals, resumes, and identity systems — production-grade creative output." href="/portfolio" />
         </div>
       </section>
 
