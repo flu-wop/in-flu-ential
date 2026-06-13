@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+const DragPortfolio = dynamic(() => import("@/components/DragPortfolio"), { ssr: false });
+const TextReveal    = dynamic(() => import("@/components/TextReveal"),    { ssr: false });
+const FadeUp        = dynamic(() => import("@/components/FadeUp"),        { ssr: false });
 
 export const metadata: Metadata = {
   title: "Portfolio | IN-FLU-ENTIAL LLC",
@@ -199,79 +203,21 @@ export default function PortfolioPage() {
         />
         <div className="relative max-w-7xl mx-auto px-6 md:px-10">
           <p className="font-sans text-xs text-gold tracking-widest uppercase mb-6 fade-up">Selected Work</p>
-          <h1 className="font-display font-light text-5xl sm:text-6xl md:text-7xl text-cream leading-tight max-w-3xl fade-up-delay-1">
-            Work that<br /><span className="italic text-gold">speaks first.</span>
-          </h1>
+          <TextReveal as="h1" className="font-display font-light text-5xl sm:text-6xl md:text-7xl text-cream leading-tight max-w-3xl" split="words" delay={0.1}>
+            Work that speaks first.
+          </TextReveal>
           <p className="font-sans text-base text-mist max-w-xl leading-relaxed mt-6 fade-up-delay-2">
             Websites, campaigns, identities, and decks — production-grade output across music, business, and culture.
           </p>
         </div>
       </section>
 
-      {/* ── FILTER TABS ──────────────────────────── */}
-      <div className="max-w-7xl mx-auto px-6 md:px-10 pb-10">
-        <div className="flex flex-wrap gap-2">
-          {CATEGORIES.map((cat) => (
-            <span
-              key={cat}
-              className={`font-sans text-xs tracking-widest uppercase px-4 py-2 border cursor-pointer transition-colors duration-200 ${
-                cat === "All"
-                  ? "border-gold text-gold"
-                  : "border-white/10 text-mist hover:border-gold/40 hover:text-cream"
-              }`}
-            >
-              {cat}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* ── GRID ─────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 md:px-10 pb-32">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {PORTFOLIO_ITEMS.map((item) => (
-            <div
-              key={item.id}
-              className="group border border-white/8 bg-ink-2 hover:border-gold/30 transition-all duration-400 hover:-translate-y-1 flex flex-col"
-            >
-              <ProjectPreview item={item} />
-
-              <div className="p-7 flex flex-col flex-1">
-                <div className="mb-3">
-                  <span className="font-sans text-[10px] text-gold tracking-widest uppercase">{item.category}</span>
-                </div>
-                <h3 className="font-display text-xl text-cream font-light mb-2 group-hover:text-gold transition-colors duration-300">
-                  {item.title}
-                </h3>
-                <p className="font-sans text-xs text-mist leading-relaxed mb-5 flex-1">{item.desc}</p>
-                <div className="flex flex-wrap gap-2 mb-5">
-                  {item.tags.map((t) => (
-                    <span key={t} className="font-sans text-[10px] text-mist/60 border border-white/8 px-2.5 py-1">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                {item.url ? (
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-sans text-xs text-gold tracking-widest uppercase hover:text-gold-light transition-colors duration-200"
-                  >
-                    View Live →
-                  </a>
-                ) : (
-                  <span className="font-sans text-xs text-mist/40 tracking-widest uppercase">
-                    {item.pending ? "Launching Soon" : "NDA / Private"}
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* ── DRAG PORTFOLIO ──────────────────────── */}
+      <section className="py-4 pb-16">
+        <DragPortfolio />
       </section>
 
-      {/* ── CTA ──────────────────────────────────── */}
+            {/* ── CTA ──────────────────────────────────── */}
       <section className="py-20 bg-ink-2 border-y border-white/5">
         <div className="max-w-3xl mx-auto px-6 text-center">
           <p className="font-sans text-xs text-gold tracking-widest uppercase mb-4">Want to be next?</p>

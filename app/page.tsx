@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-const HeroCanvas = dynamic(() => import("@/components/HeroCanvas"), { ssr: false });
+const HeroCanvas   = dynamic(() => import("@/components/HeroCanvas"),   { ssr: false });
+const TextReveal   = dynamic(() => import("@/components/TextReveal"),   { ssr: false });
+const FadeUp       = dynamic(() => import("@/components/FadeUp"),       { ssr: false });
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -79,11 +81,9 @@ export default function Home() {
           </p>
 
           {/* Main headline */}
-          <h1 className="fade-up-delay-1 font-display font-light text-5xl sm:text-6xl md:text-7xl xl:text-8xl text-cream leading-[1.05] max-w-5xl">
-            Global Roots.<br />
-            <span className="italic text-gold">Executive</span> Vision.<br />
-            Creative Execution.
-          </h1>
+          <TextReveal as="h1" className="fade-up-delay-1 font-display font-light text-5xl sm:text-6xl md:text-7xl xl:text-8xl text-cream leading-[1.05] max-w-5xl" split="words" delay={0.2}>
+            Global Roots. Executive Vision. Creative Execution.
+          </TextReveal>
 
           {/* Sub */}
           <p className="fade-up-delay-2 font-sans text-base md:text-lg text-mist max-w-xl leading-relaxed mt-8 mb-10">
@@ -92,8 +92,8 @@ export default function Home() {
 
           {/* CTAs */}
           <div className="fade-up-delay-3 flex flex-col sm:flex-row gap-4">
-            <CtaLink href="/#booking" variant="gold">Book Free Discovery Call</CtaLink>
-            <CtaLink href="/business">Our Services</CtaLink>
+            <CtaLink href="/#booking" variant="gold" data-cursor="Book">Book Free Discovery Call</CtaLink>
+            <CtaLink href="/business" data-cursor="Explore">Our Services</CtaLink>
           </div>
 
           {/* Stats */}
@@ -111,9 +111,9 @@ export default function Home() {
         <div className="grid md:grid-cols-2 gap-16 items-center">
           <div>
             <p className="font-sans text-xs text-gold tracking-widest uppercase mb-5">Who We Are</p>
-            <h2 className="font-display text-4xl md:text-5xl text-cream font-light leading-tight mb-6">
-              Where the <span className="italic">boardroom</span> meets the booth.
-            </h2>
+            <TextReveal as="h2" className="font-display text-4xl md:text-5xl text-cream font-light leading-tight mb-6" split="words" delay={0}>
+              Where the boardroom meets the booth.
+            </TextReveal>
             <p className="font-sans text-sm text-mist leading-relaxed mb-4">
               IN-FLU-ENTIAL LLC is the creative studio of a rare operator — one who has sat in the studio with Grammy-connected producers, stood on SXSW stages, managed million-dollar demolition projects, and built digital brands from scratch.
             </p>
@@ -145,9 +145,9 @@ export default function Home() {
       {/* ── SERVICES ─────────────────────────────────── */}
       <section className="py-24 md:py-32 max-w-7xl mx-auto px-6 md:px-10">
         <p className="font-sans text-xs text-gold tracking-widest uppercase mb-4">What We Do</p>
-        <h2 className="font-display text-4xl md:text-5xl text-cream font-light mb-12 max-w-xl leading-tight">
-          Four lanes. <span className="italic">One vision.</span>
-        </h2>
+        <TextReveal as="h2" className="font-display text-4xl md:text-5xl text-cream font-light mb-12 max-w-xl leading-tight" split="words">
+          Four lanes. One vision.
+        </TextReveal>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
           <ServiceCard
             title="Music & Production"
@@ -206,7 +206,7 @@ export default function Home() {
             <p className="font-sans text-sm text-mist leading-relaxed mb-8">
               Let's see if we're aligned. Tell us about your project, your vision, and where you're stuck. Zero pressure, full attention.
             </p>
-            <CtaLink href="/booking?type=free" variant="outline">Schedule Free Call</CtaLink>
+            <CtaLink href="/booking?type=free" variant="outline" data-cursor="Book">Schedule Free Call</CtaLink>
           </div>
 
           {/* Paid */}
@@ -217,7 +217,7 @@ export default function Home() {
             <p className="font-sans text-sm text-mist leading-relaxed mb-8">
               Deep-dive brand audit, creative direction, or growth strategy. You leave with a clear plan and the confidence to execute.
             </p>
-            <CtaLink href="/booking?type=paid" variant="gold">Book Strategy Session</CtaLink>
+            <CtaLink href="/booking?type=paid" variant="gold" data-cursor="$500/hr">Book Strategy Session</CtaLink>
           </div>
         </div>
       </section>

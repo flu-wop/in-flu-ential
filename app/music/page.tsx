@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+const TextReveal = dynamic(() => import("@/components/TextReveal"), { ssr: false });
 
 export const metadata: Metadata = {
   title: "Music",

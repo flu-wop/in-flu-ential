@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { cormorant, dmSans } from "@/lib/fonts";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import dynamic from "next/dynamic";
 import "./globals.css";
+const Cursor      = dynamic(() => import("@/components/Cursor"),      { ssr: false });
+const SmoothScroll = dynamic(() => import("@/components/SmoothScroll"), { ssr: false });
 
 export const metadata: Metadata = {
   title: {
@@ -40,9 +43,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
       <body className="min-h-screen bg-ink text-cream antialiased">
-        <Nav />
-        <main>{children}</main>
-        <Footer />
+        <Cursor />
+        <SmoothScroll>
+          <Nav />
+          <main>{children}</main>
+          <Footer />
+        </SmoothScroll>
       </body>
     </html>
   );
