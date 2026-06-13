@@ -13,7 +13,7 @@ export default function TermsPage() {
         {[
           ["Acceptance", "By accessing this website or engaging IN-FLU-ENTIAL LLC for services, you agree to these terms."],
           ["Services", "IN-FLU-ENTIAL LLC provides creative direction, brand strategy, music production consultation, and related services as agreed in individual client engagements. Scope, deliverables, and timelines are defined per project."],
-          ["Payment", "Consultation sessions are billed at $250/hour and are due prior to or at the time of the session. Project-based work requires a deposit before commencement. All fees are non-refundable unless otherwise agreed in writing."],
+          ["Payment", "Consultation sessions are billed at $500/hour and are due prior to or at the time of the session. Project-based work requires a deposit before commencement. All fees are non-refundable unless otherwise agreed in writing."],
           ["Intellectual Property", "Upon receipt of full payment, clients receive ownership of final deliverables as specified in their engagement agreement. IN-FLU-ENTIAL LLC retains the right to display completed work in its portfolio unless otherwise agreed."],
           ["Confidentiality", "We treat all client information as confidential. We will not disclose your project details, business information, or strategies to third parties without your explicit consent."],
           ["Limitation of Liability", "IN-FLU-ENTIAL LLC is not liable for indirect, incidental, or consequential damages arising from the use of our services. Our total liability shall not exceed the fees paid for the specific engagement."],

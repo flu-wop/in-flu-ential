@@ -50,7 +50,7 @@ function InlineBookingForm({ type }: { type: "free" | "paid" }) {
     message: "",
   });
 
-  const label = type === "free" ? "Free 15-Min Discovery Call" : "$250/hr Strategy Session";
+  const label = type === "free" ? "Free 15-Min Discovery Call" : "$500/hr Strategy Session";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -204,8 +204,8 @@ function BookingInner() {
     },
     {
       key: "paid" as const,
-      label: "$250/hr Strategy Session",
-      price: "$250 / hr",
+      label: "$500/hr Strategy Session",
+      price: "$500 / hr",
       desc: "Come ready to work. This is a focused, executive-level session: brand audit, creative direction, growth strategy, or whatever your highest-priority challenge is.",
       includes: [
         "Pre-session intake (this form)",

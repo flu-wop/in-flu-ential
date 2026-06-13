@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
+const HeroCanvas = dynamic(() => import("@/components/HeroCanvas"), { ssr: false });
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -56,6 +58,8 @@ export default function Home() {
     <>
       {/* ── HERO ─────────────────────────────────────── */}
       <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
+        {/* Three.js particle canvas */}
+        <HeroCanvas />
         {/* Background grid */}
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -142,9 +146,9 @@ export default function Home() {
       <section className="py-24 md:py-32 max-w-7xl mx-auto px-6 md:px-10">
         <p className="font-sans text-xs text-gold tracking-widest uppercase mb-4">What We Do</p>
         <h2 className="font-display text-4xl md:text-5xl text-cream font-light mb-12 max-w-xl leading-tight">
-          Three pillars. <span className="italic">One vision.</span>
+          Four lanes. <span className="italic">One vision.</span>
         </h2>
-        <div className="grid md:grid-cols-3 gap-5">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
           <ServiceCard
             title="Music & Production"
             desc="Recording engineering, artist development, studio liaison work, and music supervision for film and brand."
@@ -156,8 +160,13 @@ export default function Home() {
             href="/business"
           />
           <ServiceCard
+            title="Website Starter Kits"
+            desc="DIY guide + template or done-with-you buildout. Real booking, real Stripe, real emails. From $47."
+            href="/products"
+          />
+          <ServiceCard
             title="Portfolio Work"
-            desc="Websites, animations, campaign visuals, resumes, and identity systems — production-grade creative output."
+            desc="Websites, campaigns, visuals, resumes, and identity systems — production-grade creative output."
             href="/portfolio"
           />
         </div>
@@ -204,7 +213,7 @@ export default function Home() {
           <div className="border border-gold/30 bg-ink-2 p-10 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-full blur-2xl" />
             <p className="font-sans text-xs text-gold tracking-widest uppercase mb-3">Strategy Session</p>
-            <h3 className="font-display text-3xl text-cream font-light mb-4">$250 / Hour<br /><span className="italic">Consultation</span></h3>
+            <h3 className="font-display text-3xl text-cream font-light mb-4">$500 / Hour<br /><span className="italic">Consultation</span></h3>
             <p className="font-sans text-sm text-mist leading-relaxed mb-8">
               Deep-dive brand audit, creative direction, or growth strategy. You leave with a clear plan and the confidence to execute.
             </p>

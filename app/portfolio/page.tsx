@@ -129,37 +129,58 @@ const PORTFOLIO_ITEMS = [
 const CATEGORIES = ["All", "Website", "Campaign", "Documentary", "Pitch Deck", "Branding", "Visual System"];
 
 // ─────────────────────────────────────────────
+// PLACEHOLDER CONFIGS — swap src for real image when ready
+// ─────────────────────────────────────────────
+const PLACEHOLDERS: Record<string, { label: string; accent: string; pattern: string }> = {
+  "mid-city-sound":   { label: "Studio · Booking · Brand",      accent: "#C9A84C", pattern: "repeating-linear-gradient(45deg, #C9A84C11 0px, #C9A84C11 1px, transparent 1px, transparent 12px)" },
+  "epoch-skin":       { label: "Waxing · Skincare · E-Commerce", accent: "#8B9E7A", pattern: "repeating-linear-gradient(135deg, #8B9E7A11 0px, #8B9E7A11 1px, transparent 1px, transparent 14px)" },
+  "donald-markowitz": { label: "Artist · Legacy · Credits",      accent: "#A89880", pattern: "repeating-linear-gradient(0deg, #A8988011 0px, #A8988011 1px, transparent 1px, transparent 16px)" },
+  "jade-the-gem":     { label: "DJ · Booking · Merch",           accent: "#7BA3C4", pattern: "repeating-linear-gradient(60deg, #7BA3C411 0px, #7BA3C411 1px, transparent 1px, transparent 10px)" },
+  "fluhaul":          { label: "Junk Removal · Cinematic",       accent: "#C4874A", pattern: "repeating-linear-gradient(90deg, #C4874A11 0px, #C4874A11 1px, transparent 1px, transparent 18px)" },
+  "streetbeat":       { label: "Documentary · Streaming",        accent: "#4AC4A8", pattern: "repeating-linear-gradient(45deg, #4AC4A811 0px, #4AC4A811 1px, transparent 1px, transparent 12px)" },
+  "lil-squiggle":     { label: "Campaign · Merch · Social",      accent: "#C4C44A", pattern: "repeating-linear-gradient(135deg, #C4C44A11 0px, #C4C44A11 1px, transparent 1px, transparent 10px)" },
+  "prof-longhair":    { label: "Pitch Deck · Film · Investor",   accent: "#9A7AC4", pattern: "repeating-linear-gradient(0deg, #9A7AC411 0px, #9A7AC411 1px, transparent 1px, transparent 14px)" },
+  "graham-hill":      { label: "Album Campaign · Artist Brand",  accent: "#C4A47A", pattern: "repeating-linear-gradient(60deg, #C4A47A11 0px, #C4A47A11 1px, transparent 1px, transparent 12px)" },
+  "mvc-creations":    { label: "Beauty · E-Commerce · Motion",   accent: "#C47AA8", pattern: "repeating-linear-gradient(90deg, #C47AA811 0px, #C47AA811 1px, transparent 1px, transparent 16px)" },
+  "athlete-brand":    { label: "Personal Brand · NDA",           accent: "#7AC4A8", pattern: "repeating-linear-gradient(45deg, #7AC4A811 0px, #7AC4A811 1px, transparent 1px, transparent 14px)" },
+  "resume-system":    { label: "Visual System · NDA",            accent: "#A8A87A", pattern: "repeating-linear-gradient(135deg, #A8A87A11 0px, #A8A87A11 1px, transparent 1px, transparent 12px)" },
+};
+
+// ─────────────────────────────────────────────
 // PREVIEW COMPONENT
-// Uses iframe for live sites, styled placeholder for NDA/pending
+// Styled placeholder — swap bg for <Image> when real photo is ready
 // ─────────────────────────────────────────────
 function ProjectPreview({ item }: { item: typeof PORTFOLIO_ITEMS[0] }) {
-  if (item.previewUrl) {
-    return (
-      <div className="h-48 relative overflow-hidden border-b border-white/5 bg-ink-3">
-        <iframe
-          src={item.previewUrl}
-          title={`${item.title} preview`}
-          className="absolute inset-0 w-[200%] h-[200%] origin-top-left scale-50 pointer-events-none"
-          loading="lazy"
-          sandbox="allow-scripts allow-same-origin"
-        />
-        {/* Overlay so hover doesn't interact with iframe */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-ink-3/60" />
-      </div>
-    );
-  }
+  const ph = PLACEHOLDERS[item.id] || { label: item.category, accent: "#C9A84C", pattern: "" };
 
-  // NDA / pending — styled placeholder
-  const label = item.pending ? "In Progress" : "NDA / Private";
-  const color = item.pending ? "text-gold/50" : "text-mist/30";
   return (
-    <div className="h-48 bg-ink-3 border-b border-white/5 flex items-center justify-center relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-gold/3 to-transparent" />
-      <div className="text-center">
-        <div className="w-8 h-px bg-gold/20 mx-auto mb-3" />
-        <span className={`font-sans text-[10px] tracking-widest uppercase ${color}`}>{label}</span>
-        <div className="w-8 h-px bg-gold/20 mx-auto mt-3" />
+    <div
+      className="h-52 relative overflow-hidden border-b border-white/5 flex items-end"
+      style={{ background: `#111`, backgroundImage: ph.pattern }}
+    >
+      {/* Accent glow */}
+      <div
+        className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-30 pointer-events-none"
+        style={{ background: ph.accent }}
+      />
+      {/* Bottom label bar */}
+      <div className="relative w-full px-5 py-4 bg-gradient-to-t from-ink via-ink/80 to-transparent">
+        <p className="font-sans text-[9px] tracking-widest uppercase" style={{ color: ph.accent }}>
+          {ph.label}
+        </p>
       </div>
+      {/* Live dot top-right */}
+      {item.live && (
+        <div className="absolute top-4 right-4 flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+          <span className="font-sans text-[9px] text-mist/60 tracking-widest uppercase">Live</span>
+        </div>
+      )}
+      {item.pending && (
+        <div className="absolute top-4 right-4">
+          <span className="font-sans text-[9px] tracking-widest uppercase text-gold/50">In Progress</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -216,20 +237,8 @@ export default function PortfolioPage() {
               <ProjectPreview item={item} />
 
               <div className="p-7 flex flex-col flex-1">
-                <div className="flex items-center justify-between mb-3">
+                <div className="mb-3">
                   <span className="font-sans text-[10px] text-gold tracking-widest uppercase">{item.category}</span>
-                  {item.live && (
-                    <span className="flex items-center gap-1.5 font-sans text-[10px] text-mist">
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                      Live
-                    </span>
-                  )}
-                  {item.pending && (
-                    <span className="flex items-center gap-1.5 font-sans text-[10px] text-gold/60">
-                      <span className="w-1.5 h-1.5 rounded-full bg-gold/40" />
-                      In Progress
-                    </span>
-                  )}
                 </div>
                 <h3 className="font-display text-xl text-cream font-light mb-2 group-hover:text-gold transition-colors duration-300">
                   {item.title}

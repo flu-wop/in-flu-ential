@@ -200,7 +200,7 @@ export default function BusinessPage() {
           />
         </div>
         <p className="font-sans text-xs text-mist mt-6 text-center">
-          All packages begin with a discovery call. Custom scopes available. Hourly consulting at $250/hr.
+          All packages begin with a discovery call. Custom scopes available. Hourly consulting at $500/hr.
         </p>
       </section>
 
@@ -240,7 +240,7 @@ export default function BusinessPage() {
               Free Discovery Call
             </Link>
             <Link href="/#booking" className="inline-block border border-gold/50 text-gold px-8 py-3.5 text-xs tracking-widest uppercase font-sans hover:bg-gold hover:text-ink transition-all duration-300">
-              Book $250/hr Session
+              Book $500/hr Session
             </Link>
           </div>
         </div>

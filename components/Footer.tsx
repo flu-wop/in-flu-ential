@@ -43,7 +43,7 @@ export default function Footer() {
                 Book a Free Call
               </Link>
               <Link href="/#booking" className="font-sans text-sm text-mist hover:text-cream transition-colors gold-link w-fit">
-                $250/hr Consultation
+                $500/hr Consultation
               </Link>
             </div>
           </div>
