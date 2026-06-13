@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 const links = [
   { href: "/music", label: "Music" },
   { href: "/business", label: "Business" },
+  { href: "/products", label: "Products" },
   { href: "/portfolio", label: "Portfolio" },
   { href: "/vault", label: "Vault" },
 ];
@@ -32,7 +33,6 @@ export default function Nav() {
       <div className="max-w-7xl mx-auto px-6 md:px-10 h-16 md:h-20 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
-          {/* Replace /public/logo.png with your actual logo file */}
           <div className="w-8 h-8 rounded-sm overflow-hidden">
             <img src="/logo.png" alt="IN-FLU-ENTIAL" className="w-full h-full object-contain" onError={(e) => (e.currentTarget.style.display = "none")} />
           </div>
@@ -55,7 +55,7 @@ export default function Nav() {
             </Link>
           ))}
           <Link
-            href="/#booking"
+            href="/booking?type=free"
             className="ml-4 px-5 py-2 border border-gold/60 text-gold text-xs tracking-widest uppercase font-sans hover:bg-gold hover:text-ink transition-all duration-300"
           >
             Book Now
@@ -87,7 +87,7 @@ export default function Nav() {
             </Link>
           ))}
           <Link
-            href="/#booking"
+            href="/booking?type=free"
             className="mt-2 px-5 py-3 border border-gold/60 text-gold text-xs tracking-widest uppercase text-center"
           >
             Book Now

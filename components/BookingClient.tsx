@@ -1,13 +1,15 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { BOOKING } from "@/lib/booking";
+import { BOOKING, USE_CALENDLY } from "@/lib/booking";
 
+// ─────────────────────────────────────────────
+// Calendly embed (used when USE_CALENDLY = true)
+// ─────────────────────────────────────────────
 function CalendlyEmbed({ url, label }: { url: string; label: string }) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    // Load Calendly widget script once
     if (document.getElementById("calendly-script")) { setLoaded(true); return; }
     const s = document.createElement("script");
     s.id = "calendly-script";
@@ -19,9 +21,8 @@ function CalendlyEmbed({ url, label }: { url: string; label: string }) {
 
   return (
     <div className="w-full">
-      {/* Calendly inline embed */}
       <div
-        className="calendly-inline-widget w-full rounded-none border border-white/8"
+        className="calendly-inline-widget w-full border border-white/8"
         data-url={`${url}?hide_gdpr_banner=1&background_color=0A0A0A&text_color=F5F0E8&primary_color=C9A84C`}
         style={{ minWidth: "320px", height: "700px" }}
       />
@@ -34,9 +35,157 @@ function CalendlyEmbed({ url, label }: { url: string; label: string }) {
   );
 }
 
+// ─────────────────────────────────────────────
+// Inline form (used when USE_CALENDLY = false)
+// ─────────────────────────────────────────────
+type FormState = "idle" | "submitting" | "success" | "error";
+
+function InlineBookingForm({ type }: { type: "free" | "paid" }) {
+  const [state, setState] = useState<FormState>("idle");
+  const [fields, setFields] = useState({
+    name: "",
+    email: "",
+    project: "",
+    timeline: "",
+    message: "",
+  });
+
+  const label = type === "free" ? "Free 15-Min Discovery Call" : "$250/hr Strategy Session";
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setState("submitting");
+    try {
+      const res = await fetch("/api/booking-inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...fields, type, label }),
+      });
+      if (!res.ok) throw new Error("Failed");
+      setState("success");
+    } catch {
+      setState("error");
+    }
+  }
+
+  if (state === "success") {
+    return (
+      <div className="border border-gold/20 bg-ink-2 p-12 text-center">
+        <div className="w-10 h-px bg-gold/40 mx-auto mb-8" />
+        <p className="font-display text-3xl text-cream font-light mb-4">Request received.</p>
+        <p className="font-sans text-sm text-mist leading-relaxed max-w-sm mx-auto">
+          We&apos;ll reach out to <span className="text-cream">{fields.email}</span> within one business day to confirm your session.
+        </p>
+        <div className="w-10 h-px bg-gold/40 mx-auto mt-8" />
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label className="block font-sans text-[10px] text-gold tracking-widest uppercase mb-2">
+            Full Name
+          </label>
+          <input
+            type="text"
+            required
+            value={fields.name}
+            onChange={(e) => setFields({ ...fields, name: e.target.value })}
+            className="w-full bg-ink border border-white/10 px-5 py-3.5 text-sm text-cream placeholder:text-mist/30 font-sans focus:outline-none focus:border-gold/50 transition-colors"
+            placeholder="Your name"
+          />
+        </div>
+        <div>
+          <label className="block font-sans text-[10px] text-gold tracking-widest uppercase mb-2">
+            Email
+          </label>
+          <input
+            type="email"
+            required
+            value={fields.email}
+            onChange={(e) => setFields({ ...fields, email: e.target.value })}
+            className="w-full bg-ink border border-white/10 px-5 py-3.5 text-sm text-cream placeholder:text-mist/30 font-sans focus:outline-none focus:border-gold/50 transition-colors"
+            placeholder="you@email.com"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block font-sans text-[10px] text-gold tracking-widest uppercase mb-2">
+          Project / Brand
+        </label>
+        <input
+          type="text"
+          required
+          value={fields.project}
+          onChange={(e) => setFields({ ...fields, project: e.target.value })}
+          className="w-full bg-ink border border-white/10 px-5 py-3.5 text-sm text-cream placeholder:text-mist/30 font-sans focus:outline-none focus:border-gold/50 transition-colors"
+          placeholder="What are we working on?"
+        />
+      </div>
+
+      <div>
+        <label className="block font-sans text-[10px] text-gold tracking-widest uppercase mb-2">
+          Timeline
+        </label>
+        <select
+          value={fields.timeline}
+          onChange={(e) => setFields({ ...fields, timeline: e.target.value })}
+          className="w-full bg-ink border border-white/10 px-5 py-3.5 text-sm text-cream font-sans focus:outline-none focus:border-gold/50 transition-colors"
+        >
+          <option value="">Select a timeline</option>
+          <option value="asap">ASAP — ready to move now</option>
+          <option value="1month">Within the next month</option>
+          <option value="3months">Next 1–3 months</option>
+          <option value="exploring">Just exploring for now</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="block font-sans text-[10px] text-gold tracking-widest uppercase mb-2">
+          What do you want to walk away with?
+        </label>
+        <textarea
+          required
+          rows={5}
+          value={fields.message}
+          onChange={(e) => setFields({ ...fields, message: e.target.value })}
+          className="w-full bg-ink border border-white/10 px-5 py-3.5 text-sm text-cream placeholder:text-mist/30 font-sans focus:outline-none focus:border-gold/50 transition-colors resize-none"
+          placeholder="Tell us about your project, your challenge, or where you're stuck."
+        />
+      </div>
+
+      {state === "error" && (
+        <p className="font-sans text-xs text-red-400">
+          Something went wrong. Email us directly at{" "}
+          <a href="mailto:hello@influential.llc" className="underline">hello@influential.llc</a>
+        </p>
+      )}
+
+      <div className="pt-2">
+        <button
+          type="submit"
+          disabled={state === "submitting"}
+          className="w-full bg-gold text-ink px-8 py-4 text-xs tracking-widest uppercase font-sans hover:bg-gold-light transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {state === "submitting" ? "Sending…" : `Request ${label}`}
+        </button>
+        <p className="font-sans text-[11px] text-mist/30 mt-3 text-center">
+          We respond within one business day. Always a human.
+        </p>
+      </div>
+    </form>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Main booking inner component
+// ─────────────────────────────────────────────
 function BookingInner() {
   const params = useSearchParams();
-  const type = params.get("type"); // "free" | "paid"
+  const type = params.get("type");
   const [active, setActive] = useState<"free" | "paid">(type === "paid" ? "paid" : "free");
 
   const options = [
@@ -59,7 +208,7 @@ function BookingInner() {
       price: "$250 / hr",
       desc: "Come ready to work. This is a focused, executive-level session: brand audit, creative direction, growth strategy, or whatever your highest-priority challenge is.",
       includes: [
-        "Pre-session intake form",
+        "Pre-session intake (this form)",
         "60-minute deep-dive session",
         "Recorded recap (on request)",
         "Written follow-up action plan",
@@ -114,7 +263,7 @@ function BookingInner() {
               <p className="font-display text-4xl text-cream font-light mb-5">{current.price}</p>
               <p className="font-sans text-sm text-mist leading-relaxed mb-6">{current.desc}</p>
               <div className="space-y-2.5">
-                <p className="font-sans text-[10px] text-gold tracking-widest uppercase mb-3">What's included</p>
+                <p className="font-sans text-[10px] text-gold tracking-widest uppercase mb-3">What&apos;s included</p>
                 {current.includes.map((item) => (
                   <div key={item} className="flex items-start gap-3">
                     <span className="text-gold mt-0.5 text-sm shrink-0">—</span>
@@ -124,7 +273,6 @@ function BookingInner() {
               </div>
             </div>
 
-            {/* Quick contact fallback */}
             <div className="border border-white/5 bg-ink-2/50 p-6">
               <p className="font-sans text-xs text-mist/60 leading-relaxed">
                 Prefer to reach out directly?{" "}
@@ -135,13 +283,23 @@ function BookingInner() {
             </div>
           </div>
 
-          {/* Calendly embed */}
+          {/* Form or Calendly */}
           <div>
-            <CalendlyEmbed url={current.booking.url} label={current.label} />
-            <p className="font-sans text-[11px] text-mist/30 mt-3 text-center">
-              {/* SETUP: Replace Calendly URLs in lib/booking.ts */}
-              Powered by Calendly. All times shown in your local timezone.
-            </p>
+            {USE_CALENDLY ? (
+              <>
+                <CalendlyEmbed url={current.booking.url} label={current.label} />
+                <p className="font-sans text-[11px] text-mist/30 mt-3 text-center">
+                  Powered by Calendly. All times shown in your local timezone.
+                </p>
+              </>
+            ) : (
+              <div className="border border-white/8 bg-ink-2 p-8 md:p-10">
+                <p className="font-sans text-[10px] text-gold tracking-widest uppercase mb-6">
+                  Request your {current.label}
+                </p>
+                <InlineBookingForm type={active} />
+              </div>
+            )}
           </div>
         </div>
       </section>
