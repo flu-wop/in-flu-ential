@@ -131,7 +131,7 @@ export default function BuildingCanvas() {
       // Window light colors — mostly off, some warm, some cool
       const baseColors = [0x2A2000, 0x1A1A0A, 0x000000, 0x0A0A1A, 0x001A0A];
 
-      const windows: THREE.Mesh[] = [];
+      const windows: import("three").Mesh[] = [];
 
       for (let f = 0; f < FLOORS; f++) {
         for (let c = 0; c < COLS; c++) {
