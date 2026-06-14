@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Lenis from "@studio-freight/lenis";
+import Lenis from "lenis";
 import CinematicNav from "@/components/cinematic/CinematicNav";
 import HeroScene from "@/components/cinematic/HeroScene";
 import ApproachScene from "@/components/cinematic/ApproachScene";
