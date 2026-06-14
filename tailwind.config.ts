@@ -2,32 +2,50 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
-        ink: "#0A0A0A",
-        "ink-2": "#141414",
-        "ink-3": "#1E1E1E",
-        gold: "#C9A84C",
-        "gold-light": "#E2C47A",
-        "gold-dim": "#8A6E30",
-        cream: "#F5F0E8",
-        "cream-dim": "#D4CFC6",
-        mist: "#9A9A9A",
+        "studio-black": "#080808",
+        charcoal:       "#111111",
+        dark:           "#1A1A1A",
+        card:           "#1C1C1C",
+        border:         "#2A2A2A",
+        gold:           "#D4AF77",
+        "gold-light":   "#E8C97A",
+        "gold-dark":    "#B8935A",
+        cream:          "#F5EDD8",
+        mist:           "#A89880",
       },
       fontFamily: {
-        display: ["var(--font-cormorant)", "serif"],
-        sans: ["var(--font-dm-sans)", "sans-serif"],
+        display: ["Cormorant Garamond", "Georgia", "serif"],
+        body:    ["DM Sans", "system-ui", "sans-serif"],
+        mono:    ["DM Mono", "monospace"],
       },
-      letterSpacing: {
-        widest2: "0.25em",
-        widest3: "0.4em",
+      backgroundImage: {
+        "gold-gradient":
+          "linear-gradient(135deg, #D4AF77 0%, #E8C97A 40%, #B8935A 100%)",
+      },
+      animation: {
+        shimmer: "shimmer 2s linear infinite",
+        "fade-up": "fadeUp 0.8s ease forwards",
+      },
+      keyframes: {
+        shimmer: {
+          "0%":   { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        fadeUp: {
+          from: { opacity: "0", transform: "translateY(16px)" },
+          to:   { opacity: "1", transform: "translateY(0)" },
+        },
       },
     },
   },
   plugins: [],
 };
+
 export default config;
