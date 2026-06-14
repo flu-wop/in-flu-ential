@@ -2,9 +2,9 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -26,8 +26,7 @@ const config: Config = {
         mono:    ["DM Mono", "monospace"],
       },
       backgroundImage: {
-        "gold-gradient":
-          "linear-gradient(135deg, #D4AF77 0%, #E8C97A 40%, #B8935A 100%)",
+        "gold-gradient": "linear-gradient(135deg, #D4AF77 0%, #E8C97A 40%, #B8935A 100%)",
       },
       animation: {
         shimmer: "shimmer 2s linear infinite",
