@@ -245,7 +245,7 @@ export default function BuildingCanvas() {
         // Occasional window flicker
         if (frame % 90 === 0) {
           const win = windows[Math.floor(Math.random() * windows.length)];
-          const mat = win.material as THREE.MeshBasicMaterial;
+          const mat = win.material as import("three").MeshBasicMaterial;
           const base = mat.opacity;
           mat.opacity = base > 0.1 ? base * (0.6 + Math.random() * 0.4) : base;
         }
