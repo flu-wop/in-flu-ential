@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-const HeroCanvas   = dynamic(() => import("@/components/HeroCanvas"),   { ssr: false });
+const BuildingCanvas = dynamic(() => import("@/components/BuildingCanvas"), { ssr: false });
 const TextReveal   = dynamic(() => import("@/components/TextReveal"),   { ssr: false });
 const FadeUp       = dynamic(() => import("@/components/FadeUp"),       { ssr: false });
 import Link from "next/link";
@@ -74,22 +74,22 @@ export default function Home() {
   return (
     <>
       {/* ── HERO ─────────────────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
+      <section className="relative min-h-screen flex flex-col justify-end overflow-hidden">
         {/* Three.js particle canvas */}
-        <HeroCanvas />
+        <BuildingCanvas />
         {/* Background grid */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.015]"
           style={{
             backgroundImage:
               "linear-gradient(#C9A84C 1px, transparent 1px), linear-gradient(90deg, #C9A84C 1px, transparent 1px)",
             backgroundSize: "80px 80px",
           }}
         />
-        {/* Radial glow */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gold/5 blur-[120px] pointer-events-none" />
+        {/* Bottom gradient so text reads over building */}
+        <div className="absolute bottom-0 left-0 right-0 h-2/3 bg-gradient-to-t from-ink via-ink/80 to-transparent pointer-events-none" />
 
-        <div className="relative max-w-7xl mx-auto px-6 md:px-10 pt-32 pb-24">
+        <div className="relative max-w-7xl mx-auto px-6 md:px-10 pt-32 pb-24 flex flex-col justify-end min-h-screen">
           {/* Eyebrow */}
           <p className="fade-up font-sans text-xs text-gold tracking-widest3 uppercase mb-8">
             Creative Direction · Branding · Strategy

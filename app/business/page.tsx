@@ -1,24 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-const TextReveal = dynamic(() => import("@/components/TextReveal"), { ssr: false });
+const TextReveal     = dynamic(() => import("@/components/TextReveal"),     { ssr: false });
+const StoryTimeline  = dynamic(() => import("@/components/StoryTimeline"),  { ssr: false });
 
 export const metadata: Metadata = {
   title: "Business & Branding",
   description: "Full-spectrum brand strategy, visual identity, pitch decks, and executive consulting. Packages from $5k–$25k+.",
 };
-
-function TimelineItem({ year, event, detail }: { year: string; event: string; detail: string }) {
-  return (
-    <div className="grid grid-cols-[100px_1fr] gap-6 items-start group">
-      <span className="font-display text-gold/50 text-sm tracking-widest pt-0.5 group-hover:text-gold transition-colors duration-300">{year}</span>
-      <div className="border-l border-white/8 pl-6 pb-10 group-hover:border-gold/30 transition-colors duration-300">
-        <p className="font-sans text-sm text-cream font-medium mb-1">{event}</p>
-        <p className="font-sans text-xs text-mist leading-relaxed">{detail}</p>
-      </div>
-    </div>
-  );
-}
 
 function PackageCard({
   tier, price, desc, features, highlight,
@@ -131,23 +120,8 @@ export default function BusinessPage() {
         </div>
       </section>
 
-      <div className="divider-gold max-w-7xl mx-auto px-6 md:px-10" />
-
-      {/* ── TIMELINE ───────────────────────────────── */}
-      <section className="py-24 max-w-7xl mx-auto px-6 md:px-10">
-        <p className="font-sans text-xs text-gold tracking-widest uppercase mb-12">Visual Journey</p>
-        <div>
-          <TimelineItem year="Early" event="Ghanaian Roots · Toronto Upbringing" detail="Multicultural foundation across Ghana, Toronto, and Chicago. The breadth of experience that makes the difference." />
-          <TimelineItem year="2008–" event="Studio Internship — Fee Banks & Abby Urbina" detail="First professional music industry exposure. Learning the craft and the culture simultaneously." />
-          <TimelineItem year="2012–" event="SXSW — Viral Moment with Boosie Badazz" detail="National-stage performance that broke through the noise of the biggest music conference in America." />
-          <TimelineItem year="2014–" event="Shadowing Zaytoven — Atlanta & Los Angeles" detail="Immersive study under one of hip-hop's most iconic producers. Sonic branding, workflow, and legacy." />
-          <TimelineItem year="2016–" event="Curren$y — In-House Producer & Engineer" detail="Became the trusted in-house creative for Jet Life. Full responsibility for sound, sessions, and vision." />
-          <TimelineItem year="2017–" event="Industrial Project Management" detail="Rose to project manager on multi-million dollar demolition projects. Systems, execution, and leadership under pressure." />
-          <TimelineItem year="2019–" event="Artist Development — Former Saints Players" detail="Brand and identity work for athletes transitioning out of professional sports. High-stakes personal branding." />
-          <TimelineItem year="2023–" event="NoCap Engineering Credits" detail="Recording engineering for one of Southern rap's most critically acclaimed voices." />
-          <TimelineItem year="Now" event="IN-FLU-ENTIAL LLC — Launched" detail="Full-service creative direction and brand strategy studio. Partnered with Donny Markowitz. Open for premium clients." />
-        </div>
-      </section>
+      {/* ── SCROLLYTELLING TIMELINE ─────────────────── */}
+      <StoryTimeline />
 
       <div className="divider-gold max-w-7xl mx-auto px-6 md:px-10" />
 
