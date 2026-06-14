@@ -1,20 +1,14 @@
 import type { Metadata } from "next";
 import { cormorant, dmSans } from "@/lib/fonts";
-import Nav from "@/components/Nav";
-import Footer from "@/components/Footer";
-import dynamic from "next/dynamic";
 import "./globals.css";
-const Cursor      = dynamic(() => import("@/components/Cursor"),      { ssr: false });
-const SmoothScroll    = dynamic(() => import("@/components/SmoothScroll"),    { ssr: false });
-const PageTransition  = dynamic(() => import("@/components/PageTransition"),  { ssr: false });
 
 export const metadata: Metadata = {
   title: {
-    default: "IN-FLU-ENTIAL LLC | Creative Direction, Branding & Strategy",
+    default: "IN-FLU-ENTIAL LLC | A Building of Influence",
     template: "%s | IN-FLU-ENTIAL LLC",
   },
   description:
-    "Global Roots. Executive Vision. Creative Execution. Creative direction, branding, and marketing strategy for artists, founders, and premium brands.",
+    "Creative direction, brand development, and music marketing rooted in New Orleans. Global Roots. Executive Vision. Creative Execution.",
   keywords: [
     "creative direction", "branding studio", "music industry", "brand strategy",
     "New Orleans", "executive consulting", "artist development", "marketing agency",
@@ -22,9 +16,8 @@ export const metadata: Metadata = {
   openGraph: {
     title: "IN-FLU-ENTIAL LLC",
     description: "Global Roots. Executive Vision. Creative Execution.",
-    url: "https://influential.llc",
+    url: "https://in-flu-ential.vercel.app",
     siteName: "IN-FLU-ENTIAL LLC",
-    // Replace /public/og-image.jpg with a real OG image (1200x630)
     images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
     type: "website",
   },
@@ -34,24 +27,14 @@ export const metadata: Metadata = {
     description: "Global Roots. Executive Vision. Creative Execution.",
     images: ["/og-image.jpg"],
   },
-  icons: {
-    // Replace /public/favicon.ico with your actual favicon
-    icon: "/favicon.ico",
-  },
+  icons: { icon: "/favicon.ico" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
-      <body className="min-h-screen bg-ink text-cream antialiased">
-        <Cursor />
-        <SmoothScroll>
-          <PageTransition>
-            <Nav />
-            <main>{children}</main>
-            <Footer />
-          </PageTransition>
-        </SmoothScroll>
+      <body className="min-h-screen bg-[#080808] text-[#F5EDD8] antialiased">
+        {children}
       </body>
     </html>
   );

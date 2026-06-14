@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
-import BookingClient from "@/components/BookingClient";
+import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "Book a Consultation",
-  description: "Book a free 15-minute discovery call or a $500/hr strategy consultation with IN-FLU-ENTIAL LLC.",
-};
+export const metadata: Metadata = { title: "Book a Consultation" };
 
 export default function BookingPage() {
-  return <BookingClient />;
+  return (
+    <main className="min-h-screen bg-[#080808] flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-4xl text-[#F5EDD8] font-light mb-4" style={{fontFamily:"Cormorant Garamond,serif"}}>Book a Consultation</h1>
+        <p className="text-[#A89880] mb-8">Schedule your strategy session below.</p>
+        <Link href="/" className="text-[#D4AF77] underline">← Back home</Link>
+      </div>
+    </main>
+  );
 }
