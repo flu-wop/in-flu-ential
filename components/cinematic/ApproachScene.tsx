@@ -39,7 +39,7 @@ export default function ApproachScene() {
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1565117131043-35e3d67b8d0e?w=2400&q=85&auto=format&fit=crop')`,
+              backgroundImage: `url('/mansion-facade.webp')`,
               filter: "saturate(0.5) brightness(0.35) sepia(0.3)",
             }}
           />

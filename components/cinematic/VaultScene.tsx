@@ -65,7 +65,7 @@ export default function VaultScene() {
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=2400&q=85&auto=format&fit=crop')`,
+              backgroundImage: `url('/vault.webp')`,
               filter: "saturate(0.35) brightness(0.25) sepia(0.5)",
             }}
           />

@@ -26,7 +26,7 @@ export default function HeroScene() {
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1568695931072-a6e9b24c5a0c?w=2400&q=90&auto=format&fit=crop')`,
+              backgroundImage: `url('/hero-skyline.webp')`,
               filter: "saturate(0.7) brightness(0.55)",
             }}
           />

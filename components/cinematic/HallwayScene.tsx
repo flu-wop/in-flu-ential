@@ -136,7 +136,7 @@ export default function HallwayScene() {
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{
-                backgroundImage: `url('https://images.unsplash.com/photo-1631049421450-348ccd7f8949?w=2200&q=85&auto=format&fit=crop')`,
+                backgroundImage: `url('/hallway.webp')`,
                 filter: "saturate(0.4) brightness(0.3) sepia(0.4)",
               }}
             />
