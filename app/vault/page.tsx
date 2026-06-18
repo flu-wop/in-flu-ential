@@ -62,13 +62,7 @@ export default function VaultPage() {
               </a>
             </div>
 
-            <SceneBoundary fallback={
-              <div className="w-full h-[100dvh] flex items-center justify-center bg-[#060606]">
-                <p className="text-[10px] tracking-[0.5em] text-[#D4AF77]/40 uppercase" style={{ fontFamily: "DM Sans, sans-serif" }}>
-                  Enter the combination
-                </p>
-              </div>
-            }>
+            <SceneBoundary>
               <VaultDoor3D onUnlock={() => setUnlocked(true)} />
             </SceneBoundary>
           </motion.div>

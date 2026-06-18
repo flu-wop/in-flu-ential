@@ -9,6 +9,7 @@ interface Props {
 
 interface State {
   hasError: boolean;
+  message: string;
 }
 
 // Wraps any Three.js scene. If WebGL throws, the page survives —
@@ -16,11 +17,12 @@ interface State {
 export default class SceneBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, message: "" };
   }
 
-  static getDerivedStateFromError(): State {
-    return { hasError: true };
+  static getDerivedStateFromError(error: unknown): State {
+    const message = error instanceof Error ? error.message : String(error);
+    return { hasError: true, message };
   }
 
   componentDidCatch(error: unknown) {
@@ -32,7 +34,24 @@ export default class SceneBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      return this.props.fallback ?? null;
+      if (this.props.fallback) return this.props.fallback;
+      // Default: show the actual error so we can diagnose from a screenshot
+      return (
+        <div className="w-full min-h-[40vh] flex flex-col items-center justify-center gap-3 px-6 py-12 text-center">
+          <p
+            className="text-[10px] tracking-[0.4em] text-[#D4AF77]/50 uppercase"
+            style={{ fontFamily: "DM Sans, sans-serif" }}
+          >
+            3D scene error
+          </p>
+          <p
+            className="text-[#A89880]/70 text-xs max-w-md break-words"
+            style={{ fontFamily: "DM Mono, monospace" }}
+          >
+            {this.state.message}
+          </p>
+        </div>
+      );
     }
     return this.props.children;
   }
