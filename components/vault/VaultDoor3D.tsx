@@ -2,7 +2,10 @@
 
 import { useState, useRef, useEffect, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, RoundedBox, Cylinder, Torus } from "@react-three/drei";
+import { RoundedBox, Cylinder, Torus } from "@react-three/drei";
+
+// NOTE: Environment preset fetches an HDRI from a CDN — Brave/mobile often
+// blocks it, which kills the canvas. We light the door manually instead.
 import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
 
@@ -157,8 +160,11 @@ function Scene({ tier, openProgress, dialSpin }: {
       <spotLight position={[5, 6, 6]} angle={0.4} penumbra={0.8} intensity={tier === "desktop" ? 40 : 25} color={GOLD_LT} />
       <spotLight position={[-5, -3, 5]} angle={0.5} penumbra={1} intensity={12} color="#ffffff" />
       <DoorMesh tier={tier} openProgress={openProgress} dialSpin={dialSpin} />
-      {/* Desktop gets reflective environment for real metal; mobile skips it for speed */}
-      {tier === "desktop" && <Environment preset="warehouse" />}
+      {/* Manual rim + key lights replace the HDRI so metal reads without any
+          network fetch. Extra fills give the gold its sheen. */}
+      <pointLight position={[3, 2, 4]} intensity={tier === "desktop" ? 30 : 22} color="#fff4e0" />
+      <pointLight position={[-3, -1, 3]} intensity={12} color={GOLD_LT} />
+      <pointLight position={[0, 3, 2]} intensity={10} color="#ffffff" />
     </>
   );
 }
@@ -208,7 +214,7 @@ export default function VaultDoor3D({ onUnlock }: VaultDoor3DProps) {
       {/* 3D canvas */}
       {!webglFailed && (
         <Canvas
-          camera={{ position: [0, 0, 8], fov: tier === "mobile" ? 42 : 38 }}
+          camera={{ position: [0, 0, 7], fov: tier === "mobile" ? 42 : 38 }}
           dpr={tier === "mobile" ? [1, 1.5] : [1, 2]}
           gl={{ antialias: tier === "desktop", powerPreference: "high-performance" }}
           onCreated={({ gl }) => { gl.toneMapping = THREE.ACESFilmicToneMapping; }}
