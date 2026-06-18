@@ -1,10 +1,13 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import OfficeDoor from "./OfficeDoor";
+import dynamic from "next/dynamic";
+import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import ServiceModal from "./ServiceModal";
 import type { ServiceData } from "./ServiceModal";
+
+// Three.js corridor — client-only, never SSR
+const Hallway3D = dynamic(() => import("./Hallway3D"), { ssr: false });
 
 const SERVICES: ServiceData[] = [
   {
@@ -114,142 +117,86 @@ const SERVICES: ServiceData[] = [
 export default function HallwayScene() {
   const ref = useRef<HTMLDivElement>(null);
   const [activeService, setActiveService] = useState<ServiceData | null>(null);
+  const scrollProgress = useRef(0);
 
+  // Drive the 3D camera from scroll through this tall section
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start end", "end start"],
+    offset: ["start start", "end end"],
   });
-
-  const bgY = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
-  const fogOpacity = useTransform(scrollYProgress, [0.1, 0.4, 0.8], [0, 0.6, 0]);
-  const springBgY = useSpring(bgY, { stiffness: 40, damping: 18 });
+  // Mirror scroll MotionValue into a ref the canvas reads each frame
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    scrollProgress.current = v;
+  });
 
   return (
     <>
-      <section ref={ref} id="hallway" className="relative bg-[#080808]">
-        {/* Hallway background strip */}
-        <div className="relative overflow-hidden h-[45vw] max-h-[520px] min-h-[280px]">
+      {/* Tall scroll track — sticky canvas inside */}
+      <section ref={ref} id="hallway" className="relative bg-[#060504]" style={{ height: "420vh" }}>
+        <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
+          {/* 3D corridor */}
+          <Hallway3D
+            services={SERVICES}
+            onOpen={setActiveService}
+            scrollProgress={scrollProgress}
+          />
+
+          {/* Heading overlay — fades as you enter the hall */}
           <motion.div
-            style={{ y: springBgY }}
-            className="absolute inset-0 will-change-transform"
+            style={{ opacity: useTransform(scrollYProgress, [0, 0.12], [1, 0]) }}
+            className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 pointer-events-none"
           >
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{
-                backgroundImage: `url('/hallway.webp')`,
-                filter: "saturate(0.4) brightness(0.3) sepia(0.4)",
-              }}
-            />
-          </motion.div>
-
-          {/* Atmospheric fog */}
-          <motion.div
-            style={{
-              opacity: fogOpacity,
-              background:
-                "radial-gradient(ellipse 100% 60% at 50% 50%, rgba(212,175,119,0.08) 0%, transparent 70%)",
-            }}
-            className="absolute inset-0 pointer-events-none"
-          />
-
-          {/* Vignettes */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "linear-gradient(to right, #080808 0%, transparent 25%, transparent 75%, #080808 100%)",
-            }}
-          />
-          <div
-            className="absolute bottom-0 left-0 right-0 h-3/4 pointer-events-none"
-            style={{ background: "linear-gradient(to top, #080808, transparent)" }}
-          />
-          <div
-            className="absolute top-0 left-0 right-0 h-1/3 pointer-events-none"
-            style={{ background: "linear-gradient(to bottom, #080808, transparent)" }}
-          />
-
-          {/* Hallway heading overlay */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="flex items-center gap-4 mb-5"
-            >
+            <div className="flex items-center gap-4 mb-5">
               <div className="h-px w-10 bg-[#D4AF77]/50" />
-              <span
-                className="text-[10px] tracking-[0.45em] text-[#D4AF77] uppercase"
-                style={{ fontFamily: "DM Sans, sans-serif" }}
-              >
+              <span className="text-[10px] tracking-[0.45em] text-[#D4AF77] uppercase" style={{ fontFamily: "DM Sans, sans-serif" }}>
                 The Hallway
               </span>
               <div className="h-px w-10 bg-[#D4AF77]/50" />
-            </motion.div>
-            <motion.h2
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-[clamp(2.2rem,7vw,5.5rem)] font-light text-[#F5EDD8] leading-tight"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
-            >
+            </div>
+            <h2 className="text-[clamp(2.2rem,7vw,5.5rem)] font-light text-[#F5EDD8] leading-tight" style={{ fontFamily: "Cormorant Garamond, serif" }}>
               Every door,
               <br />
               <em className="text-[#D4AF77]">a discipline</em>
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.25, duration: 0.9 }}
-              className="mt-4 text-[#A89880] text-sm md:text-base max-w-lg"
-              style={{ fontFamily: "DM Sans, sans-serif" }}
-            >
-              Walk the hall. Choose your room. Each one leads somewhere rare.
-            </motion.p>
-          </div>
-        </div>
-
-        {/* Doors grid */}
-        <div className="relative z-10 px-6 md:px-12 lg:px-20 py-20">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
-            {SERVICES.map((service, i) => (
-              <OfficeDoor
-                key={service.id}
-                service={service}
-                index={i}
-                onOpen={setActiveService}
-              />
-            ))}
-          </div>
-
-          {/* Bottom flourish */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5, duration: 1 }}
-            className="flex items-center gap-5 justify-center mt-16"
-          >
-            <div className="h-px w-16 bg-[#D4AF77]/20" />
-            <span
-              className="text-[10px] tracking-[0.4em] text-[#A89880]/40 uppercase"
-              style={{ fontFamily: "DM Sans, sans-serif" }}
-            >
-              or enter the vault
-            </span>
-            <div className="h-px w-16 bg-[#D4AF77]/20" />
+            </h2>
+            <p className="mt-4 text-[#A89880] text-sm md:text-base max-w-lg" style={{ fontFamily: "DM Sans, sans-serif" }}>
+              Scroll to walk the hall. Tap any door to step inside.
+            </p>
           </motion.div>
+
+          {/* Scroll cue — fades once moving */}
+          <motion.div
+            style={{ opacity: useTransform(scrollYProgress, [0, 0.08], [1, 0]) }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none"
+          >
+            <span className="text-[9px] tracking-[0.5em] text-[#A89880]/60 uppercase" style={{ fontFamily: "DM Sans, sans-serif" }}>
+              Walk
+            </span>
+            <div className="w-px h-12 bg-gradient-to-b from-[#D4AF77]/50 to-transparent" />
+          </motion.div>
+
+          {/* Door directory — accessible list, always tappable */}
+          <div className="absolute bottom-6 left-0 right-0 px-4 pointer-events-auto">
+            <div className="max-w-5xl mx-auto flex flex-wrap justify-center gap-2">
+              {SERVICES.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => setActiveService(s)}
+                  className="px-3 py-1.5 text-[9px] tracking-[0.25em] uppercase transition-all duration-300 hover:bg-[#D4AF77]/15"
+                  style={{
+                    fontFamily: "DM Sans, sans-serif",
+                    border: "1px solid rgba(212,175,119,0.15)",
+                    color: "#A89880",
+                  }}
+                >
+                  {s.number} · {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Service modal */}
-      <ServiceModal
-        service={activeService}
-        onClose={() => setActiveService(null)}
-      />
+      <ServiceModal service={activeService} onClose={() => setActiveService(null)} />
     </>
   );
 }
