@@ -1,10 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import VaultDoor from "@/components/vault/VaultDoor";
 import VaultContent from "@/components/vault/VaultContent";
 import CinematicNav from "@/components/cinematic/CinematicNav";
+
+// Three.js must never server-render — load client-only
+const VaultDoor3D = dynamic(() => import("@/components/vault/VaultDoor3D"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[100dvh] flex items-center justify-center bg-[#060606]">
+      <p
+        className="text-[10px] tracking-[0.5em] text-[#D4AF77]/40 uppercase animate-pulse"
+        style={{ fontFamily: "DM Sans, sans-serif" }}
+      >
+        Approaching the vault…
+      </p>
+    </div>
+  ),
+});
 
 export default function VaultPage() {
   const [unlocked, setUnlocked] = useState(false);
@@ -46,7 +61,7 @@ export default function VaultPage() {
               </a>
             </div>
 
-            <VaultDoor onUnlock={() => setUnlocked(true)} />
+            <VaultDoor3D onUnlock={() => setUnlocked(true)} />
           </motion.div>
         ) : (
           <motion.div

@@ -9,12 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-three/drei": "^9.96.0",
+    "@react-three/fiber": "^8.15.0",
     "framer-motion": "^11.3.0",
+    "lenis": "^1.1.14",
     "next": "16.2.6",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "resend": "^4.0.0",
-    "lenis": "^1.1.14"
+    "three": "^0.160.0"
   },
   "devDependencies": {
     "@types/node": "^20",
