@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import ServiceModal from "./ServiceModal";
+import SceneBoundary from "./SceneBoundary";
 import type { ServiceData } from "./ServiceModal";
 
 // Three.js corridor — client-only, never SSR
@@ -135,11 +136,13 @@ export default function HallwayScene() {
       <section ref={ref} id="hallway" className="relative bg-[#060504]" style={{ height: "420vh" }}>
         <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
           {/* 3D corridor */}
-          <Hallway3D
-            services={SERVICES}
-            onOpen={setActiveService}
-            scrollProgress={scrollProgress}
-          />
+          <SceneBoundary>
+            <Hallway3D
+              services={SERVICES}
+              onOpen={setActiveService}
+              scrollProgress={scrollProgress}
+            />
+          </SceneBoundary>
 
           {/* Heading overlay — fades as you enter the hall */}
           <motion.div

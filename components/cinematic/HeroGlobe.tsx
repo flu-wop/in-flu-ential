@@ -74,26 +74,34 @@ function PointGlobe({ count, pointer }: { count: number; pointer: React.MutableR
 
 // ── A few orbiting arcs to suggest connection/reach ─────────────────
 function OrbitRing({ radius, tilt, speed }: { radius: number; tilt: number; speed: number }) {
-  const ref = useRef<THREE.Line>(null);
+  const ref = useRef<THREE.LineSegments>(null);
+
   const geom = useMemo(() => {
-    const pts: THREE.Vector3[] = [];
-    for (let i = 0; i <= 64; i++) {
-      const a = (i / 64) * Math.PI * 2;
-      pts.push(new THREE.Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius));
+    const pts: number[] = [];
+    const seg = 64;
+    for (let i = 0; i < seg; i++) {
+      const a1 = (i / seg) * Math.PI * 2;
+      const a2 = ((i + 1) / seg) * Math.PI * 2;
+      pts.push(Math.cos(a1) * radius, 0, Math.sin(a1) * radius);
+      pts.push(Math.cos(a2) * radius, 0, Math.sin(a2) * radius);
     }
-    return new THREE.BufferGeometry().setFromPoints(pts);
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
+    return g;
   }, [radius]);
+
+  const mat = useMemo(
+    () => new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0.18 }),
+    []
+  );
+
+  const lineObj = useMemo(() => new THREE.LineSegments(geom, mat), [geom, mat]);
 
   useFrame((_, delta) => {
     if (ref.current) ref.current.rotation.y += delta * speed;
   });
 
-  return (
-    // @ts-expect-error line is a valid three element
-    <line ref={ref} geometry={geom} rotation={[tilt, 0, 0]}>
-      <lineBasicMaterial color={GOLD} transparent opacity={0.18} />
-    </line>
-  );
+  return <primitive object={lineObj} ref={ref} rotation={[tilt, 0, 0]} />;
 }
 
 function Scene({ tier, pointer }: { tier: "mobile" | "desktop"; pointer: React.MutableRefObject<{ x: number; y: number }> }) {

@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import VaultContent from "@/components/vault/VaultContent";
 import CinematicNav from "@/components/cinematic/CinematicNav";
+import SceneBoundary from "@/components/cinematic/SceneBoundary";
 
 // Three.js must never server-render — load client-only
 const VaultDoor3D = dynamic(() => import("@/components/vault/VaultDoor3D"), {
@@ -61,7 +62,15 @@ export default function VaultPage() {
               </a>
             </div>
 
-            <VaultDoor3D onUnlock={() => setUnlocked(true)} />
+            <SceneBoundary fallback={
+              <div className="w-full h-[100dvh] flex items-center justify-center bg-[#060606]">
+                <p className="text-[10px] tracking-[0.5em] text-[#D4AF77]/40 uppercase" style={{ fontFamily: "DM Sans, sans-serif" }}>
+                  Enter the combination
+                </p>
+              </div>
+            }>
+              <VaultDoor3D onUnlock={() => setUnlocked(true)} />
+            </SceneBoundary>
           </motion.div>
         ) : (
           <motion.div
