@@ -1,12 +1,57 @@
 import { NextResponse } from "next/server";
 
+// ── Lightweight in-memory rate limiter ──────────────────────────────
+// Catches rapid bursts hitting a warm serverless instance. For full
+// production-grade protection across cold starts, swap for Upstash
+// Ratelimit (Redis). Good enough to stop casual form spam today.
+const WINDOW_MS = 60_000;     // 1 minute
+const MAX_PER_WINDOW = 3;     // 3 submissions per IP per minute
+const hits = new Map<string, number[]>();
+
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+  const recent = (hits.get(ip) || []).filter((t) => now - t < WINDOW_MS);
+  recent.push(now);
+  hits.set(ip, recent);
+  // Opportunistic cleanup
+  if (hits.size > 5000) {
+    for (const [k, v] of hits) {
+      if (v.every((t) => now - t > WINDOW_MS)) hits.delete(k);
+    }
+  }
+  return recent.length > MAX_PER_WINDOW;
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export async function POST(req: Request) {
   try {
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+      req.headers.get("x-real-ip") ||
+      "unknown";
+
+    if (rateLimited(ip)) {
+      return NextResponse.json(
+        { error: "Too many requests. Please wait a moment and try again." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
-    const { name, email, project, timeline, message, label } = body;
+    const { name, email, project, timeline, message, label, company } = body;
+
+    // Honeypot — bots fill hidden fields, humans never see "company"
+    if (company) {
+      return NextResponse.json({ success: true }); // silently drop
+    }
 
     if (!name || !email || !project || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    if (!EMAIL_RE.test(String(email)) || String(message).length > 5000) {
+      return NextResponse.json({ error: "Invalid submission" }, { status: 400 });
     }
 
     // Lazy-init Resend so build doesn't fail without env var

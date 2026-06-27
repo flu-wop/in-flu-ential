@@ -13,16 +13,17 @@ const TIMELINE = [
 ];
 
 const CREDENTIALS = [
-  { stat: "7+", label: "Years operating" },
-  { stat: "150+", label: "Campaigns executed" },
-  { stat: "$2M+", label: "Client revenue influenced" },
-  { stat: "3", label: "Continents of reach" },
+  { stat: "20+", label: "Records engineered & produced" },
+  { stat: "10+", label: "Brands & artists launched" },
+  { stat: "2014", label: "In the industry since" },
+  // PLACEHOLDER — engineering credit on Killer Mike's MICHAEL pending formalization
+  { stat: "Grammy", label: "Album credit · MICHAEL" },
 ];
 
 const TIERS = [
   {
     name: "Growth",
-    price: "$5,000",
+    price: "$10,000",
     period: "/ project",
     tagline: "Brand clarity and a content system that actually works.",
     includes: [
@@ -34,7 +35,7 @@ const TIERS = [
   },
   {
     name: "Influence",
-    price: "$12,500",
+    price: "$25,000",
     period: "/ quarter",
     tagline: "Full-service creative direction and ongoing strategic partnership.",
     includes: [
@@ -48,7 +49,7 @@ const TIERS = [
   },
   {
     name: "Legacy",
-    price: "$25,000+",
+    price: "$50,000+",
     period: "/ engagement",
     tagline: "Executive-level brand architecture for those building for decades.",
     includes: [

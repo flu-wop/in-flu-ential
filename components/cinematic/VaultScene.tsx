@@ -6,7 +6,7 @@ import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "fra
 const VAULT_TIERS = [
   {
     tier: "Growth",
-    price: "$5,000",
+    price: "$10,000",
     period: "/ project",
     description: "Brand clarity, social strategy, and a content system that actually works.",
     features: ["Brand positioning audit", "Social strategy + calendar", "30-day content sprint", "One creative campaign"],
@@ -14,7 +14,7 @@ const VAULT_TIERS = [
   },
   {
     tier: "Influence",
-    price: "$12,500",
+    price: "$25,000",
     period: "/ quarter",
     description: "Full-service creative direction, media production, and ongoing strategic partnership.",
     features: ["Everything in Growth", "Monthly creative direction sessions", "Video + media production", "Press + partnership brokerage", "Direct access — Signal"],
@@ -22,7 +22,7 @@ const VAULT_TIERS = [
   },
   {
     tier: "Legacy",
-    price: "$25,000+",
+    price: "$50,000+",
     period: "/ engagement",
     description: "Executive-level brand architecture for artists, founders, and organizations building for decades.",
     features: ["Everything in Influence", "Brand architecture and legacy roadmap", "Business development advisory", "Revenue stream mapping", "Priority access — all initiatives"],

@@ -163,7 +163,7 @@ export default function ServiceModal({ service, onClose }: ServiceModalProps) {
                     </span>
                   </div>
                   <a
-                    href="/booking"
+                    href={`/booking?service=${encodeURIComponent(service.label)}`}
                     className="flex-1 text-center py-3.5 bg-[#D4AF77] text-[#080808] text-[11px] tracking-[0.35em] uppercase hover:bg-[#E8C97A] transition-colors"
                     style={{ fontFamily: "DM Sans, sans-serif" }}
                   >

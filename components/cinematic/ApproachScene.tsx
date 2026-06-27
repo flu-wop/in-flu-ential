@@ -4,10 +4,11 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 
 const stats = [
-  { value: "7+", label: "Years Shaping Brands" },
-  { value: "150+", label: "Campaigns Executed" },
-  { value: "$2M+", label: "Client Revenue Generated" },
-  { value: "3", label: "Core Verticals" },
+  { value: "20+", label: "Records Engineered & Produced" },
+  { value: "10+", label: "Brands & Artists Launched" },
+  { value: "2014", label: "In the Industry Since" },
+  // PLACEHOLDER — engineering credit on Killer Mike's MICHAEL pending formalization
+  { value: "Grammy", label: "Album Credit · MICHAEL" },
 ];
 
 export default function ApproachScene() {

@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState, useEffect, Suspense } from "react";
+import { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox } from "@react-three/drei";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { ServiceData } from "./ServiceModal";
 
@@ -45,12 +46,11 @@ function HallDoor({
 }) {
   const isHovered = hovered === service.id;
   const glowRef = useRef<THREE.PointLight>(null);
-  // Doors on left wall face +X (rotate +Y), right wall face -X (rotate -Y)
   const rotY = side === "left" ? Math.PI / 2 : -Math.PI / 2;
 
   useFrame((_, delta) => {
     if (glowRef.current) {
-      const target = isHovered ? 3 : 0.6;
+      const target = isHovered ? 3.2 : 0.6;
       glowRef.current.intensity += (target - glowRef.current.intensity) * Math.min(1, delta * 5);
     }
   });
@@ -77,7 +77,7 @@ function HallDoor({
           metalness={0.7}
           roughness={0.45}
           emissive={GOLD}
-          emissiveIntensity={isHovered ? 0.12 : 0}
+          emissiveIntensity={isHovered ? 0.18 : 0}
         />
       </RoundedBox>
 
@@ -89,22 +89,22 @@ function HallDoor({
       {/* Brass knob */}
       <mesh position={[side === "left" ? 0.55 : -0.55, 0, 0.22]}>
         <sphereGeometry args={[0.08, 16, 16]} />
-        <meshStandardMaterial color={GOLD_LT} metalness={1} roughness={0.2} />
+        <meshStandardMaterial color={GOLD_LT} metalness={1} roughness={0.2} emissive={GOLD_LT} emissiveIntensity={isHovered ? 0.5 : 0.15} toneMapped={false} />
       </mesh>
 
       {/* Door number plate */}
       <RoundedBox args={[0.5, 0.32, 0.14]} radius={0.02} smoothness={2} position={[0, 1.3, 0.14]}>
-        <meshStandardMaterial color={GOLD} metalness={1} roughness={0.35} />
+        <meshStandardMaterial color={GOLD} metalness={1} roughness={0.35} emissive={GOLD} emissiveIntensity={isHovered ? 0.4 : 0.1} toneMapped={false} />
       </RoundedBox>
 
       {/* Per-door glow that rises on hover */}
-      <pointLight ref={glowRef} position={[0, 0, 0.6]} intensity={0.6} color={GOLD_LT} distance={3} />
+      <pointLight ref={glowRef} position={[0, 0, 0.6]} intensity={0.6} color={GOLD_LT} distance={3.2} />
     </group>
   );
 }
 
 // ── Corridor geometry: floor, ceiling, two walls ────────────────────
-function Corridor({ length, tier }: { length: number; tier: "mobile" | "desktop" }) {
+function Corridor({ length }: { length: number }) {
   const wallMat = (
     <meshStandardMaterial color="#0c0a07" metalness={0.3} roughness={0.85} />
   );
@@ -135,22 +135,81 @@ function Corridor({ length, tier }: { length: number; tier: "mobile" | "desktop"
       {Array.from({ length: Math.floor(length / 4) }).map((_, i) => (
         <mesh key={i} position={[0, 2.45, -2 - i * 4]} rotation={[Math.PI / 2, 0, 0]}>
           <planeGeometry args={[0.4, 1.4]} />
-          <meshStandardMaterial color={GOLD_LT} emissive={GOLD_LT} emissiveIntensity={1.5} toneMapped={false} />
+          <meshStandardMaterial color={GOLD_LT} emissive={GOLD_LT} emissiveIntensity={2.2} toneMapped={false} />
         </mesh>
       ))}
     </group>
   );
 }
 
-// ── Camera rig: scroll moves you down the corridor ──────────────────
+// ── Floating dust motes drifting in the corridor light ──────────────
+function DustMotes({ count, length }: { count: number; length: number }) {
+  const ref = useRef<THREE.Points>(null);
+
+  const positions = useMemo(() => {
+    const arr = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      arr[i * 3] = (Math.random() - 0.5) * 4.2;      // x across corridor
+      arr[i * 3 + 1] = (Math.random() - 0.5) * 4.2;  // y
+      arr[i * 3 + 2] = -Math.random() * length;      // z down the hall
+    }
+    return arr;
+  }, [count, length]);
+
+  // Per-mote drift speed
+  const speeds = useMemo(() => {
+    const arr = new Float32Array(count);
+    for (let i = 0; i < count; i++) arr[i] = 0.04 + Math.random() * 0.08;
+    return arr;
+  }, [count]);
+
+  useFrame((state) => {
+    if (!ref.current) return;
+    const geom = ref.current.geometry as THREE.BufferGeometry;
+    const pos = geom.attributes.position as THREE.BufferAttribute;
+    const t = state.clock.elapsedTime;
+    for (let i = 0; i < count; i++) {
+      const baseY = pos.getY(i);
+      // Gentle vertical bob + slow drift
+      pos.setY(i, baseY + Math.sin(t * speeds[i] * 4 + i) * 0.0009);
+    }
+    pos.needsUpdate = true;
+    ref.current.rotation.y = Math.sin(t * 0.02) * 0.05;
+  });
+
+  return (
+    <points ref={ref}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+      </bufferGeometry>
+      <pointsMaterial
+        color={GOLD_LT}
+        size={0.018}
+        sizeAttenuation
+        transparent
+        opacity={0.5}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
+  );
+}
+
+// ── Camera rig: scroll moves you down the corridor, with cinematic drift ─
 function CameraRig({ scrollProgress, travel }: { scrollProgress: React.MutableRefObject<number>; travel: number }) {
   const { camera } = useThree();
   const current = useRef(0);
-  useFrame((_, delta) => {
-    current.current += (scrollProgress.current - current.current) * Math.min(1, delta * 3);
+  useFrame((state, delta) => {
+    // Slower easing → floating feel (was delta*3)
+    current.current += (scrollProgress.current - current.current) * Math.min(1, delta * 1.6);
+    const t = state.clock.elapsedTime;
+    // Subtle handheld sway
+    const swayX = Math.sin(t * 0.3) * 0.06;
+    const swayY = Math.cos(t * 0.23) * 0.05;
     camera.position.z = 4 - current.current * travel;
-    camera.position.y = 0;
-    camera.lookAt(0, 0, camera.position.z - 5);
+    camera.position.x = swayX;
+    camera.position.y = swayY;
+    camera.lookAt(swayX * 0.5, swayY * 0.5, camera.position.z - 5);
   });
   return null;
 }
@@ -170,7 +229,8 @@ function Scene({ services, onOpen, scrollProgress, tier }: {
     <>
       <ambientLight intensity={0.25} />
       <fog attach="fog" args={["#060504", 6, tier === "mobile" ? 22 : 30]} />
-      <Corridor length={length} tier={tier} />
+      <Corridor length={length} />
+      <DustMotes count={tier === "mobile" ? 70 : 160} length={length} />
       {services.map((service, i) => {
         const side: "left" | "right" = i % 2 === 0 ? "left" : "right";
         const z = -3 - i * spacing;
@@ -188,6 +248,18 @@ function Scene({ services, onOpen, scrollProgress, tier }: {
         );
       })}
       <CameraRig scrollProgress={scrollProgress} travel={travel} />
+
+      {/* Cinematic post — bloom on the gold emissives + corner vignette */}
+      <EffectComposer>
+        <Bloom
+          intensity={tier === "mobile" ? 0.7 : 1.1}
+          luminanceThreshold={0.2}
+          luminanceSmoothing={0.9}
+          mipmapBlur
+          radius={0.7}
+        />
+        <Vignette eskil={false} offset={0.25} darkness={0.85} />
+      </EffectComposer>
     </>
   );
 }
