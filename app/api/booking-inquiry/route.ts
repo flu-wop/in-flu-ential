@@ -64,9 +64,19 @@ export async function POST(req: Request) {
     const { Resend } = await import("resend");
     const resend = new Resend(apiKey);
 
+    // onboarding@resend.dev is Resend's sandbox sender — it can only
+    // deliver to the account owner's own verified address, so the
+    // confirmation email below (sent to the client's real address) would
+    // 403 in production. Same failure mode already fixed on MCS/Streetbeat
+    // (see RESEND_FROM_EMAIL there). Requires the influential.llc domain
+    // to be verified in the Resend dashboard before this actually sends.
+    const FROM = process.env.RESEND_FROM_EMAIL
+      ? `IN-FLU-ENTIAL LLC <${process.env.RESEND_FROM_EMAIL}>`
+      : "IN-FLU-ENTIAL LLC <onboarding@resend.dev>";
+
     // ── Email to James ────────────────────────
     await resend.emails.send({
-      from: "IN-FLU-ENTIAL LLC <onboarding@resend.dev>",
+      from: FROM,
       to: "hello@influential.llc",
       subject: `New Booking Request — ${label}`,
       html: `
@@ -95,7 +105,7 @@ export async function POST(req: Request) {
 
     // ── Confirmation to client ────────────────
     await resend.emails.send({
-      from: "IN-FLU-ENTIAL LLC <onboarding@resend.dev>",
+      from: FROM,
       to: email,
       subject: `We received your request — IN-FLU-ENTIAL LLC`,
       html: `
