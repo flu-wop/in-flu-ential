@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { RoundedBox } from "@react-three/drei";
+import { RoundedBox, Text } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { ServiceData } from "./ServiceModal";
@@ -96,6 +96,19 @@ function HallDoor({
       <RoundedBox args={[0.5, 0.32, 0.14]} radius={0.02} smoothness={2} position={[0, 1.3, 0.14]}>
         <meshStandardMaterial color={GOLD} metalness={1} roughness={0.35} emissive={GOLD} emissiveIntensity={isHovered ? 0.4 : 0.1} toneMapped={false} />
       </RoundedBox>
+
+      {/* Door number rendered on the plate */}
+      <Text
+        position={[0, 1.3, 0.22]}
+        fontSize={0.18}
+        color="#080808"
+        anchorX="center"
+        anchorY="middle"
+        font={undefined}
+        letterSpacing={0.05}
+      >
+        {service.number ?? service.id}
+      </Text>
 
       {/* Per-door glow that rises on hover */}
       <pointLight ref={glowRef} position={[0, 0, 0.6]} intensity={0.6} color={GOLD_LT} distance={3.2} />
