@@ -8,6 +8,7 @@ import { RoundedBox, Cylinder, Torus } from "@react-three/drei";
 // blocks it, which kills the canvas. We light the door manually instead.
 import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
+import Link from "next/link";
 
 interface VaultDoor3DProps {
   onUnlock: () => void;
@@ -197,7 +198,13 @@ export default function VaultDoor3D({ onUnlock }: VaultDoor3DProps) {
       setTimeout(onUnlock, 500);
     } else {
       setPhase("wrong");
+      // Dial shake
       dialSpin.current -= 0.6;
+      // Door rattle — briefly nudge openProgress so the whole door reacts
+      openProgress.current = 0.025;
+      setTimeout(() => {
+        openProgress.current = 0;
+      }, 180);
       setInput("");
       setTimeout(() => setPhase("idle"), 1200);
     }
@@ -299,6 +306,15 @@ export default function VaultDoor3D({ onUnlock }: VaultDoor3DProps) {
             >
               {phase === "unlocking" ? "Opening…" : "Enter"}
             </button>
+
+            {/* Recovery path for legitimate visitors without the password */}
+            <Link
+              href="/booking"
+              className="mt-3 text-[10px] tracking-[0.3em] text-[#A89880]/40 uppercase hover:text-[#D4AF77]/70 transition-colors duration-300"
+              style={{ fontFamily: "DM Sans, sans-serif" }}
+            >
+              Don't have access? Request it →
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>
