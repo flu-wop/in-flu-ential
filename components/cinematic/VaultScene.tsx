@@ -162,7 +162,7 @@ export default function VaultScene() {
                 className="text-[10px] tracking-[0.5em] text-[#D4AF77] uppercase"
                 style={{ fontFamily: "DM Sans, sans-serif" }}
               >
-                The Vault
+                Engagement
               </span>
               <div className="h-px w-10 bg-[#D4AF77]/40" />
             </motion.div>
@@ -354,7 +354,7 @@ export default function VaultScene() {
               className="text-2xl md:text-3xl font-light text-[#F5EDD8] group-hover:text-[#D4AF77] transition-colors duration-500"
               style={{ fontFamily: "Cormorant Garamond, serif" }}
             >
-              Let&apos;s have a conversation
+              Let's have a conversation
             </span>
             <motion.span
               className="text-[#D4AF77]/40 text-2xl"
