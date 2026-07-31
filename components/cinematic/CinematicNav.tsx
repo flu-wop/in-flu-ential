@@ -20,7 +20,7 @@ export default function CinematicNav() {
   const navLinks = [
     { label: "Approach", href: "#approach" },
     { label: "Services", href: "#hallway" },
-    { label: "The Vault", href: "#vault" },
+    { label: "Engagement", href: "#vault" },
     { label: "Contact", href: "/booking" },
   ];
 
