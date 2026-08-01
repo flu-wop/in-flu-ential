@@ -47,6 +47,35 @@ export default function Home() {
       {/* Restrained Vault teaser — single moment that surfaces the real /vault */}
       <section className="relative py-24 md:py-32 px-6 md:px-16 border-t border-[#D4AF77]/10">
         <div className="max-w-3xl mx-auto text-center">
+          {/* Static vault door preview — not the interactive 3D door, just a quiet still */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9 }}
+            className="mx-auto mb-8 w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center"
+            style={{
+              border: "1px solid rgba(212,175,119,0.3)",
+              boxShadow: "0 0 40px rgba(212,175,119,0.06), inset 0 0 24px rgba(0,0,0,0.5)",
+            }}
+          >
+            <div
+              className="w-9 h-9 md:w-11 md:h-11 rounded-full flex items-center justify-center"
+              style={{
+                border: "1px solid rgba(212,175,119,0.5)",
+                background: "radial-gradient(circle, rgba(212,175,119,0.08) 0%, rgba(8,8,8,0.8) 100%)",
+              }}
+            >
+              <div
+                className="w-1.5 h-1.5 rounded-full"
+                style={{
+                  background: "radial-gradient(circle at 30% 30%, #E8C97A, #8B6914)",
+                  boxShadow: "0 0 12px rgba(212,175,119,0.4)",
+                }}
+              />
+            </div>
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

@@ -2,12 +2,14 @@
 
 import { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { RoundedBox } from "@react-three/drei";
+import { RoundedBox, Text } from "@react-three/drei";
+import { EffectComposer, Bloom, Vignette, SSAO } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { ServiceData } from "./ServiceModal";
 
 const GOLD = "#D4AF77";
 const GOLD_LT = "#E8C97A";
+const DM_MONO_URL = "/fonts/dmmono-medium.woff";
 
 interface Hallway3DProps {
   services: ServiceData[];
@@ -31,6 +33,7 @@ function HallDoor({
   service,
   position,
   side,
+  index,
   onOpen,
   hovered,
   setHovered,
@@ -38,6 +41,7 @@ function HallDoor({
   service: ServiceData;
   position: [number, number, number];
   side: "left" | "right";
+  index: number;
   onOpen: (s: ServiceData) => void;
   hovered: string | null;
   setHovered: (id: string | null) => void;
@@ -45,6 +49,7 @@ function HallDoor({
   const isHovered = hovered === service.id;
   const glowRef = useRef<THREE.PointLight>(null);
   const rotY = side === "left" ? Math.PI / 2 : -Math.PI / 2;
+  const hasSconce = index % 2 !== 0;
 
   useFrame((_, delta) => {
     if (glowRef.current) {
@@ -66,6 +71,7 @@ function HallDoor({
         radius={0.03}
         smoothness={3}
         position={[0, 0, 0.12]}
+        castShadow
         onPointerOver={(e) => {
           e.stopPropagation();
           setHovered(service.id);
@@ -107,7 +113,7 @@ function HallDoor({
         />
       </mesh>
 
-      {/* Number plate (no Text / no CDN font) */}
+      {/* Number plate (self-hosted font — no CDN fetch, so Suspense resolves) */}
       <RoundedBox args={[0.5, 0.32, 0.14]} radius={0.02} smoothness={2} position={[0, 1.3, 0.14]}>
         <meshStandardMaterial
           color={GOLD}
@@ -118,8 +124,32 @@ function HallDoor({
           toneMapped={false}
         />
       </RoundedBox>
+      <Suspense fallback={null}>
+        <Text
+          position={[0, 1.3, 0.22]}
+          fontSize={0.15}
+          font={DM_MONO_URL}
+          color="#1a1610"
+          anchorX="center"
+          anchorY="middle"
+          maxWidth={0.42}
+        >
+          {service.number}
+        </Text>
+      </Suspense>
 
       <pointLight ref={glowRef} position={[0, 0, 0.55]} intensity={0.5} color={GOLD_LT} distance={3} />
+
+      {/* Sconce break-up on odd-indexed doors — a little visual variety */}
+      {hasSconce && (
+        <group position={[side === "left" ? -0.95 : 0.95, 1.1, 0.05]}>
+          <mesh>
+            <planeGeometry args={[0.22, 0.34]} />
+            <meshStandardMaterial color={GOLD_LT} emissive={GOLD_LT} emissiveIntensity={1.3} toneMapped={false} />
+          </mesh>
+          <pointLight intensity={0.7} color={GOLD_LT} distance={3} position={[0, 0, 0.15]} />
+        </group>
+      )}
     </group>
   );
 }
@@ -127,41 +157,60 @@ function HallDoor({
 function Corridor({ length }: { length: number }) {
   return (
     <group>
-      {/* Floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.2, -length / 2]}>
+      {/* Floor — polished for light pools */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.2, -length / 2]} receiveShadow>
         <planeGeometry args={[5, length]} />
-        <meshStandardMaterial color="#12100c" metalness={0.45} roughness={0.35} />
+        <meshStandardMaterial color="#0a0806" metalness={0.55} roughness={0.25} />
       </mesh>
 
       {/* Ceiling */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 2.5, -length / 2]}>
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 2.5, -length / 2]} receiveShadow>
         <planeGeometry args={[5, length]} />
         <meshStandardMaterial color="#100e0a" metalness={0.25} roughness={0.85} />
       </mesh>
 
       {/* Left wall */}
-      <mesh rotation={[0, Math.PI / 2, 0]} position={[-2.5, 0, -length / 2]}>
+      <mesh rotation={[0, Math.PI / 2, 0]} position={[-2.5, 0, -length / 2]} receiveShadow>
         <planeGeometry args={[length, 4.7]} />
         <meshStandardMaterial color="#110f0b" metalness={0.25} roughness={0.85} />
       </mesh>
 
       {/* Right wall */}
-      <mesh rotation={[0, -Math.PI / 2, 0]} position={[2.5, 0, -length / 2]}>
+      <mesh rotation={[0, -Math.PI / 2, 0]} position={[2.5, 0, -length / 2]} receiveShadow>
         <planeGeometry args={[length, 4.7]} />
         <meshStandardMaterial color="#110f0b" metalness={0.25} roughness={0.85} />
       </mesh>
 
       {/* Baseboards */}
-      <RoundedBox args={[0.08, 0.1, length]} radius={0.01} smoothness={2} position={[-2.46, -2.15, -length / 2]}>
+      <RoundedBox args={[0.08, 0.1, length]} radius={0.01} smoothness={2} position={[-2.46, -2.15, -length / 2]} receiveShadow>
         <meshStandardMaterial color="#2a2115" metalness={0.5} roughness={0.45} />
       </RoundedBox>
-      <RoundedBox args={[0.08, 0.1, length]} radius={0.01} smoothness={2} position={[2.46, -2.15, -length / 2]}>
+      <RoundedBox args={[0.08, 0.1, length]} radius={0.01} smoothness={2} position={[2.46, -2.15, -length / 2]} receiveShadow>
         <meshStandardMaterial color="#2a2115" metalness={0.5} roughness={0.45} />
       </RoundedBox>
 
-      {/* Ceiling light strips + illumination only (no shadows for stability) */}
+      {/* Wall panel rhythm — subtle recessed panels between doors */}
+      {Array.from({ length: Math.floor(length / 4.5) }).map((_, i) => {
+        const z = -2.2 - i * 4.5;
+        return (
+          <group key={`panel-${i}`}>
+            <RoundedBox args={[0.04, 2.4, 1.6]} radius={0.02} smoothness={2} position={[-2.48, 0.1, z]}>
+              <meshStandardMaterial color="#090706" metalness={0.25} roughness={0.9} />
+            </RoundedBox>
+            <RoundedBox args={[0.04, 2.4, 1.6]} radius={0.02} smoothness={2} position={[2.48, 0.1, z]}>
+              <meshStandardMaterial color="#090706" metalness={0.25} roughness={0.9} />
+            </RoundedBox>
+          </group>
+        );
+      })}
+
+      {/* Ceiling light strips + point lights.
+          Only the first two (nearest the camera's starting position) cast
+          shadows — point-light shadow passes are expensive, the rest are
+          illumination-only. */}
       {Array.from({ length: Math.floor(length / 4) }).map((_, i) => {
         const z = -2 - i * 4;
+        const shouldCastShadow = i < 2;
         return (
           <group key={i}>
             <mesh position={[0, 2.45, z]} rotation={[Math.PI / 2, 0, 0]}>
@@ -173,7 +222,15 @@ function Corridor({ length }: { length: number }) {
                 toneMapped={false}
               />
             </mesh>
-            <pointLight position={[0, 2.25, z]} intensity={3.2} color={GOLD_LT} distance={6} />
+            <pointLight
+              position={[0, 2.25, z]}
+              intensity={3.2}
+              color={GOLD_LT}
+              distance={6}
+              castShadow={shouldCastShadow}
+              shadow-mapSize-width={shouldCastShadow ? 512 : undefined}
+              shadow-mapSize-height={shouldCastShadow ? 512 : undefined}
+            />
           </group>
         );
       })}
@@ -278,6 +335,7 @@ function Scene({
             service={service}
             position={[x, 0, z]}
             side={side}
+            index={i}
             onOpen={onOpen}
             hovered={hovered}
             setHovered={setHovered}
@@ -286,6 +344,28 @@ function Scene({
       })}
 
       <CameraRig scrollProgress={scrollProgress} travel={travel} />
+
+      <EffectComposer enableNormalPass={tier === "desktop"}>
+        {tier === "desktop" ? (
+          <>
+            <SSAO
+              intensity={18}
+              radius={0.28}
+              worldDistanceThreshold={1}
+              worldDistanceFalloff={0.2}
+              worldProximityThreshold={0.5}
+              worldProximityFalloff={0.1}
+            />
+            <Bloom intensity={1.1} luminanceThreshold={0.2} luminanceSmoothing={0.9} mipmapBlur radius={0.7} />
+            <Vignette eskil={false} offset={0.25} darkness={0.85} />
+          </>
+        ) : (
+          <>
+            <Bloom intensity={0.7} luminanceThreshold={0.2} luminanceSmoothing={0.9} mipmapBlur radius={0.7} />
+            <Vignette eskil={false} offset={0.25} darkness={0.85} />
+          </>
+        )}
+      </EffectComposer>
     </>
   );
 }
@@ -295,6 +375,7 @@ export default function Hallway3D({ services, onOpen, scrollProgress }: Hallway3
 
   return (
     <Canvas
+      shadows
       camera={{ position: [0, 0, 4], fov: tier === "mobile" ? 70 : 60 }}
       dpr={tier === "mobile" ? [1, 1.4] : [1, 1.75]}
       gl={{ antialias: tier === "desktop", powerPreference: "high-performance" }}
