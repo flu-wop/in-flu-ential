@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from "react";
+import { useState, useRef, useEffect, useMemo, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { RoundedBox, Cylinder, Torus } from "@react-three/drei";
-
-// NOTE: Environment preset fetches an HDRI from a CDN — Brave/mobile often
-// blocks it, which kills the canvas. We light the door manually instead.
+import { RoundedBox, Cylinder, Torus, Environment, useTexture } from "@react-three/drei";
 import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
 import Link from "next/link";
+
+// Self-hosted HDRI (not a CDN fetch, so it can't reintroduce the Suspense
+// hang a CDN Environment preset caused) — restores real reflections on the
+// gold/brass on top of the manual rim + key lights below.
+const HDRI_URL = "/hdri/office-interior.hdr";
 
 interface VaultDoor3DProps {
   onUnlock: () => void;
@@ -56,6 +58,17 @@ function DoorMesh({
       ? { metalness: 0.95, roughness: 0.28 }
       : { metalness: 0.6, roughness: 0.5 };
 
+  // Subtle brushed-metal normal map — self-hosted, tiny tiling texture.
+  // Loaded either way (cheap), only wired in on desktop so mobile skips the
+  // normal-map shader cost.
+  const metalNormalMap = useTexture("/textures/metal-normal.png");
+  useMemo(() => {
+    metalNormalMap.wrapS = metalNormalMap.wrapT = THREE.RepeatWrapping;
+    metalNormalMap.repeat.set(3, 4);
+  }, [metalNormalMap]);
+  const normalMapProps =
+    tier === "desktop" ? { normalMap: metalNormalMap, normalScale: new THREE.Vector2(0.25, 0.25) } : {};
+
   useFrame((_, delta) => {
     // Ease door toward target open angle (hinge on left = rotate -Y)
     currentOpen.current += (openProgress.current - currentOpen.current) * Math.min(1, delta * 2.5);
@@ -82,9 +95,11 @@ function DoorMesh({
       {/* The swinging door — hinge pivot on left edge */}
       <group ref={doorGroup} position={[-2.0, 0, 0]}>
         <group position={[2.0, 0, 0]}>
-          {/* Main door slab */}
-          <RoundedBox args={[4.0, 5.6, 0.55]} radius={0.08} smoothness={4} castShadow>
-            <meshStandardMaterial color="#1a1610" {...metalProps} />
+          {/* Main door slab — no castShadow: this scene has no floor/frame
+              receiver (the door floats in a dark void by design), so a
+              shadow-casting light here would have nothing to fall on. */}
+          <RoundedBox args={[4.0, 5.6, 0.55]} radius={0.08} smoothness={4}>
+            <meshStandardMaterial color="#1a1610" {...metalProps} {...normalMapProps} />
           </RoundedBox>
 
           {/* Outer gold trim ring (raised border) */}
@@ -157,6 +172,7 @@ function Scene({ tier, openProgress, dialSpin }: {
 }) {
   return (
     <>
+      {tier === "desktop" && <Environment files={HDRI_URL} />}
       <ambientLight intensity={tier === "desktop" ? 0.35 : 0.6} />
       <spotLight position={[5, 6, 6]} angle={0.4} penumbra={0.8} intensity={tier === "desktop" ? 40 : 25} color={GOLD_LT} />
       <spotLight position={[-5, -3, 5]} angle={0.5} penumbra={1} intensity={12} color="#ffffff" />
