@@ -31,8 +31,8 @@ export default function HeroScene() {
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{
-              backgroundImage: `url('/hero-skyline.webp')`,
-              filter: "saturate(0.7) brightness(0.55)",
+              backgroundImage: `url('/office-generic.svg')`,
+              filter: "brightness(0.9) saturate(0.95)",
             }}
           />
           <div
