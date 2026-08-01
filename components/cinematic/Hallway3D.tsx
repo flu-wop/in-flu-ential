@@ -6,7 +6,12 @@ import { RoundedBox, Text, Environment, useTexture } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette, SSAO } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { ServiceData } from "./ServiceModal";
-import { HALLWAY_DOOR_SPACING, getHallwayTravel } from "./hallwayLayout";
+import {
+  HALLWAY_DOOR_SPACING,
+  HALLWAY_FIRST_DOOR_Z,
+  HALLWAY_CAMERA_START_Z,
+  getHallwayTravel,
+} from "./hallwayLayout";
 
 const GOLD = "#D4AF77";
 const GOLD_LT = "#E8C97A";
@@ -451,7 +456,7 @@ function CameraRig({
   const scrollDrivenPose = (t: number) => {
     const swayX = Math.sin(t * 0.3) * 0.05;
     const swayY = Math.cos(t * 0.23) * 0.04;
-    const z = 4 - current.current * travel;
+    const z = HALLWAY_CAMERA_START_Z - current.current * travel;
     // Slight upward glance as the camera passes under a ceiling light —
     // gets the light rig actually looked at instead of sailing past it.
     const lightDist = distanceToNearestLight(z);
@@ -601,7 +606,7 @@ function Scene({
 
       {services.map((service, i) => {
         const side: "left" | "right" = i % 2 === 0 ? "left" : "right";
-        const z = -3 - i * spacing;
+        const z = HALLWAY_FIRST_DOOR_Z - i * spacing;
         const x = side === "left" ? -2.42 : 2.42;
         return (
           <HallDoor
@@ -650,7 +655,7 @@ export default function Hallway3D({ services, onOpen, scrollProgress, activeServ
   return (
     <Canvas
       shadows
-      camera={{ position: [0, 0, 4], fov: tier === "mobile" ? 70 : 60 }}
+      camera={{ position: [0, 0, HALLWAY_CAMERA_START_Z], fov: tier === "mobile" ? 70 : 60 }}
       dpr={tier === "mobile" ? [1, 1.4] : [1, 1.75]}
       gl={{ antialias: tier === "desktop", powerPreference: "high-performance" }}
       onCreated={({ gl }) => {
