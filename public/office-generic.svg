@@ -310,11 +310,9 @@
 <rect x="670.0" y="774" width="260" height="14" fill="#D4AF77" opacity="0.55"/>
 <rect x="666.0" y="771" width="268" height="3" fill="#E8C97A" opacity="0.8"/>
 
-  <text x="800.0" y="744.0" text-anchor="middle"
-        font-family="Georgia, 'Times New Roman', serif" font-size="30" letter-spacing="9"
-        fill="#E8C97A" opacity="0.92">IN-FLU-ENTIAL</text>
-  <line x1="655.0" y1="756.0" x2="758.0" y2="756.0" stroke="#D4AF77" stroke-width="1.5" opacity="0.5"/>
-  <line x1="842.0" y1="756.0" x2="945.0" y2="756.0" stroke="#D4AF77" stroke-width="1.5" opacity="0.5"/>
+  <rect x="794.0" y="742.0" width="12" height="12" fill="#E8C97A" opacity="0.75" transform="rotate(45 800.0 748)"/>
+  <line x1="700.0" y1="748.0" x2="780.0" y2="748.0" stroke="#D4AF77" stroke-width="1.5" opacity="0.45"/>
+  <line x1="820.0" y1="748.0" x2="900.0" y2="748.0" stroke="#D4AF77" stroke-width="1.5" opacity="0.45"/>
 
 <ellipse cx="800.0" cy="890" rx="220" ry="60" fill="#D4AF77" opacity="0.10"/>
 <rect width="1600" height="140" fill="url(#fade)" transform="scale(1,-1) translate(0,-140)"/>

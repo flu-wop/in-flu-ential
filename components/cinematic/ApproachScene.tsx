@@ -45,8 +45,8 @@ export default function ApproachScene() {
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: `url('/mansion-facade.webp')`,
-              filter: "saturate(0.5) brightness(0.35) sepia(0.3)",
+              backgroundImage: `url('/door-closeup.svg')`,
+              filter: "brightness(0.95) saturate(0.95)",
             }}
           />
         </motion.div>
