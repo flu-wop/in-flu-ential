@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox, Text } from "@react-three/drei";
-import { EffectComposer, Bloom, Vignette, SSAO } from "@react-three/postprocessing";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { ServiceData } from "./ServiceModal";
 
@@ -332,7 +332,6 @@ function Scene({ services, onOpen, scrollProgress, tier }: {
       <CameraRig scrollProgress={scrollProgress} travel={travel} />
 
       <EffectComposer>
-        {tier === "desktop" && <SSAO intensity={18} radius={0.28} />}
         <Bloom
           intensity={tier === "mobile" ? 0.7 : 1.1}
           luminanceThreshold={0.2}
