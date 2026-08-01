@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { RoundedBox, Text } from "@react-three/drei";
+import { RoundedBox } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { ServiceData } from "./ServiceModal";
@@ -93,23 +93,10 @@ function HallDoor({
         <meshStandardMaterial color={GOLD_LT} metalness={1} roughness={0.2} emissive={GOLD_LT} emissiveIntensity={isHovered ? 0.5 : 0.15} toneMapped={false} />
       </mesh>
 
-      {/* Door number plate */}
+      {/* Door number plate (no Text — avoids CDN font fetch that can hang Suspense) */}
       <RoundedBox args={[0.5, 0.32, 0.14]} radius={0.02} smoothness={2} position={[0, 1.3, 0.14]}>
         <meshStandardMaterial color={GOLD} metalness={1} roughness={0.35} emissive={GOLD} emissiveIntensity={isHovered ? 0.4 : 0.1} toneMapped={false} />
       </RoundedBox>
-
-      {/* Door number rendered on the plate */}
-      <Text
-        position={[0, 1.3, 0.22]}
-        fontSize={0.18}
-        color="#080808"
-        anchorX="center"
-        anchorY="middle"
-        font={undefined}
-        letterSpacing={0.05}
-      >
-        {service.number ?? service.id}
-      </Text>
 
       {/* Per-door glow that rises on hover */}
       <pointLight ref={glowRef} position={[0, 0, 0.6]} intensity={0.6} color={GOLD_LT} distance={3.2} />
@@ -188,9 +175,12 @@ function Corridor({ length }: { length: number }) {
         );
       })}
 
-      {/* Ceiling light strips + real point lights that cast shadows */}
+      {/* Ceiling light strips + point lights
+          Only the first 2 lights cast shadows (point-light shadows are expensive).
+          The rest provide illumination only. */}
       {Array.from({ length: Math.floor(length / 4) }).map((_, i) => {
         const z = -2 - i * 4;
+        const shouldCastShadow = i < 2; // only first two
         return (
           <group key={i}>
             <mesh position={[0, 2.45, z]} rotation={[Math.PI / 2, 0, 0]}>
@@ -202,9 +192,9 @@ function Corridor({ length }: { length: number }) {
               intensity={2.5}
               color={GOLD_LT}
               distance={5}
-              castShadow
-              shadow-mapSize-width={512}
-              shadow-mapSize-height={512}
+              castShadow={shouldCastShadow}
+              shadow-mapSize-width={shouldCastShadow ? 512 : undefined}
+              shadow-mapSize-height={shouldCastShadow ? 512 : undefined}
             />
           </group>
         );
