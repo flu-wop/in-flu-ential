@@ -3,7 +3,6 @@
 import { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox } from "@react-three/drei";
-import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { ServiceData } from "./ServiceModal";
 
@@ -13,7 +12,7 @@ const GOLD_LT = "#E8C97A";
 interface Hallway3DProps {
   services: ServiceData[];
   onOpen: (service: ServiceData) => void;
-  scrollProgress: React.MutableRefObject<number>; // 0..1 from parent scroll
+  scrollProgress: React.MutableRefObject<number>;
 }
 
 function useDeviceTier() {
@@ -28,7 +27,6 @@ function useDeviceTier() {
   return tier;
 }
 
-// ── A single door set into a wall ───────────────────────────────────
 function HallDoor({
   service,
   position,
@@ -50,7 +48,7 @@ function HallDoor({
 
   useFrame((_, delta) => {
     if (glowRef.current) {
-      const target = isHovered ? 3.2 : 0.6;
+      const target = isHovered ? 2.8 : 0.5;
       glowRef.current.intensity += (target - glowRef.current.intensity) * Math.min(1, delta * 5);
     }
   });
@@ -59,158 +57,123 @@ function HallDoor({
     <group position={position} rotation={[0, rotY, 0]}>
       {/* Door frame recess */}
       <RoundedBox args={[1.8, 3.6, 0.15]} radius={0.03} smoothness={3} position={[0, 0, 0.02]}>
-        <meshStandardMaterial color="#0d0b07" metalness={0.4} roughness={0.8} />
+        <meshStandardMaterial color="#1a1610" metalness={0.35} roughness={0.75} />
       </RoundedBox>
 
-      {/* Door slab — clickable + casts shadow */}
+      {/* Door slab */}
       <RoundedBox
         args={[1.5, 3.3, 0.12]}
         radius={0.03}
         smoothness={3}
         position={[0, 0, 0.12]}
-        castShadow
-        onPointerOver={(e) => { e.stopPropagation(); setHovered(service.id); document.body.style.cursor = "pointer"; }}
-        onPointerOut={() => { setHovered(null); document.body.style.cursor = "default"; }}
-        onClick={(e) => { e.stopPropagation(); onOpen(service); }}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          setHovered(service.id);
+          document.body.style.cursor = "pointer";
+        }}
+        onPointerOut={() => {
+          setHovered(null);
+          document.body.style.cursor = "default";
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpen(service);
+        }}
       >
         <meshStandardMaterial
-          color={isHovered ? "#241d12" : "#181410"}
-          metalness={0.7}
-          roughness={0.45}
+          color={isHovered ? "#2a2115" : "#1e1912"}
+          metalness={0.55}
+          roughness={0.5}
           emissive={GOLD}
-          emissiveIntensity={isHovered ? 0.18 : 0}
+          emissiveIntensity={isHovered ? 0.15 : 0.02}
         />
       </RoundedBox>
 
-      {/* Inset panel lines */}
+      {/* Inset panel */}
       <RoundedBox args={[1.1, 2.8, 0.13]} radius={0.02} smoothness={2} position={[0, 0, 0.13]}>
-        <meshStandardMaterial color="#13100a" metalness={0.6} roughness={0.5} />
+        <meshStandardMaterial color="#16120c" metalness={0.4} roughness={0.55} />
       </RoundedBox>
 
       {/* Brass knob */}
       <mesh position={[side === "left" ? 0.55 : -0.55, 0, 0.22]}>
         <sphereGeometry args={[0.08, 16, 16]} />
-        <meshStandardMaterial color={GOLD_LT} metalness={1} roughness={0.2} emissive={GOLD_LT} emissiveIntensity={isHovered ? 0.5 : 0.15} toneMapped={false} />
+        <meshStandardMaterial
+          color={GOLD_LT}
+          metalness={1}
+          roughness={0.25}
+          emissive={GOLD_LT}
+          emissiveIntensity={isHovered ? 0.45 : 0.12}
+          toneMapped={false}
+        />
       </mesh>
 
-      {/* Door number plate (no Text — avoids CDN font fetch that can hang Suspense) */}
+      {/* Number plate (no Text / no CDN font) */}
       <RoundedBox args={[0.5, 0.32, 0.14]} radius={0.02} smoothness={2} position={[0, 1.3, 0.14]}>
-        <meshStandardMaterial color={GOLD} metalness={1} roughness={0.35} emissive={GOLD} emissiveIntensity={isHovered ? 0.4 : 0.1} toneMapped={false} />
+        <meshStandardMaterial
+          color={GOLD}
+          metalness={1}
+          roughness={0.35}
+          emissive={GOLD}
+          emissiveIntensity={isHovered ? 0.35 : 0.12}
+          toneMapped={false}
+        />
       </RoundedBox>
 
-      {/* Per-door glow that rises on hover */}
-      <pointLight ref={glowRef} position={[0, 0, 0.6]} intensity={0.6} color={GOLD_LT} distance={3.2} />
+      <pointLight ref={glowRef} position={[0, 0, 0.55]} intensity={0.5} color={GOLD_LT} distance={3} />
     </group>
   );
 }
 
-// ── Corridor geometry: floor, ceiling, two walls + architecture cues ─
 function Corridor({ length }: { length: number }) {
-  const wallMat = (
-    <meshStandardMaterial color="#0c0a07" metalness={0.3} roughness={0.85} />
-  );
-
   return (
     <group>
-      {/* Floor — polished for light pools */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.2, -length / 2]} receiveShadow>
+      {/* Floor */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.2, -length / 2]}>
         <planeGeometry args={[5, length]} />
-        <meshStandardMaterial color="#0a0806" metalness={0.55} roughness={0.25} />
+        <meshStandardMaterial color="#12100c" metalness={0.45} roughness={0.35} />
       </mesh>
 
       {/* Ceiling */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 2.5, -length / 2]} receiveShadow>
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 2.5, -length / 2]}>
         <planeGeometry args={[5, length]} />
-        {wallMat}
+        <meshStandardMaterial color="#100e0a" metalness={0.25} roughness={0.85} />
       </mesh>
 
       {/* Left wall */}
-      <mesh rotation={[0, Math.PI / 2, 0]} position={[-2.5, 0, -length / 2]} receiveShadow>
+      <mesh rotation={[0, Math.PI / 2, 0]} position={[-2.5, 0, -length / 2]}>
         <planeGeometry args={[length, 4.7]} />
-        {wallMat}
+        <meshStandardMaterial color="#110f0b" metalness={0.25} roughness={0.85} />
       </mesh>
 
       {/* Right wall */}
-      <mesh rotation={[0, -Math.PI / 2, 0]} position={[2.5, 0, -length / 2]} receiveShadow>
+      <mesh rotation={[0, -Math.PI / 2, 0]} position={[2.5, 0, -length / 2]}>
         <planeGeometry args={[length, 4.7]} />
-        {wallMat}
+        <meshStandardMaterial color="#110f0b" metalness={0.25} roughness={0.85} />
       </mesh>
 
-      {/* Baseboard trim — left */}
-      <RoundedBox
-        args={[0.08, 0.1, length]}
-        radius={0.01}
-        smoothness={2}
-        position={[-2.46, -2.15, -length / 2]}
-        receiveShadow
-      >
-        <meshStandardMaterial color="#2a2115" metalness={0.6} roughness={0.4} />
+      {/* Baseboards */}
+      <RoundedBox args={[0.08, 0.1, length]} radius={0.01} smoothness={2} position={[-2.46, -2.15, -length / 2]}>
+        <meshStandardMaterial color="#2a2115" metalness={0.5} roughness={0.45} />
+      </RoundedBox>
+      <RoundedBox args={[0.08, 0.1, length]} radius={0.01} smoothness={2} position={[2.46, -2.15, -length / 2]}>
+        <meshStandardMaterial color="#2a2115" metalness={0.5} roughness={0.45} />
       </RoundedBox>
 
-      {/* Baseboard trim — right */}
-      <RoundedBox
-        args={[0.08, 0.1, length]}
-        radius={0.01}
-        smoothness={2}
-        position={[2.46, -2.15, -length / 2]}
-        receiveShadow
-      >
-        <meshStandardMaterial color="#2a2115" metalness={0.6} roughness={0.4} />
-      </RoundedBox>
-
-      {/* Wall panel rhythm — subtle recessed panels between doors */}
-      {Array.from({ length: Math.floor(length / 4.5) }).map((_, i) => {
-        const z = -2.2 - i * 4.5;
-        return (
-          <group key={`panel-${i}`}>
-            {/* Left wall inset */}
-            <RoundedBox args={[0.04, 2.4, 1.6]} radius={0.02} smoothness={2} position={[-2.48, 0.1, z]}>
-              <meshStandardMaterial color="#090706" metalness={0.25} roughness={0.9} />
-            </RoundedBox>
-            {/* Right wall inset */}
-            <RoundedBox args={[0.04, 2.4, 1.6]} radius={0.02} smoothness={2} position={[2.48, 0.1, z]}>
-              <meshStandardMaterial color="#090706" metalness={0.25} roughness={0.9} />
-            </RoundedBox>
-          </group>
-        );
-      })}
-
-      {/* Ceiling light strips + point lights
-          Only the first 2 lights cast shadows (point-light shadows are expensive).
-          The rest provide illumination only. */}
+      {/* Ceiling light strips + illumination only (no shadows for stability) */}
       {Array.from({ length: Math.floor(length / 4) }).map((_, i) => {
         const z = -2 - i * 4;
-        const shouldCastShadow = i < 2; // only first two
         return (
           <group key={i}>
             <mesh position={[0, 2.45, z]} rotation={[Math.PI / 2, 0, 0]}>
               <planeGeometry args={[0.4, 1.4]} />
-              <meshStandardMaterial color={GOLD_LT} emissive={GOLD_LT} emissiveIntensity={2.2} toneMapped={false} />
+              <meshStandardMaterial
+                color={GOLD_LT}
+                emissive={GOLD_LT}
+                emissiveIntensity={1.8}
+                toneMapped={false}
+              />
             </mesh>
-            <pointLight
-              position={[0, 2.3, z]}
-              intensity={2.5}
-              color={GOLD_LT}
-              distance={5}
-              castShadow={shouldCastShadow}
-              shadow-mapSize-width={shouldCastShadow ? 512 : undefined}
-              shadow-mapSize-height={shouldCastShadow ? 512 : undefined}
-            />
-          </group>
-        );
-      })}
-
-      {/* Occasional wall sconces to break perfect repetition */}
-      {Array.from({ length: Math.floor(length / 9) }).map((_, i) => {
-        const z = -4.5 - i * 9;
-        const side = i % 2 === 0 ? -1 : 1;
-        return (
-          <group key={`sconce-${i}`}>
-            <mesh position={[side * 2.35, 1.1, z]}>
-              <planeGeometry args={[0.25, 0.12]} />
-              <meshStandardMaterial color={GOLD_LT} emissive={GOLD_LT} emissiveIntensity={1.4} toneMapped={false} />
-            </mesh>
-            <pointLight position={[side * 2.2, 1.1, z]} intensity={0.8} color={GOLD_LT} distance={3.5} />
+            <pointLight position={[0, 2.25, z]} intensity={3.2} color={GOLD_LT} distance={6} />
           </group>
         );
       })}
@@ -218,7 +181,6 @@ function Corridor({ length }: { length: number }) {
   );
 }
 
-// ── Floating dust motes drifting in the corridor light ──────────────
 function DustMotes({ count, length }: { count: number; length: number }) {
   const ref = useRef<THREE.Points>(null);
 
@@ -232,23 +194,9 @@ function DustMotes({ count, length }: { count: number; length: number }) {
     return arr;
   }, [count, length]);
 
-  const speeds = useMemo(() => {
-    const arr = new Float32Array(count);
-    for (let i = 0; i < count; i++) arr[i] = 0.04 + Math.random() * 0.08;
-    return arr;
-  }, [count]);
-
   useFrame((state) => {
     if (!ref.current) return;
-    const geom = ref.current.geometry as THREE.BufferGeometry;
-    const pos = geom.attributes.position as THREE.BufferAttribute;
-    const t = state.clock.elapsedTime;
-    for (let i = 0; i < count; i++) {
-      const baseY = pos.getY(i);
-      pos.setY(i, baseY + Math.sin(t * speeds[i] * 4 + i) * 0.0009);
-    }
-    pos.needsUpdate = true;
-    ref.current.rotation.y = Math.sin(t * 0.02) * 0.05;
+    ref.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.02) * 0.04;
   });
 
   return (
@@ -258,10 +206,10 @@ function DustMotes({ count, length }: { count: number; length: number }) {
       </bufferGeometry>
       <pointsMaterial
         color={GOLD_LT}
-        size={0.018}
+        size={0.016}
         sizeAttenuation
         transparent
-        opacity={0.5}
+        opacity={0.4}
         depthWrite={false}
         blending={THREE.AdditiveBlending}
       />
@@ -269,24 +217,36 @@ function DustMotes({ count, length }: { count: number; length: number }) {
   );
 }
 
-// ── Camera rig ──────────────────────────────────────────────────────
-function CameraRig({ scrollProgress, travel }: { scrollProgress: React.MutableRefObject<number>; travel: number }) {
+function CameraRig({
+  scrollProgress,
+  travel,
+}: {
+  scrollProgress: React.MutableRefObject<number>;
+  travel: number;
+}) {
   const { camera } = useThree();
   const current = useRef(0);
+
   useFrame((state, delta) => {
     current.current += (scrollProgress.current - current.current) * Math.min(1, delta * 1.6);
     const t = state.clock.elapsedTime;
-    const swayX = Math.sin(t * 0.3) * 0.06;
-    const swayY = Math.cos(t * 0.23) * 0.05;
+    const swayX = Math.sin(t * 0.3) * 0.05;
+    const swayY = Math.cos(t * 0.23) * 0.04;
     camera.position.z = 4 - current.current * travel;
     camera.position.x = swayX;
     camera.position.y = swayY;
-    camera.lookAt(swayX * 0.5, swayY * 0.5, camera.position.z - 5);
+    camera.lookAt(swayX * 0.4, swayY * 0.4, camera.position.z - 5);
   });
+
   return null;
 }
 
-function Scene({ services, onOpen, scrollProgress, tier }: {
+function Scene({
+  services,
+  onOpen,
+  scrollProgress,
+  tier,
+}: {
   services: ServiceData[];
   onOpen: (s: ServiceData) => void;
   scrollProgress: React.MutableRefObject<number>;
@@ -299,10 +259,15 @@ function Scene({ services, onOpen, scrollProgress, tier }: {
 
   return (
     <>
-      <ambientLight intensity={0.22} />
-      <fog attach="fog" args={["#060504", 6, tier === "mobile" ? 22 : 30]} />
+      {/* Higher ambient so the scene is never pure black */}
+      <ambientLight intensity={0.55} />
+      <hemisphereLight args={["#1a1610", "#080808", 0.35]} />
+
+      <fog attach="fog" args={["#080706", 8, tier === "mobile" ? 26 : 34]} />
+
       <Corridor length={length} />
-      <DustMotes count={tier === "mobile" ? 70 : 160} length={length} />
+      <DustMotes count={tier === "mobile" ? 50 : 110} length={length} />
+
       {services.map((service, i) => {
         const side: "left" | "right" = i % 2 === 0 ? "left" : "right";
         const z = -3 - i * spacing;
@@ -319,31 +284,24 @@ function Scene({ services, onOpen, scrollProgress, tier }: {
           />
         );
       })}
-      <CameraRig scrollProgress={scrollProgress} travel={travel} />
 
-      <EffectComposer>
-        <Bloom
-          intensity={tier === "mobile" ? 0.7 : 1.1}
-          luminanceThreshold={0.2}
-          luminanceSmoothing={0.9}
-          mipmapBlur
-          radius={0.7}
-        />
-        <Vignette eskil={false} offset={0.25} darkness={0.85} />
-      </EffectComposer>
+      <CameraRig scrollProgress={scrollProgress} travel={travel} />
     </>
   );
 }
 
 export default function Hallway3D({ services, onOpen, scrollProgress }: Hallway3DProps) {
   const tier = useDeviceTier();
+
   return (
     <Canvas
-      shadows
       camera={{ position: [0, 0, 4], fov: tier === "mobile" ? 70 : 60 }}
-      dpr={tier === "mobile" ? [1, 1.5] : [1, 2]}
+      dpr={tier === "mobile" ? [1, 1.4] : [1, 1.75]}
       gl={{ antialias: tier === "desktop", powerPreference: "high-performance" }}
-      onCreated={({ gl }) => { gl.toneMapping = THREE.ACESFilmicToneMapping; }}
+      onCreated={({ gl }) => {
+        gl.toneMapping = THREE.ACESFilmicToneMapping;
+        gl.toneMappingExposure = 1.15;
+      }}
       className="absolute inset-0"
     >
       <Suspense fallback={null}>
