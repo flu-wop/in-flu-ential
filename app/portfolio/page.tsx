@@ -196,7 +196,7 @@ export default function PortfolioPage() {
 
       {/* ── HERO ─────────────────────────────────────────── */}
       <section ref={heroRef} className="relative h-[120vh]">
-        <div className="sticky top-0 h-[100dvh] overflow-hidden">
+        <div className="sticky top-0 h-screen overflow-hidden">
           <motion.div style={{ y: bgY }} className="absolute inset-0 will-change-transform">
             <div
               className="absolute inset-0 bg-cover bg-center"
