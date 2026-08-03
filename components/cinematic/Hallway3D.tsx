@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { RoundedBox, Text, Environment, useTexture } from "@react-three/drei";
+import { RoundedBox, Text } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette, SSAO } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { ServiceData } from "./ServiceModal";
@@ -12,6 +12,7 @@ import {
   HALLWAY_CAMERA_START_Z,
   getHallwayTravel,
 } from "./hallwayLayout";
+import { useNonBlockingTexture, useNonBlockingHDRIEnvironment } from "./nonBlockingAssets";
 
 const GOLD = "#D4AF77";
 const GOLD_LT = "#E8C97A";
@@ -252,16 +253,17 @@ function HallDoor({
 }
 
 function Corridor({ length, tier }: { length: number; tier: "mobile" | "desktop" }) {
-  // Subtle surface normal maps — self-hosted, tiny tiling textures. Loaded
-  // either way (cheap to fetch), but only wired into the material on
-  // desktop so mobile skips the normal-map shader/GPU cost entirely.
-  const [floorNormalMap, wallNormalMap] = useTexture([
-    "/textures/floor-normal.png",
-    "/textures/wall-normal.png",
-  ]);
+  // Subtle surface normal maps — self-hosted, tiny tiling textures, loaded
+  // non-blockingly (see nonBlockingAssets.ts) so a slow/failed fetch on a
+  // real connection can never blank the whole corridor while it waits.
+  // Loaded either way (cheap), but only wired into the material on desktop
+  // so mobile skips the normal-map shader/GPU cost entirely.
+  const floorNormalMap = useNonBlockingTexture("/textures/floor-normal.png");
+  const wallNormalMap = useNonBlockingTexture("/textures/wall-normal.png");
   const desktop = tier === "desktop";
 
   useMemo(() => {
+    if (!floorNormalMap || !wallNormalMap) return;
     floorNormalMap.wrapS = floorNormalMap.wrapT = THREE.RepeatWrapping;
     floorNormalMap.repeat.set(length / 2.5, 2);
     wallNormalMap.wrapS = wallNormalMap.wrapT = THREE.RepeatWrapping;
@@ -564,6 +566,10 @@ function Scene({
   const length = services.length * spacing + 6;
   const travel = getHallwayTravel(services.length);
 
+  // Non-blocking — the corridor renders immediately either way; the HDRI
+  // just fills in gold/brass reflections whenever (if) it finishes loading.
+  useNonBlockingHDRIEnvironment(HDRI_URL, tier === "desktop");
+
   const pushState = useRef<PushState>({
     phase: "idle",
     elapsed: 0,
@@ -595,11 +601,6 @@ function Scene({
       <hemisphereLight args={["#1a1610", "#080808", 0.35]} />
 
       <fog attach="fog" args={["#080706", 8, tier === "mobile" ? 26 : 34]} />
-
-      {/* Self-hosted HDRI — real reflections on gold/brass. Desktop only
-          (skip on mobile per spec); self-hosted so it can't reintroduce the
-          Suspense-hang failure mode a CDN HDRI caused in Phase 1. */}
-      {tier === "desktop" && <Environment files={HDRI_URL} />}
 
       <Corridor length={length} tier={tier} />
       <DustMotes count={tier === "mobile" ? 50 : 110} length={length} />
