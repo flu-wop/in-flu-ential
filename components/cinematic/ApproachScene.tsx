@@ -1,7 +1,12 @@
 "use client";
 
 import { useRef } from "react";
+import dynamic from "next/dynamic";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import SceneBoundary from "./SceneBoundary";
+
+// Three.js wireframe accent — client-only, never SSR
+const ApproachAccent = dynamic(() => import("./ApproachAccent"), { ssr: false });
 
 const stats = [
   { value: "20+", label: "Records Engineered & Produced" },
@@ -40,8 +45,8 @@ export default function ApproachScene() {
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
-              backgroundImage: `url('/mansion-facade.webp')`,
-              filter: "saturate(0.5) brightness(0.35) sepia(0.3)",
+              backgroundImage: `url('/door-closeup.svg')`,
+              filter: "brightness(0.95) saturate(0.95)",
             }}
           />
         </motion.div>
@@ -71,6 +76,17 @@ export default function ApproachScene() {
           className="absolute top-0 left-0 right-0 h-48 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, #080808, transparent)" }}
         />
+
+        {/* Three.js wireframe accent — a slow-turning structure, echoing the
+            Hero globe technique, to pair with "architect cultural moments" */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none hidden md:block"
+          style={{ opacity: useTransform(scrollYProgress, [0, 0.2, 0.85, 1], [0, 0.7, 0.7, 0]) }}
+        >
+          <SceneBoundary>
+            <ApproachAccent />
+          </SceneBoundary>
+        </motion.div>
 
         {/* Content */}
         <motion.div

@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-mot
 import ServiceModal from "./ServiceModal";
 import SceneBoundary from "./SceneBoundary";
 import type { ServiceData } from "./ServiceModal";
+import { getHallwayScrollHeightVh } from "./hallwayLayout";
 
 // Three.js corridor — client-only, never SSR
 const Hallway3D = dynamic(() => import("./Hallway3D"), { ssr: false });
@@ -133,7 +134,12 @@ export default function HallwayScene() {
   return (
     <>
       {/* Tall scroll track — sticky canvas inside */}
-      <section ref={ref} id="hallway" className="relative bg-[#060504]" style={{ height: "420vh" }}>
+      <section
+        ref={ref}
+        id="hallway"
+        className="relative bg-[#060504]"
+        style={{ height: `${getHallwayScrollHeightVh(SERVICES.length)}vh` }}
+      >
         <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
           {/* 3D corridor */}
           <SceneBoundary>
@@ -141,6 +147,7 @@ export default function HallwayScene() {
               services={SERVICES}
               onOpen={setActiveService}
               scrollProgress={scrollProgress}
+              activeServiceId={activeService?.id ?? null}
             />
           </SceneBoundary>
 
