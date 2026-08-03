@@ -2,10 +2,11 @@
 
 import { useState, useRef, useEffect, useMemo, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { RoundedBox, Cylinder, Torus, Environment, useTexture } from "@react-three/drei";
+import { RoundedBox, Cylinder, Torus } from "@react-three/drei";
 import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
 import Link from "next/link";
+import { useNonBlockingTexture, useNonBlockingHDRIEnvironment } from "../cinematic/nonBlockingAssets";
 
 // Self-hosted HDRI (not a CDN fetch, so it can't reintroduce the Suspense
 // hang a CDN Environment preset caused) — restores real reflections on the
@@ -58,16 +59,21 @@ function DoorMesh({
       ? { metalness: 0.95, roughness: 0.28 }
       : { metalness: 0.6, roughness: 0.5 };
 
-  // Subtle brushed-metal normal map — self-hosted, tiny tiling texture.
-  // Loaded either way (cheap), only wired in on desktop so mobile skips the
-  // normal-map shader cost.
-  const metalNormalMap = useTexture("/textures/metal-normal.png");
+  // Subtle brushed-metal normal map — self-hosted, tiny tiling texture,
+  // loaded non-blockingly (see nonBlockingAssets.ts) so a slow/failed fetch
+  // can never blank the vault door while it waits. Loaded either way
+  // (cheap), only wired in on desktop so mobile skips the normal-map
+  // shader cost.
+  const metalNormalMap = useNonBlockingTexture("/textures/metal-normal.png");
   useMemo(() => {
+    if (!metalNormalMap) return;
     metalNormalMap.wrapS = metalNormalMap.wrapT = THREE.RepeatWrapping;
     metalNormalMap.repeat.set(3, 4);
   }, [metalNormalMap]);
   const normalMapProps =
-    tier === "desktop" ? { normalMap: metalNormalMap, normalScale: new THREE.Vector2(0.25, 0.25) } : {};
+    tier === "desktop" && metalNormalMap
+      ? { normalMap: metalNormalMap, normalScale: new THREE.Vector2(0.25, 0.25) }
+      : {};
 
   useFrame((_, delta) => {
     // Ease door toward target open angle (hinge on left = rotate -Y)
@@ -170,9 +176,12 @@ function Scene({ tier, openProgress, dialSpin }: {
   openProgress: React.MutableRefObject<number>;
   dialSpin: React.MutableRefObject<number>;
 }) {
+  // Non-blocking — the door renders immediately either way; the HDRI just
+  // fills in gold/brass reflections whenever (if) it finishes loading.
+  useNonBlockingHDRIEnvironment(HDRI_URL, tier === "desktop");
+
   return (
     <>
-      {tier === "desktop" && <Environment files={HDRI_URL} />}
       <ambientLight intensity={tier === "desktop" ? 0.35 : 0.6} />
       <spotLight position={[5, 6, 6]} angle={0.4} penumbra={0.8} intensity={tier === "desktop" ? 40 : 25} color={GOLD_LT} />
       <spotLight position={[-5, -3, 5]} angle={0.5} penumbra={1} intensity={12} color="#ffffff" />
