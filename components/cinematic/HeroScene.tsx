@@ -24,7 +24,7 @@ export default function HeroScene() {
 
   return (
     <section ref={ref} id="hero" className="relative h-[160vh] w-full">
-      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
 
         {/* Parallax background */}
         <motion.div style={{ y: springY, scale }} className="absolute inset-0 will-change-transform">

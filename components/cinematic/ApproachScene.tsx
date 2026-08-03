@@ -36,7 +36,7 @@ export default function ApproachScene() {
       id="approach"
       className="relative min-h-[180vh] w-full"
     >
-      <div className="sticky top-0 h-[100dvh] overflow-hidden">
+      <div className="sticky top-0 h-screen overflow-hidden">
         {/* Background — mansion facade */}
         <motion.div
           style={{ y: springBgY, scale }}

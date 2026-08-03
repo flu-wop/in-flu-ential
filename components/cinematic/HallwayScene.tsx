@@ -140,7 +140,7 @@ export default function HallwayScene() {
         className="relative bg-[#060504]"
         style={{ height: `${getHallwayScrollHeightVh(SERVICES.length)}vh` }}
       >
-        <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
+        <div className="sticky top-0 h-screen w-full overflow-hidden">
           {/* 3D corridor */}
           <SceneBoundary>
             <Hallway3D
