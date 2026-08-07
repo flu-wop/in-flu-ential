@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Eyebrow, Section, SectionHeading } from "@/components/ui/Section";
 import { PhotoSlot } from "@/components/ui/PhotoSlot";
 import { Button } from "@/components/ui/Button";
+import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { LINKS, SITE } from "@/lib/site-config";
 import { MENU } from "@/lib/menu-data";
 
@@ -44,7 +45,7 @@ export default function MenuPage() {
           </div>
           <div className="grid gap-8 md:grid-cols-2">
             {section.items.map((item) => (
-              <div key={item.name} className="flex gap-5 border-b border-border/60 pb-8">
+              <div key={item.id} className="flex gap-5 border-b border-border/60 pb-8">
                 {item.image ? (
                   <div className="relative aspect-square w-28 shrink-0 overflow-hidden rounded-2xl border border-border">
                     <Image src={item.image} alt={item.name} fill sizes="112px" className="object-cover" />
@@ -52,9 +53,17 @@ export default function MenuPage() {
                 ) : (
                   <PhotoSlot label={item.name} aspect="aspect-square" className="w-28 shrink-0" />
                 )}
-                <div>
-                  <h3 className="font-display text-xl text-cream">{item.name}</h3>
+                <div className="flex flex-1 flex-col">
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="font-display text-xl text-cream">{item.name}</h3>
+                    <span className="shrink-0 font-mono text-sm text-turmeric">
+                      {item.price !== null ? `$${item.price.toFixed(2)}` : "TBD"}
+                    </span>
+                  </div>
                   <p className="mt-2 font-body text-sm leading-relaxed text-mist">{item.description}</p>
+                  <div className="mt-3">
+                    <AddToCartButton id={item.id} name={item.name} price={item.price} image={item.image} />
+                  </div>
                 </div>
               </div>
             ))}

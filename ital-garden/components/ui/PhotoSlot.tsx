@@ -1,7 +1,7 @@
-// Stand-in for a real photo until James drops the actual image in. Renders
-// as an intentional-looking styled block (never a broken <img>) so the site
-// looks finished in the meantime. Swap for a real <Image> once photos land
-// in /public/images.
+// Stand-in for a real photo until the actual shot lands. Styled to read as
+// an intentional editorial moment (gradient + brand line art + a small
+// handwritten-style caption) rather than a broken or unfinished image, so
+// the site holds together even before every photo is in.
 export function PhotoSlot({
   label,
   aspect = "aspect-[4/3]",
@@ -13,26 +13,38 @@ export function PhotoSlot({
 }) {
   return (
     <div
-      className={`relative flex ${aspect} items-end overflow-hidden rounded-2xl border border-dashed border-gold/25 bg-gradient-to-br from-charcoal via-dark to-palm/20 ${className}`}
+      title={`Photo coming soon: ${label}`}
+      className={`relative flex ${aspect} items-center justify-center overflow-hidden rounded-2xl border border-border bg-charcoal ${className}`}
     >
-      <div className="absolute inset-0 opacity-40 [background-image:radial-gradient(circle_at_30%_20%,rgba(212,175,119,0.15),transparent_55%),radial-gradient(circle_at_80%_80%,rgba(31,77,46,0.35),transparent_55%)]" />
-      <div className="relative z-10 flex w-full items-center justify-between gap-3 p-4">
-        <span className="font-mono text-[11px] uppercase tracking-wider text-mist">
-          Photo needed: {label}
-        </span>
-        <svg
-          aria-hidden
-          viewBox="0 0 24 24"
-          className="h-5 w-5 shrink-0 text-mist/60"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <rect x="3" y="5" width="18" height="14" rx="2" />
-          <circle cx="9" cy="10.5" r="1.75" />
-          <path d="M3 16.5l5-4.5 4 3.5 3-2.5 6 5" />
-        </svg>
-      </div>
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(circle at 25% 20%, rgba(226,163,59,0.22), transparent 55%), radial-gradient(circle at 80% 85%, rgba(31,77,46,0.55), transparent 60%), linear-gradient(155deg, #1A1A1A 0%, #111111 60%, #0F1A13 100%)",
+        }}
+      />
+      <div className="grain-fine absolute inset-0 opacity-[0.06]" />
+
+      <svg
+        aria-hidden
+        viewBox="0 0 96 96"
+        className="relative z-10 h-[34%] w-[34%] max-h-16 max-w-16 text-gold/50"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* crossed fork + spoon, echoing the wordmark */}
+        <path d="M30 10v28a6 6 0 0 0 6 6v42" />
+        <path d="M24 10v14a6 6 0 0 0 6 6" />
+        <path d="M36 10v14a6 6 0 0 0-6 6" />
+        <path d="M66 86V44c8 0 10-8 10-16s-2-18-10-18-10 10-10 18 2 16 10 16" />
+      </svg>
+
+      <p className="absolute bottom-4 left-0 right-0 z-10 text-center font-display text-sm italic text-gold/70">
+        photo coming soon
+      </p>
     </div>
   );
 }

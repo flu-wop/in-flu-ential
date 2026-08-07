@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { NAV_LINKS, LINKS } from "@/lib/site-config";
+import { CartDrawer } from "@/components/cart/CartDrawer";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -46,16 +47,19 @@ export function Navbar() {
           </a>
         </nav>
 
-        <button
-          aria-label="Toggle menu"
-          aria-expanded={open}
-          className="flex flex-col gap-1.5 md:hidden"
-          onClick={() => setOpen((v) => !v)}
-        >
-          <span className={`h-px w-6 bg-cream transition-transform ${open ? "translate-y-2 rotate-45" : ""}`} />
-          <span className={`h-px w-6 bg-cream transition-opacity ${open ? "opacity-0" : ""}`} />
-          <span className={`h-px w-6 bg-cream transition-transform ${open ? "-translate-y-2 -rotate-45" : ""}`} />
-        </button>
+        <div className="flex items-center gap-2">
+          <CartDrawer />
+          <button
+            aria-label="Toggle menu"
+            aria-expanded={open}
+            className="flex flex-col gap-1.5 md:hidden"
+            onClick={() => setOpen((v) => !v)}
+          >
+            <span className={`h-px w-6 bg-cream transition-transform ${open ? "translate-y-2 rotate-45" : ""}`} />
+            <span className={`h-px w-6 bg-cream transition-opacity ${open ? "opacity-0" : ""}`} />
+            <span className={`h-px w-6 bg-cream transition-transform ${open ? "-translate-y-2 -rotate-45" : ""}`} />
+          </button>
+        </div>
       </div>
 
       {open && (
