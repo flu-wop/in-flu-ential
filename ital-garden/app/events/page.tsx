@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Eyebrow, Section, SectionHeading } from "@/components/ui/Section";
-import { PhotoSlot } from "@/components/ui/PhotoSlot";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { CONTACT, SITE, SOCIAL } from "@/lib/site-config";
@@ -54,7 +54,15 @@ export default function EventsPage() {
               on Instagram.
             </p>
           </div>
-          <PhotoSlot label="Community dinner / cooking class in progress" aspect="aspect-[4/3]" />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border">
+            <Image
+              src="/images/about/interior-2.jpg"
+              alt="Diners at I-tal Garden"
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
         </div>
       </Section>
 

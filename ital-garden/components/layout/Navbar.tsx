@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { NAV_LINKS, LINKS } from "@/lib/site-config";
@@ -12,8 +13,11 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-studio-black/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="font-display text-2xl tracking-wide text-cream" onClick={() => setOpen(false)}>
-          I-tal <span className="text-gold-gradient">Garden</span>
+        <Link href="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
+          <Image src="/images/logo.png" alt="I-tal Garden" width={38} height={52} className="h-11 w-auto" priority />
+          <span className="hidden font-display text-xl tracking-wide text-cream sm:inline">
+            I-tal <span className="text-gold-gradient">Garden</span>
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">

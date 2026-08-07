@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { CONTACT, HOURS_SUMMARY, NAV_LINKS, SOCIAL } from "@/lib/site-config";
 
 export function Footer() {
@@ -6,9 +7,7 @@ export function Footer() {
     <footer className="border-t border-border/60 bg-charcoal">
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 md:grid-cols-4">
         <div>
-          <p className="font-display text-2xl text-cream">
-            I-tal <span className="text-gold-gradient">Garden</span>
-          </p>
+          <Image src="/images/logo.png" alt="I-tal Garden" width={58} height={80} className="h-16 w-auto" />
           <p className="mt-3 max-w-xs font-body text-sm text-mist">
             Plant-based soul food, cooked ital, served in New Orleans.
           </p>

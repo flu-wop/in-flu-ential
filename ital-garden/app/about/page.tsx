@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Eyebrow, Section, SectionHeading } from "@/components/ui/Section";
 import { PhotoSlot } from "@/components/ui/PhotoSlot";
 import { Button } from "@/components/ui/Button";
@@ -54,7 +55,15 @@ export default function AboutPage() {
 
       <Section>
         <div className="grid items-center gap-12 md:grid-cols-2">
-          <PhotoSlot label="Kitchen / prep, hands-on cooking" aspect="aspect-[4/3]" />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border">
+            <Image
+              src="/images/about/decor.jpg"
+              alt="Inside I-tal Garden"
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
           <div>
             <Eyebrow>New Orleans, Through and Through</Eyebrow>
             <SectionHeading>

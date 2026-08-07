@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -51,7 +52,16 @@ export default function HomePage() {
               Ordering opens in our partner site — no account needed to browse the menu first.
             </p>
           </div>
-          <PhotoSlot label="Hero — plated signature dish, natural light" aspect="aspect-[4/5]" />
+          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-border">
+            <Image
+              src="/images/menu/ra-pasta.jpg"
+              alt="The Ra Pasta, I-tal Garden's signature plate"
+              fill
+              priority
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
         </div>
       </Section>
 
@@ -87,7 +97,13 @@ export default function HomePage() {
         <div className="grid gap-6 md:grid-cols-3">
           {mains.map((item) => (
             <Card key={item.name}>
-              <PhotoSlot label={item.name} aspect="aspect-[4/3]" className="rounded-b-none border-b-0" />
+              {item.image ? (
+                <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
+                  <Image src={item.image} alt={item.name} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
+                </div>
+              ) : (
+                <PhotoSlot label={item.name} aspect="aspect-[4/3]" className="rounded-b-none border-b-0" />
+              )}
               <CardContent>
                 <h3 className="font-display text-xl text-cream">{item.name}</h3>
                 <p className="mt-2 font-body text-sm leading-relaxed text-mist">{item.description}</p>
@@ -100,7 +116,15 @@ export default function HomePage() {
       {/* Chef Ra teaser */}
       <Section className="border-y border-border/60 bg-charcoal/60">
         <div className="grid items-center gap-12 md:grid-cols-2">
-          <PhotoSlot label="Chef Ra in the kitchen" aspect="aspect-square" />
+          <div className="relative aspect-square overflow-hidden rounded-2xl border border-border">
+            <Image
+              src="/images/about/interior-2.jpg"
+              alt="Inside I-tal Garden"
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
           <div>
             <Eyebrow>Family-Owned</Eyebrow>
             <SectionHeading>
@@ -205,7 +229,15 @@ export default function HomePage() {
               </Button>
             </div>
           </div>
-          <PhotoSlot label="Storefront / dining room" aspect="aspect-[4/3]" />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border">
+            <Image
+              src="/images/about/interior-1.jpg"
+              alt="Dining room at I-tal Garden"
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
         </div>
       </Section>
     </>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Eyebrow, Section, SectionHeading } from "@/components/ui/Section";
-import { PhotoSlot } from "@/components/ui/PhotoSlot";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { CONTACT, LINKS, SITE } from "@/lib/site-config";
@@ -45,7 +45,15 @@ export default function CateringPage() {
               No deposit to inquire — pricing depends on headcount and menu.
             </p>
           </div>
-          <PhotoSlot label="Catering spread / trays" aspect="aspect-[4/3]" />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border">
+            <Image
+              src="/images/catering-spread.jpg"
+              alt="I-tal Garden catering spread"
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
         </div>
       </Section>
 
@@ -81,7 +89,15 @@ export default function CateringPage() {
               </Button>
             </div>
           </div>
-          <PhotoSlot label="Large event / space rental setup" aspect="aspect-[4/3]" />
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border">
+            <Image
+              src="/images/assorted-topview.jpg"
+              alt="An assortment of I-tal Garden dishes"
+              fill
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="object-cover"
+            />
+          </div>
         </div>
       </Section>
     </>

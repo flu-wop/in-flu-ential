@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Eyebrow, Section, SectionHeading } from "@/components/ui/Section";
 import { PhotoSlot } from "@/components/ui/PhotoSlot";
 import { Button } from "@/components/ui/Button";
@@ -44,7 +45,13 @@ export default function MenuPage() {
           <div className="grid gap-8 md:grid-cols-2">
             {section.items.map((item) => (
               <div key={item.name} className="flex gap-5 border-b border-border/60 pb-8">
-                <PhotoSlot label={item.name} aspect="aspect-square" className="w-28 shrink-0" />
+                {item.image ? (
+                  <div className="relative aspect-square w-28 shrink-0 overflow-hidden rounded-2xl border border-border">
+                    <Image src={item.image} alt={item.name} fill sizes="112px" className="object-cover" />
+                  </div>
+                ) : (
+                  <PhotoSlot label={item.name} aspect="aspect-square" className="w-28 shrink-0" />
+                )}
                 <div>
                   <h3 className="font-display text-xl text-cream">{item.name}</h3>
                   <p className="mt-2 font-body text-sm leading-relaxed text-mist">{item.description}</p>
