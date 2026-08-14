@@ -625,7 +625,7 @@ function Scene({
 
       <CameraRig scrollProgress={scrollProgress} travel={travel} pushState={pushState} onOpen={onOpen} tier={tier} />
 
-      <EffectComposer enableNormalPass={tier === "desktop"}>
+      <EffectComposer enableNormalPass={tier === "desktop"} multisampling={0}>
         {tier === "desktop" ? (
           <>
             <SSAO

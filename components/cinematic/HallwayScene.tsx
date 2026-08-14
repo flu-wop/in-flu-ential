@@ -7,6 +7,7 @@ import ServiceModal from "./ServiceModal";
 import SceneBoundary from "./SceneBoundary";
 import type { ServiceData } from "./ServiceModal";
 import { getHallwayScrollHeightVh } from "./hallwayLayout";
+import { useSectionVisible } from "./useSectionVisible";
 
 // Three.js corridor — client-only, never SSR
 const Hallway3D = dynamic(() => import("./Hallway3D"), { ssr: false });
@@ -118,6 +119,7 @@ const SERVICES: ServiceData[] = [
 
 export default function HallwayScene() {
   const ref = useRef<HTMLDivElement>(null);
+  const isVisible = useSectionVisible(ref);
   const [activeService, setActiveService] = useState<ServiceData | null>(null);
   const scrollProgress = useRef(0);
 
@@ -143,12 +145,14 @@ export default function HallwayScene() {
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           {/* 3D corridor */}
           <SceneBoundary>
-            <Hallway3D
-              services={SERVICES}
-              onOpen={setActiveService}
-              scrollProgress={scrollProgress}
-              activeServiceId={activeService?.id ?? null}
-            />
+            {isVisible && (
+              <Hallway3D
+                services={SERVICES}
+                onOpen={setActiveService}
+                scrollProgress={scrollProgress}
+                activeServiceId={activeService?.id ?? null}
+              />
+            )}
           </SceneBoundary>
 
           {/* Heading overlay — fades as you enter the hall */}
