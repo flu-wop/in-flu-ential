@@ -652,22 +652,36 @@ function Scene({
 
 export default function Hallway3D({ services, onOpen, scrollProgress, activeServiceId }: Hallway3DProps) {
   const tier = useDeviceTier();
+  const [webglFailed, setWebglFailed] = useState(false);
 
   return (
-    <Canvas
-      shadows
-      camera={{ position: [0, 0, HALLWAY_CAMERA_START_Z], fov: tier === "mobile" ? 70 : 60 }}
-      dpr={tier === "mobile" ? [1, 1.4] : [1, 1.75]}
-      gl={{ antialias: tier === "desktop", powerPreference: "high-performance" }}
-      onCreated={({ gl }) => {
-        gl.toneMapping = THREE.ACESFilmicToneMapping;
-        gl.toneMappingExposure = 1.15;
-      }}
-      className="absolute inset-0"
-    >
-      <Suspense fallback={null}>
-        <Scene services={services} onOpen={onOpen} scrollProgress={scrollProgress} tier={tier} activeServiceId={activeServiceId} />
-      </Suspense>
-    </Canvas>
+    <div className="relative w-full h-full">
+      {!webglFailed && (
+        <Canvas
+          shadows
+          camera={{ position: [0, 0, HALLWAY_CAMERA_START_Z], fov: tier === "mobile" ? 70 : 60 }}
+          dpr={tier === "mobile" ? [1, 1.4] : [1, 1.75]}
+          gl={{ antialias: tier === "desktop", powerPreference: "high-performance" }}
+          onCreated={({ gl }) => {
+            gl.toneMapping = THREE.ACESFilmicToneMapping;
+            gl.toneMappingExposure = 1.15;
+          }}
+          onError={() => setWebglFailed(true)}
+          className="absolute inset-0"
+        >
+          <Suspense fallback={null}>
+            <Scene services={services} onOpen={onOpen} scrollProgress={scrollProgress} tier={tier} activeServiceId={activeServiceId} />
+          </Suspense>
+        </Canvas>
+      )}
+
+      {/* Fallback if WebGL unavailable — static hallway shot instead of a blank canvas */}
+      {webglFailed && (
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/hallway.webp')" }}
+        />
+      )}
+    </div>
   );
 }
