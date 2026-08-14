@@ -474,7 +474,7 @@ function CameraRig({
     const push = pushState.current;
 
     if (push.phase === "idle") {
-      current.current += (scrollProgress.current - current.current) * Math.min(1, delta * 1.6);
+      current.current += (scrollProgress.current - current.current) * Math.min(1, delta * 4.5);
 
       // FOV breathing — widen slightly on fast scroll, like head-turn
       // parallax. Smoothed so it doesn't jitter frame to frame.

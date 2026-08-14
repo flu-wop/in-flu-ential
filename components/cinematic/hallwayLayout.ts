@@ -9,7 +9,7 @@ export const HALLWAY_CAMERA_START_Z = 4;
 // How far past the last door the camera keeps going before scroll hands off
 // to the Vault — enough that the last door is fully arrived-at, not just
 // glimpsed at the edge of frame.
-const ARRIVAL_BUFFER = 2;
+const ARRIVAL_BUFFER = 4;
 
 // Scroll pacing — how many vh of scrolling per world unit of camera travel.
 // Tuned by feel; unrelated to the geometry fix below.
