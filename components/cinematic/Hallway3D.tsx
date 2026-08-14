@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox, Text } from "@react-three/drei";
-import { EffectComposer, Bloom, Vignette, SSAO } from "@react-three/postprocessing";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { ServiceData } from "./ServiceModal";
 import {
@@ -628,14 +628,6 @@ function Scene({
       <EffectComposer enableNormalPass={tier === "desktop"} multisampling={0}>
         {tier === "desktop" ? (
           <>
-            <SSAO
-              intensity={18}
-              radius={0.28}
-              worldDistanceThreshold={1}
-              worldDistanceFalloff={0.2}
-              worldProximityThreshold={0.5}
-              worldProximityFalloff={0.1}
-            />
             <Bloom intensity={1.1} luminanceThreshold={0.2} luminanceSmoothing={0.9} mipmapBlur radius={0.7} />
             <Vignette eskil={false} offset={0.25} darkness={0.85} />
           </>
@@ -658,7 +650,6 @@ export default function Hallway3D({ services, onOpen, scrollProgress, activeServ
     <div className="relative w-full h-full">
       {!webglFailed && (
         <Canvas
-          shadows
           camera={{ position: [0, 0, HALLWAY_CAMERA_START_Z], fov: tier === "mobile" ? 70 : 60 }}
           dpr={tier === "mobile" ? [1, 1.4] : [1, 1.75]}
           gl={{ antialias: false, powerPreference: "high-performance" }}
