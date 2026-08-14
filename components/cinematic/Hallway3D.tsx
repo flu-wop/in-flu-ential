@@ -661,7 +661,7 @@ export default function Hallway3D({ services, onOpen, scrollProgress, activeServ
           shadows
           camera={{ position: [0, 0, HALLWAY_CAMERA_START_Z], fov: tier === "mobile" ? 70 : 60 }}
           dpr={tier === "mobile" ? [1, 1.4] : [1, 1.75]}
-          gl={{ antialias: tier === "desktop", powerPreference: "high-performance" }}
+          gl={{ antialias: false, powerPreference: "high-performance" }}
           onCreated={({ gl }) => {
             gl.toneMapping = THREE.ACESFilmicToneMapping;
             gl.toneMappingExposure = 1.15;
