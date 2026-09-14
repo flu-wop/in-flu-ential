@@ -9,13 +9,6 @@ import * as THREE from "three";
 const GOLD = "#D4AF77";
 const GOLD_LT = "#E8C97A";
 
-// Module-level — persists for the life of the page (survives scrolling away
-// and back), resets only on a real page load. This is deliberately NOT
-// component state, so it can't be reset by the section unmounting/remounting
-// as the user scrolls, which is exactly the kind of thing that made the old
-// hallway's state fragile.
-let hasPlayed = false;
-
 type Phase = "closed" | "opening" | "flythrough" | "done";
 
 const OPEN_DURATION = 0.9; // seconds
@@ -154,12 +147,6 @@ export default function EntranceSequence({ onComplete }: { onComplete: () => voi
   const [webglFailed, setWebglFailed] = useState(false);
 
   useEffect(() => {
-    if (hasPlayed) {
-      onComplete();
-      return;
-    }
-    hasPlayed = true;
-
     const openTimer = setTimeout(() => {
       phase.current = "opening";
       setPhaseState("opening");

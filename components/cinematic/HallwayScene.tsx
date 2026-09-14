@@ -19,6 +19,10 @@ function EntranceFallback({ onComplete }: { onComplete: () => void }) {
   return null;
 }
 
+// Module-level — persists for the life of the page (survives scrolling away
+// and back within the same load), resets only on a real page reload.
+let hasPlayedEntranceGlobally = false;
+
 const SERVICES: ServiceData[] = [
   {
     id: "creative-direction",
@@ -127,21 +131,38 @@ const SERVICES: ServiceData[] = [
 export default function HallwayScene() {
   const [activeService, setActiveService] = useState<ServiceData | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
-  const [sequenceComplete, setSequenceComplete] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 769px)");
     setIsDesktop(mq.matches);
-    // Mobile never plays the entrance sequence — straight to the grid.
-    if (!mq.matches) setSequenceComplete(true);
+    if (mq.matches && !hasPlayedEntranceGlobally) {
+      setShowOverlay(true);
+    }
   }, []);
+
+  function dismissOverlay() {
+    hasPlayedEntranceGlobally = true;
+    setShowOverlay(false);
+  }
+
+  // Hard failsafe: whatever happens inside the entrance sequence — a hung
+  // animation, an error that SceneBoundary doesn't catch, anything — this
+  // guarantees the overlay cannot stay up forever. The grid underneath is
+  // ALWAYS visible regardless of this; the overlay is a bonus, not a gate.
+  useEffect(() => {
+    if (!showOverlay) return;
+    const failsafe = setTimeout(dismissOverlay, 8000);
+    return () => clearTimeout(failsafe);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showOverlay]);
 
   return (
     <>
       <section id="hallway" className="relative bg-[#060504] py-24 md:py-32 px-6 md:px-16 overflow-hidden">
-        {isDesktop && !sequenceComplete && (
-          <SceneBoundary fallback={<EntranceFallback onComplete={() => setSequenceComplete(true)} />}>
-            <EntranceSequence onComplete={() => setSequenceComplete(true)} />
+        {isDesktop && showOverlay && (
+          <SceneBoundary fallback={<EntranceFallback onComplete={dismissOverlay} />}>
+            <EntranceSequence onComplete={dismissOverlay} />
           </SceneBoundary>
         )}
 
@@ -179,19 +200,15 @@ export default function HallwayScene() {
           </p>
         </motion.div>
 
-        {/* Door grid */}
-        <motion.div
-          initial={false}
-          animate={{ opacity: sequenceComplete ? 1 : 0 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5"
-        >
+        {/* Door grid — always visible; the entrance overlay sits on top of
+            it, never gates it */}
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
           {SERVICES.map((s, i) => (
             <motion.button
               key={s.id}
               onClick={() => setActiveService(s)}
               initial={{ opacity: 0, y: 24 }}
-              whileInView={sequenceComplete ? { opacity: 1, y: 0 } : {}}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.08, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
               className="group relative text-left p-7 md:p-8 transition-colors duration-300 hover:bg-[#D4AF77]/[0.04]"
@@ -223,7 +240,7 @@ export default function HallwayScene() {
               </span>
             </motion.button>
           ))}
-        </motion.div>
+        </div>
       </section>
 
       <ServiceModal service={activeService} onClose={() => setActiveService(null)} />
