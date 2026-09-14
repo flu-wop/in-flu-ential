@@ -3,7 +3,6 @@
 import { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox, Text } from "@react-three/drei";
-import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import type { ServiceData } from "./ServiceModal";
 import {
@@ -624,20 +623,6 @@ function Scene({
       })}
 
       <CameraRig scrollProgress={scrollProgress} travel={travel} pushState={pushState} onOpen={onOpen} tier={tier} />
-
-      <EffectComposer enableNormalPass={tier === "desktop"} multisampling={0}>
-        {tier === "desktop" ? (
-          <>
-            <Bloom intensity={1.1} luminanceThreshold={0.2} luminanceSmoothing={0.9} mipmapBlur radius={0.7} />
-            <Vignette eskil={false} offset={0.25} darkness={0.85} />
-          </>
-        ) : (
-          <>
-            <Bloom intensity={0.7} luminanceThreshold={0.2} luminanceSmoothing={0.9} mipmapBlur radius={0.7} />
-            <Vignette eskil={false} offset={0.25} darkness={0.85} />
-          </>
-        )}
-      </EffectComposer>
     </>
   );
 }

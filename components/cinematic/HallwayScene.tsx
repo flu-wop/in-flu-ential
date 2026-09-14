@@ -155,6 +155,16 @@ export default function HallwayScene() {
             )}
           </SceneBoundary>
 
+          {/* CSS vignette — replaces the removed 3D postprocessing Vignette,
+              which (with Bloom) was the likely cause of a black canvas on
+              mobile Safari's WebGL implementation */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: "radial-gradient(ellipse 70% 70% at 50% 50%, transparent 40%, rgba(6,5,4,0.75) 100%)",
+            }}
+          />
+
           {/* Heading overlay — fades as you enter the hall */}
           <motion.div
             style={{ opacity: useTransform(scrollYProgress, [0, 0.12], [1, 0]) }}
