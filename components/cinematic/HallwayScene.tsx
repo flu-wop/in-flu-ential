@@ -1,9 +1,23 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import ServiceModal from "./ServiceModal";
+import SceneBoundary from "./SceneBoundary";
 import type { ServiceData } from "./ServiceModal";
+
+const EntranceSequence = dynamic(() => import("./EntranceSequence"), { ssr: false });
+
+// If the 3D entrance scene throws, this fires instead — guarantees the grid
+// still reveals rather than staying hidden behind a dead scene forever.
+function EntranceFallback({ onComplete }: { onComplete: () => void }) {
+  useEffect(() => {
+    onComplete();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return null;
+}
 
 const SERVICES: ServiceData[] = [
   {
@@ -112,10 +126,25 @@ const SERVICES: ServiceData[] = [
 
 export default function HallwayScene() {
   const [activeService, setActiveService] = useState<ServiceData | null>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [sequenceComplete, setSequenceComplete] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 769px)");
+    setIsDesktop(mq.matches);
+    // Mobile never plays the entrance sequence — straight to the grid.
+    if (!mq.matches) setSequenceComplete(true);
+  }, []);
 
   return (
     <>
-      <section id="hallway" className="relative bg-[#060504] py-24 md:py-32 px-6 md:px-16">
+      <section id="hallway" className="relative bg-[#060504] py-24 md:py-32 px-6 md:px-16 overflow-hidden">
+        {isDesktop && !sequenceComplete && (
+          <SceneBoundary fallback={<EntranceFallback onComplete={() => setSequenceComplete(true)} />}>
+            <EntranceSequence onComplete={() => setSequenceComplete(true)} />
+          </SceneBoundary>
+        )}
+
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -151,13 +180,18 @@ export default function HallwayScene() {
         </motion.div>
 
         {/* Door grid */}
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+        <motion.div
+          initial={false}
+          animate={{ opacity: sequenceComplete ? 1 : 0 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5"
+        >
           {SERVICES.map((s, i) => (
             <motion.button
               key={s.id}
               onClick={() => setActiveService(s)}
               initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              whileInView={sequenceComplete ? { opacity: 1, y: 0 } : {}}
               viewport={{ once: true }}
               transition={{ delay: i * 0.08, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
               className="group relative text-left p-7 md:p-8 transition-colors duration-300 hover:bg-[#D4AF77]/[0.04]"
@@ -189,7 +223,7 @@ export default function HallwayScene() {
               </span>
             </motion.button>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       <ServiceModal service={activeService} onClose={() => setActiveService(null)} />
