@@ -1,17 +1,10 @@
 "use client";
 
 import { useRef } from "react";
-import dynamic from "next/dynamic";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import SceneBoundary from "./SceneBoundary";
-import { useSectionVisible } from "./useSectionVisible";
-
-// Three.js globe — client-only, never SSR
-const HeroGlobe = dynamic(() => import("./HeroGlobe"), { ssr: false });
 
 export default function HeroScene() {
   const ref = useRef<HTMLDivElement>(null);
-  const isVisible = useSectionVisible(ref);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -43,16 +36,6 @@ export default function HeroScene() {
               background: "radial-gradient(ellipse 80% 60% at 50% 70%, rgba(180,120,40,0.15) 0%, transparent 70%)",
             }}
           />
-        </motion.div>
-
-        {/* Three.js globe — global reach, drifting behind the skyline */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{ opacity: useTransform(scrollYProgress, [0, 0.5], [0.55, 0]) }}
-        >
-          <SceneBoundary>
-            {isVisible && <HeroGlobe />}
-          </SceneBoundary>
         </motion.div>
 
         {/* Overlay gradient */}

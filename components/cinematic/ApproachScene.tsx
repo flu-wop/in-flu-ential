@@ -1,13 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import dynamic from "next/dynamic";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import SceneBoundary from "./SceneBoundary";
-import { useSectionVisible } from "./useSectionVisible";
-
-// Three.js wireframe accent — client-only, never SSR
-const ApproachAccent = dynamic(() => import("./ApproachAccent"), { ssr: false });
 
 const stats = [
   { value: "20+", label: "Records Engineered & Produced" },
@@ -19,7 +13,6 @@ const stats = [
 
 export default function ApproachScene() {
   const ref = useRef<HTMLDivElement>(null);
-  const isVisible = useSectionVisible(ref);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
@@ -78,17 +71,6 @@ export default function ApproachScene() {
           className="absolute top-0 left-0 right-0 h-48 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, #080808, transparent)" }}
         />
-
-        {/* Three.js wireframe accent — a slow-turning structure, echoing the
-            Hero globe technique, to pair with "architect cultural moments" */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none hidden md:block"
-          style={{ opacity: useTransform(scrollYProgress, [0, 0.2, 0.85, 1], [0, 0.7, 0.7, 0]) }}
-        >
-          <SceneBoundary>
-            {isVisible && <ApproachAccent />}
-          </SceneBoundary>
-        </motion.div>
 
         {/* Content */}
         <motion.div
