@@ -1,16 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
-import dynamic from "next/dynamic";
-import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
+import { motion } from "framer-motion";
+import { useState } from "react";
 import ServiceModal from "./ServiceModal";
-import SceneBoundary from "./SceneBoundary";
 import type { ServiceData } from "./ServiceModal";
-import { getHallwayScrollHeightVh } from "./hallwayLayout";
-import { useSectionVisible } from "./useSectionVisible";
-
-// Three.js corridor — client-only, never SSR
-const Hallway3D = dynamic(() => import("./Hallway3D"), { ssr: false });
 
 const SERVICES: ServiceData[] = [
   {
@@ -118,105 +111,84 @@ const SERVICES: ServiceData[] = [
 ];
 
 export default function HallwayScene() {
-  const ref = useRef<HTMLDivElement>(null);
-  const isVisible = useSectionVisible(ref);
   const [activeService, setActiveService] = useState<ServiceData | null>(null);
-  const scrollProgress = useRef(0);
-
-  // Drive the 3D camera from scroll through this tall section
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end end"],
-  });
-  // Mirror scroll MotionValue into a ref the canvas reads each frame
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    scrollProgress.current = v;
-  });
 
   return (
     <>
-      {/* Tall scroll track — sticky canvas inside */}
-      <section
-        ref={ref}
-        id="hallway"
-        className="relative bg-[#060504]"
-        style={{ height: `${getHallwayScrollHeightVh(SERVICES.length)}vh` }}
-      >
-        <div className="sticky top-0 h-screen w-full overflow-hidden">
-          {/* 3D corridor */}
-          <SceneBoundary>
-            {isVisible && (
-              <Hallway3D
-                services={SERVICES}
-                onOpen={setActiveService}
-                scrollProgress={scrollProgress}
-                activeServiceId={activeService?.id ?? null}
-              />
-            )}
-          </SceneBoundary>
-
-          {/* CSS vignette — replaces the removed 3D postprocessing Vignette,
-              which (with Bloom) was the likely cause of a black canvas on
-              mobile Safari's WebGL implementation */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: "radial-gradient(ellipse 70% 70% at 50% 50%, transparent 40%, rgba(6,5,4,0.75) 100%)",
-            }}
-          />
-
-          {/* Heading overlay — fades as you enter the hall */}
-          <motion.div
-            style={{ opacity: useTransform(scrollYProgress, [0, 0.12], [1, 0]) }}
-            className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 pointer-events-none"
-          >
-            <div className="flex items-center gap-4 mb-5">
-              <div className="h-px w-10 bg-[#D4AF77]/50" />
-              <span className="text-[10px] tracking-[0.45em] text-[#D4AF77] uppercase" style={{ fontFamily: "DM Sans, sans-serif" }}>
-                The Hallway
-              </span>
-              <div className="h-px w-10 bg-[#D4AF77]/50" />
-            </div>
-            <h2 className="text-[clamp(2.2rem,7vw,5.5rem)] font-light text-[#F5EDD8] leading-tight" style={{ fontFamily: "Cormorant Garamond, serif" }}>
-              Every door,
-              <br />
-              <em className="text-[#D4AF77]">a discipline</em>
-            </h2>
-            <p className="mt-4 text-[#A89880] text-sm md:text-base max-w-lg" style={{ fontFamily: "DM Sans, sans-serif" }}>
-              Scroll to walk the hall. Tap any door to step inside.
-            </p>
-          </motion.div>
-
-          {/* Scroll cue — fades once moving */}
-          <motion.div
-            style={{ opacity: useTransform(scrollYProgress, [0, 0.08], [1, 0]) }}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none"
-          >
-            <span className="text-[9px] tracking-[0.5em] text-[#A89880]/60 uppercase" style={{ fontFamily: "DM Sans, sans-serif" }}>
-              Walk
+      <section id="hallway" className="relative bg-[#060504] py-24 md:py-32 px-6 md:px-16">
+        {/* Heading */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="text-center mb-16 md:mb-20"
+        >
+          <div className="flex items-center gap-4 justify-center mb-5">
+            <div className="h-px w-10 bg-[#D4AF77]/50" />
+            <span
+              className="text-[10px] tracking-[0.45em] text-[#D4AF77] uppercase"
+              style={{ fontFamily: "DM Sans, sans-serif" }}
+            >
+              The Hallway
             </span>
-            <div className="w-px h-12 bg-gradient-to-b from-[#D4AF77]/50 to-transparent" />
-          </motion.div>
-
-          {/* Door directory — accessible list, always tappable */}
-          <div className="absolute bottom-6 left-0 right-0 px-4 pointer-events-auto">
-            <div className="max-w-5xl mx-auto flex flex-wrap justify-center gap-2">
-              {SERVICES.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => setActiveService(s)}
-                  className="px-3 py-1.5 text-[9px] tracking-[0.25em] uppercase transition-all duration-300 hover:bg-[#D4AF77]/15"
-                  style={{
-                    fontFamily: "DM Sans, sans-serif",
-                    border: "1px solid rgba(212,175,119,0.15)",
-                    color: "#A89880",
-                  }}
-                >
-                  {s.number} · {s.label}
-                </button>
-              ))}
-            </div>
+            <div className="h-px w-10 bg-[#D4AF77]/50" />
           </div>
+          <h2
+            className="text-[clamp(2.2rem,7vw,5.5rem)] font-light text-[#F5EDD8] leading-tight"
+            style={{ fontFamily: "Cormorant Garamond, serif" }}
+          >
+            Every door,
+            <br />
+            <em className="text-[#D4AF77]">a discipline</em>
+          </h2>
+          <p
+            className="mt-4 text-[#A89880] text-sm md:text-base max-w-lg mx-auto"
+            style={{ fontFamily: "DM Sans, sans-serif" }}
+          >
+            Tap a door to step inside.
+          </p>
+        </motion.div>
+
+        {/* Door grid */}
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+          {SERVICES.map((s, i) => (
+            <motion.button
+              key={s.id}
+              onClick={() => setActiveService(s)}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              className="group relative text-left p-7 md:p-8 transition-colors duration-300 hover:bg-[#D4AF77]/[0.04]"
+              style={{ border: "1px solid rgba(212,175,119,0.18)" }}
+            >
+              <span
+                className="text-[11px] tracking-[0.3em] text-[#D4AF77]/60 uppercase"
+                style={{ fontFamily: "DM Mono, monospace" }}
+              >
+                {s.number}
+              </span>
+              <h3
+                className="mt-3 text-xl md:text-2xl font-light text-[#F5EDD8] leading-snug"
+                style={{ fontFamily: "Cormorant Garamond, serif" }}
+              >
+                {s.label}
+              </h3>
+              <p
+                className="mt-2 text-xs text-[#A89880]/70"
+                style={{ fontFamily: "DM Sans, sans-serif" }}
+              >
+                {s.price}
+              </p>
+              <span
+                className="absolute bottom-6 right-7 text-[#D4AF77]/40 group-hover:text-[#D4AF77] group-hover:translate-x-1 transition-all duration-300"
+                aria-hidden
+              >
+                →
+              </span>
+            </motion.button>
+          ))}
         </div>
       </section>
 
