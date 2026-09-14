@@ -21,6 +21,7 @@ export default function CinematicNav() {
     { label: "Approach", href: "#approach" },
     { label: "Services", href: "#hallway" },
     { label: "Engagement", href: "#vault" },
+    { label: "Products", href: "/products" },
     { label: "Contact", href: "/booking" },
   ];
 

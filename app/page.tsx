@@ -41,8 +41,12 @@ export default function Home() {
     <main className="bg-[#080808] overflow-x-hidden">
       <CinematicNav />
       <HeroScene />
-      <ApproachScene />
-      <HallwayScene />
+      <section id="approach">
+        <ApproachScene />
+      </section>
+      <section id="hallway">
+        <HallwayScene />
+      </section>
 
       {/* Restrained Vault teaser — single moment that surfaces the real /vault */}
       <section className="relative py-24 md:py-32 px-6 md:px-16 border-t border-[#D4AF77]/10">
@@ -133,7 +137,9 @@ export default function Home() {
         </div>
       </section>
 
-      <VaultScene />
+      <section id="vault">
+        <VaultScene />
+      </section>
       <CinematicFooter />
     </main>
   );
