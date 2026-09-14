@@ -7,7 +7,7 @@ const stats = [
   { value: "20+", label: "Records Engineered & Produced" },
   { value: "10+", label: "Brands & Artists Launched" },
   { value: "2014", label: "In the Industry Since" },
-  // PLACEHOLDER — engineering credit on Killer Mike's MICHAEL pending formalization
+  // Engineering credit on Killer Mike's MICHAEL — formalized
   { value: "Grammy", label: "Album Credit · MICHAEL" },
 ];
 
