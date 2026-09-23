@@ -1,26 +1,23 @@
 import type { Config } from "tailwindcss";
+import defaultTheme from "tailwindcss/defaultTheme";
 
 const config: Config = {
+  // Brand colours, fonts and semantic tokens come from the shared IN-FLU-ENTIAL preset.
+  presets: [require("@flu-wop/design-system/tailwind-preset")],
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./node_modules/@flu-wop/design-system/src/**/*.{ts,tsx}",
   ],
   theme: {
     extend: {
       colors: {
         "studio-black": "#080808",
-        charcoal:       "#111111",
-        dark:           "#1A1A1A",
-        card:           "#1C1C1C",
-        border:         "#2A2A2A",
-        gold:           "#D4AF77",
-        "gold-light":   "#E8C97A",
-        "gold-dark":    "#B8935A",
-        cream:          "#F5EDD8",
-        mist:           "#A89880",
       },
       fontFamily: {
+        // Keep Tailwind\'s default sans (the shared preset would otherwise make it DM Sans)
+        sans: defaultTheme.fontFamily.sans,
         display: ["Cormorant Garamond", "Georgia", "serif"],
         body:    ["DM Sans", "system-ui", "sans-serif"],
         mono:    ["DM Mono", "monospace"],

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import "@flu-wop/design-system/core.css";
+import "@flu-wop/design-system/compat.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -26,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html data-theme="studio" lang="en" className="scroll-smooth">
       <body>{children}</body>
     </html>
   );
