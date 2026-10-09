@@ -1,0 +1,28 @@
+/* Credits as a session tracklist: one lane per credit, like the edit window. */
+.tracks { display: flex; flex-direction: column; border: 1px solid #34322c; border-radius: 8px; overflow: hidden; }
+.track {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 4px 14px;
+  padding: 14px 14px 14px 0;
+  background: #191815;
+  position: relative;
+}
+.track + .track { border-top: 1px solid #2c2a24; }
+.track::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--lane); }
+.num { font-family: "DM Mono", monospace; font-size: 11px; color: #6f695d; text-align: right; padding-top: 6px; font-variant-numeric: tabular-nums; }
+.main { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.top { display: flex; flex-direction: column; gap: 4px; }
+.artist { font-family: "Cormorant Garamond", Georgia, serif; font-size: 1.6rem; line-height: 1.1; color: #f5edd8; }
+.role { font-family: "DM Mono", monospace; font-size: 11px; letter-spacing: 0.06em; color: #d4af77; }
+.desc { margin: 0; font-size: 14px; line-height: 1.6; color: #c9bfa9; max-width: 64ch; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px 14px; font-family: "DM Mono", monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #8f887a; }
+
+/* Services as insert slots on a channel strip */
+.inserts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.insert { background: #191815; border: 1px solid #34322c; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.slot { display: flex; justify-content: space-between; align-items: center; font-family: "DM Mono", monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #8f887a; }
+.led { width: 7px; height: 7px; border-radius: 50%; background: #5ec26a; }
+.insertTitle { margin: 0; font-family: "Cormorant Garamond", Georgia, serif; font-weight: 400; font-size: 1.4rem; color: #f5edd8; }
+.insertText { margin: 0; font-size: 14px; line-height: 1.6; color: #c9bfa9; }
+.insertNote { margin: 0; font-family: "DM Mono", monospace; font-size: 11px; color: #d4af77; }
