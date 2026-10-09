@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CHANNELS, VAULT_COMBO, type ChannelId } from "@/lib/session";
-import { MixEngine, KNOB_DEFAULTS, FADER_UNITY, type KnobId } from "./mixEngine";
+import { KNOB_DEFAULTS, type KnobId } from "./mixEngine";
+import { useSession } from "./SessionProvider";
 import SessionScreen from "./SessionScreen";
 import { OUTPUTS } from "./outputs";
 import styles from "./console.module.css";
@@ -16,11 +17,6 @@ const EQ_KNOBS: { id: KnobId; label: string; cap: string }[] = [
   { id: "send", label: "Send", cap: "var(--cap-brown)" },
 ];
 
-type Knobs = Record<ChannelId, Record<KnobId, number>>;
-const initKnobs = () =>
-  Object.fromEntries(CHANNELS.map((c) => [c.id, { ...KNOB_DEFAULTS }])) as Knobs;
-const initFaders = () =>
-  Object.fromEntries(CHANNELS.map((c) => [c.id, c.id === "vault" ? 0 : FADER_UNITY])) as Record<ChannelId, number>;
 
 function useDrag(onDelta: (dy: number, dx: number) => void, onStart?: () => void) {
   const last = useRef<{ x: number; y: number } | null>(null);
@@ -152,14 +148,8 @@ function Fader({
 }
 
 export default function Console() {
-  const [engine, setEngine] = useState<MixEngine | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  const [loadError, setLoadError] = useState(false);
-  const [playing, setPlaying] = useState(false);
-  const [knobs, setKnobs] = useState<Knobs>(initKnobs);
-  const [faders, setFaders] = useState(initFaders);
-  const [combo, setCombo] = useState<number[]>([0, 0, 0]);
-  const [vaultOpen, setVaultOpen] = useState(false);
+  const session = useSession();
+  const { engine, loaded, loadError, playing, knobs, faders, combo, vaultOpen, ensureEngine, toggle } = session;
   const [selected, setSelected] = useState<ChannelId>("music");
   const [eqChannel, setEqChannel] = useState<ChannelId | null>(null);
   const [isIOS, setIsIOS] = useState(false);
@@ -169,17 +159,8 @@ export default function Console() {
 
   useEffect(() => {
     setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
-    const e = new MixEngine();
-    CHANNELS.forEach((c) => {
-      (Object.keys(KNOB_DEFAULTS) as KnobId[]).forEach((k) => e.setKnob(c.id, k, KNOB_DEFAULTS[k]));
-      e.setFader(c.id, c.id === "vault" ? 0 : FADER_UNITY, 0.001);
-    });
-    setEngine(e);
-    e.load()
-      .then(() => setLoaded(true))
-      .catch(() => setLoadError(true));
-    return () => e.dispose();
-  }, []);
+    ensureEngine(); // loads the stems so the session screen can draw waveforms
+  }, [ensureEngine]);
 
   // Meters: written straight to the DOM each frame.
   useEffect(() => {
@@ -194,7 +175,6 @@ export default function Console() {
         const lv = target > prev ? target : prev + (target - prev) * 0.12;
         levels.current[c.id] = lv;
         const lit = Math.round(lv * LEDS);
-        el.dataset.lit = String(lit);
         const leds = el.children;
         for (let i = 0; i < leds.length; i++) (leds[i] as HTMLElement).classList.toggle(styles.on, i < lit);
       });
@@ -204,17 +184,6 @@ export default function Console() {
     return () => cancelAnimationFrame(raf);
   }, [engine]);
 
-  const toggle = useCallback(async () => {
-    if (!engine || !loaded) return;
-    if (engine.playing) {
-      engine.stop();
-      setPlaying(false);
-    } else {
-      await engine.play();
-      setPlaying(true);
-    }
-  }, [engine, loaded]);
-
   const showEq = (ch: ChannelId) => {
     setEqChannel(ch);
     if (eqTimer.current) clearTimeout(eqTimer.current);
@@ -222,27 +191,14 @@ export default function Console() {
   };
 
   const setKnob = (ch: ChannelId, k: KnobId, v: number) => {
-    setKnobs((prev) => ({ ...prev, [ch]: { ...prev[ch], [k]: v } }));
-    engine?.setKnob(ch, k, v);
+    session.setKnob(ch, k, v);
     if (k !== "send") showEq(ch);
   };
 
-  const setFader = (ch: ChannelId, v: number) => {
-    if (ch === "vault" && !vaultOpen) return;
-    setFaders((prev) => ({ ...prev, [ch]: v }));
-    engine?.setFader(ch, v);
-  };
+  const setFader = (ch: ChannelId, v: number) => session.setFader(ch, v);
 
   const setComboKnob = (i: number, v: number) => {
-    if (vaultOpen) return;
-    const next = combo.map((x, j) => (j === i ? v : x));
-    setCombo(next);
-    if (next.every((x, j) => x === VAULT_COMBO[j])) {
-      setVaultOpen(true);
-      setSelected("vault");
-      setFaders((prev) => ({ ...prev, vault: FADER_UNITY }));
-      engine?.setFader("vault", FADER_UNITY, 0.6);
-    }
+    if (session.setComboKnob(i, v)) setSelected("vault");
   };
 
   const out = selected === "vault" && !vaultOpen ? OUTPUTS.vaultLocked : OUTPUTS[selected];

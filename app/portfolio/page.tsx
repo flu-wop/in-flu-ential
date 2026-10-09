@@ -27,7 +27,7 @@ const CATEGORIES: { title: string; sites: Site[] }[] = [
       { name: "Doug Belote", url: "https://dougbelote.vercel.app", shot: "doug-belote", blurb: "Site for the New Orleans drummer and percussionist.", built: ["Credits", "Media", "Booking"] },
       { name: "DJ Jade the Gem", url: "https://www.dahiddengem.com", shot: "jade-the-gem", blurb: "DJ site with mixes, events and direct booking.", built: ["Booking", "Mixes", "Events"] },
       { name: "Lil Squiggle", url: "https://lilsquiggle.vercel.app", shot: "lil-squiggle", blurb: "Release site for “Don't Drink & Dial,” with a merch shop.", built: ["Release site", "Shop"] },
-      { name: "Street Beat", url: "https://nolastreetbeat.vercel.app", shot: "streetbeat", blurb: "Documentary site with a paid streaming paywall.", built: ["Paywall", "Stripe", "Trailer"] },
+      { name: "Street Beat", url: "https://www.streetbeat.video", shot: "streetbeat", blurb: "Documentary site with a paid streaming paywall.", built: ["Paywall", "Stripe", "Trailer"] },
     ],
   },
   {

@@ -3,6 +3,7 @@ import "@flu-wop/design-system/core.css";
 import "@flu-wop/design-system/compat.css";
 import "./globals.css";
 import { SITE_URL } from "@/lib/site-url";
+import SessionProvider from "@/components/console/SessionProvider";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -30,7 +31,9 @@ export default function RootLayout({
 }) {
   return (
     <html data-theme="studio" lang="en" className="scroll-smooth">
-      <body>{children}</body>
+      <body>
+        <SessionProvider>{children}</SessionProvider>
+      </body>
     </html>
   );
 }

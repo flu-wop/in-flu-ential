@@ -19,14 +19,15 @@ export const OUTPUTS: Record<"music" | "business" | "work" | "vault" | "vaultLoc
     cta: { label: "Full credits", href: "/music" },
   },
   business: {
-    title: "Creative strategy with an engineer's ear",
-    body: "Cinematic websites, campaigns and brand systems for artists and businesses that want to be remembered.",
+    title: "Websites, campaigns and AI tools",
+    body: "Production websites, social media marketing with the site built in, and AI tools for contractors. Half down starts any project.",
     rows: [
-      ["Growth", "$10,000"],
-      ["Influence", "$25,000"],
-      ["Legacy", "$50,000+"],
+      ["Website", "$3,000"],
+      ["Social media marketing + website", "$5,000"],
+      ["AI for contractors", "Custom quote"],
+      ["Website starter kit", "$50"],
     ],
-    cta: { label: "See engagements", href: "/business" },
+    cta: { label: "See packages", href: "/business" },
   },
   work: {
     title: "Recent builds",

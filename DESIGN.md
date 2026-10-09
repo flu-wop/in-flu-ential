@@ -58,6 +58,16 @@ Don't hand-style a page; extend the kit instead.
 - **Work** lists every live site build in category accordions, with a
   screenshot in `/public/work/<slug>.webp` (960x600) and a live link.
 - No pitch decks anywhere on the site, vault included.
+- **The session persists.** `SessionProvider` in the root layout owns the
+  audio engine and the mix (knobs, faders, vault), so the song keeps playing
+  across pages. Subpages show a slim transport bar; stems only download once
+  someone opens the console or presses Play.
+
+## Pricing (Oct 2026)
+
+Website $3,000 ($1,500 deposit). Social media marketing $5,000 with the
+website included ($2,500 deposit). AI for contractors by custom quote.
+Website starter kit $50, the only low-cost option.
 
 ## Rules
 

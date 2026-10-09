@@ -4,7 +4,7 @@ import k from "@/components/studio/studio.module.css";
 
 export const metadata: Metadata = {
   title: "Business | IN-FLU-ENTIAL LLC",
-  description: "Websites, campaigns, and AI tools for artists, local businesses, and contractors. Engagements from $10,000.",
+  description: "Websites from $3,000, social media marketing with a website from $5,000, and custom AI tools for contractors.",
 };
 
 const LANES = [
@@ -18,7 +18,7 @@ const LANES = [
   {
     slot: "Lane B",
     title: "Campaigns",
-    text: "Artist rollouts and brand campaigns: positioning, content calendars, short-form video and release strategy, run by someone who has been in the room.",
+    text: "Social media marketing for artists and local businesses: positioning, content calendars, short-form video and launch campaigns, with your website built in.",
     chips: ["Release strategy", "Social", "Video"],
     id: undefined,
   },
@@ -31,34 +31,47 @@ const LANES = [
   },
 ];
 
-const TIERS = [
+const PACKAGES = [
   {
-    name: "Growth",
-    price: "$10,000",
-    period: "per project",
-    tagline: "Brand clarity and a content system that actually works.",
-    includes: ["Brand positioning audit", "Social strategy and 30-day calendar", "30-day content sprint", "One full creative campaign"],
+    name: "Website",
+    price: "$3,000",
+    deposit: "$1,500 deposit to start",
+    tagline: "A production site you own, built on the same stack as every site in Work.",
+    includes: [
+      "Custom design for your brand",
+      "Booking, store or paywall where you need it",
+      "Stripe or Square payments",
+      "Email confirmations",
+      "Domain setup and launch",
+      "Handoff doc with every login",
+    ],
   },
   {
-    name: "Influence",
-    price: "$25,000",
-    period: "per quarter",
-    tagline: "Full-service creative direction and an ongoing partnership.",
-    includes: ["Everything in Growth", "Monthly creative direction sessions", "Video and media production", "Press and partnership brokerage", "Direct access via Signal"],
+    name: "Social media marketing",
+    price: "$5,000",
+    deposit: "$2,500 deposit to start",
+    tagline: "A full campaign with the website included.",
+    includes: [
+      "Everything in Website",
+      "Brand positioning",
+      "Content calendar",
+      "Short-form video and clips",
+      "Launch or release campaign",
+    ],
     featured: true,
   },
   {
-    name: "Legacy",
-    price: "$50,000+",
-    period: "per engagement",
-    tagline: "Executive-level brand architecture for those building for decades.",
-    includes: ["Everything in Influence", "Brand architecture and legacy roadmap", "Business development advisory", "Revenue stream mapping", "Priority access on all initiatives"],
+    name: "AI for contractors",
+    price: "Custom quote",
+    deposit: "Scoped after a walkthrough",
+    tagline: "Tools built around how your jobs actually run.",
+    includes: ["Walkthrough of your current process", "Written scope and price", "Estimating, scheduling or job docs", "Training for your team"],
   },
 ];
 
 const STEPS = [
   { title: "Call", text: "A short conversation about what you're building and where you are now." },
-  { title: "Proposal", text: "Scope, timeline and price in writing, before any money moves." },
+  { title: "Proposal", text: "Scope, timeline and price in writing. Half down starts the build." },
   { title: "Build", text: "You see progress on a live link the whole way, not a reveal at the end." },
   { title: "Launch", text: "Domain, handoff notes and logins, plus support after it's live." },
 ];
@@ -110,18 +123,16 @@ export default function BusinessPage() {
         </div>
       </Panel>
 
-      <Panel title="Rates · Engagements" meta="Written first" heading="Engagements">
+      <Panel title="Rates · Packages" meta="Half down to start" heading="Packages">
         <div className={k.cards}>
-          {TIERS.map((t) => (
+          {PACKAGES.map((t) => (
             <div className={`${k.card} ${t.featured ? k.featured : ""}`} key={t.name}>
               <div className={k.cardSlot}>
                 <span>{t.name}</span>
-                {t.featured && <span className={k.tag}>Most chosen</span>}
+                {t.featured && <span className={k.tag}>Website included</span>}
               </div>
-              <div className={k.cardPrice}>
-                {t.price}
-                <small>{t.period}</small>
-              </div>
+              <div className={k.cardPrice}>{t.price}</div>
+              <span className={k.cardNote}>{t.deposit}</span>
               <p className={k.cardText}>{t.tagline}</p>
               <ul className={k.list}>
                 {t.includes.map((i) => (
@@ -131,9 +142,9 @@ export default function BusinessPage() {
             </div>
           ))}
         </div>
-        <PanelText>Need something smaller? Starter kits for your first site begin at $47.</PanelText>
+        <PanelText>Doing it yourself? The website starter kit is $50.</PanelText>
         <div>
-          <Cta href="/products">See starter kits</Cta>
+          <Cta href="/products">See the starter kit</Cta>
         </div>
       </Panel>
 
