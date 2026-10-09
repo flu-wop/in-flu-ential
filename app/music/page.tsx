@@ -2,49 +2,76 @@ import type { CSSProperties } from "react";
 import { StudioPage, ChannelHeader, Panel, PanelText, Cta } from "@/components/studio/Studio";
 import s from "./music.module.css";
 
-const CREDITS = [
+const LANES = ["#4E9C8F", "#D4AF77", "#8A6BB0", "#4C77B4", "#B2412F", "#3D8753"];
+
+// What was actually done on each: produced, recorded (engineered), or both.
+const CREDITS: { artist: string; role: string; description: string; did: string[] }[] = [
   {
     artist: "Curren$y",
     role: "In-house producer / engineer",
     description: "Sustained creative partnership. Production, engineering, and session coordination across multiple projects, including Hang Glider.",
-    tags: ["Hip-hop", "2018–2021"],
-    lane: "#4E9C8F",
+    did: ["Produced", "Recorded"],
   },
   {
     // Credit formalization in progress via Reid Whick; update wording once confirmed.
     artist: "Killer Mike — MICHAEL",
     role: "Engineering",
     description: "Engineering credit on the album that won Best Rap Album at the 2024 Grammys.",
-    tags: ["Hip-hop", "Grammy-winning album"],
-    lane: "#D4AF77",
+    did: ["Recorded"],
   },
   {
     artist: "Trapaganda",
     role: "Production",
     description: "Flagship project released through Jet Life and EMPIRE.",
-    tags: ["Jet Life / EMPIRE"],
-    lane: "#8A6BB0",
+    did: ["Produced"],
   },
   {
-    artist: "Zaytoven",
-    role: "Recording engineer",
-    description: "Studio sessions with the Atlanta producer behind Gucci Mane, Future, and YG.",
-    tags: ["Trap", "2019"],
-    lane: "#4C77B4",
+    artist: "Wiz Khalifa",
+    role: "Producer",
+    description: "Production on two records featuring Wiz Khalifa, one released and one unreleased.",
+    did: ["Produced"],
+  },
+  {
+    artist: "Quando Rondo",
+    role: "Producer / engineer",
+    description: "Produced and recorded.",
+    did: ["Produced", "Recorded"],
   },
   {
     artist: "NoCap",
-    role: "Recording engineer",
-    description: "Session work with the Alabama rapper during his breakthrough period.",
-    tags: ["Hip-hop", "2020"],
-    lane: "#B2412F",
+    role: "Producer / engineer",
+    description: "Produced and recorded.",
+    did: ["Produced", "Recorded"],
   },
   {
     artist: "Boosie Badazz",
+    role: "Producer",
+    description: "Production for the Baton Rouge legend.",
+    did: ["Produced"],
+  },
+  {
+    artist: "Kevin Gates",
     role: "Recording engineer",
-    description: "Studio work with the Baton Rouge legend and Louisiana rap icon.",
-    tags: ["Southern rap", "2019–2020"],
-    lane: "#3D8753",
+    description: "Recording sessions.",
+    did: ["Recorded"],
+  },
+  {
+    artist: "Flau'jae",
+    role: "Recording engineer",
+    description: "Recording sessions.",
+    did: ["Recorded"],
+  },
+  {
+    artist: "MadeinTYO",
+    role: "Recording engineer",
+    description: "Recording sessions.",
+    did: ["Recorded"],
+  },
+  {
+    artist: "Donald Markowitz",
+    role: "Ongoing collaborator",
+    description: "Extensive, ongoing work together across records and Mid City Sound.",
+    did: ["Produced", "Recorded"],
   },
 ];
 
@@ -82,11 +109,11 @@ export default function MusicPage() {
             Built in the <em>studio</em>
           </>
         }
-        lede="Production and engineering credits, artist development, and music supervision, rooted in real sessions rather than theory."
+        lede="Producer and engineer, and manager of Mid City Sound Studios in New Orleans since 2024. Artist development and music supervision, rooted in real sessions rather than theory."
         meta={[
           ["Credits", "29"],
-          ["Home room", "Mid City Sound"],
-          ["Based", "New Orleans"],
+          ["Managing", "Mid City Sound"],
+          ["Since", "2024"],
         ]}
         actions={
           <>
@@ -101,7 +128,7 @@ export default function MusicPage() {
       <Panel title="Session · Credits" meta={`${CREDITS.length} lanes`} heading="Who we've been in the room with">
         <div className={s.tracks}>
           {CREDITS.map((c, i) => (
-            <div className={s.track} key={c.artist} style={{ "--lane": c.lane } as CSSProperties}>
+            <div className={s.track} key={c.artist} style={{ "--lane": LANES[i % LANES.length] } as CSSProperties}>
               <span className={s.num}>{String(i + 1).padStart(2, "0")}</span>
               <div className={s.main}>
                 <div className={s.top}>
@@ -110,7 +137,7 @@ export default function MusicPage() {
                 </div>
                 <p className={s.desc}>{c.description}</p>
                 <div className={s.tags}>
-                  {c.tags.map((t) => (
+                  {c.did.map((t) => (
                     <span key={t}>{t}</span>
                   ))}
                 </div>

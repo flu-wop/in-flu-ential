@@ -9,12 +9,12 @@ interface Output {
 export const OUTPUTS: Record<"music" | "business" | "work" | "vault" | "vaultLocked", Output> = {
   music: {
     title: "29 credits across production and engineering",
-    body: "In-house producer and engineer for Curren$y, recording engineer for Zaytoven, NoCap and Boosie Badazz, with an engineering credit on Killer Mike's MICHAEL.",
+    body: "Producer and engineer for Curren$y, Quando Rondo and NoCap, production for Boosie Badazz and records featuring Wiz Khalifa, and an engineering credit on Killer Mike's MICHAEL.",
     rows: [
       ["Curren$y", "Producer / Engineer"],
       ["Killer Mike — MICHAEL", "Engineering"],
       ["Trapaganda", "Jet Life / EMPIRE"],
-      ["Zaytoven · NoCap · Boosie", "Recording"],
+      ["Quando Rondo · NoCap · Boosie", "Production"],
     ],
     cta: { label: "Full credits", href: "/music" },
   },
