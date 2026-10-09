@@ -84,7 +84,9 @@ Checkout is Stripe embedded checkout on the page (`/api/checkout`, prices
 only in `lib/products.ts`, return page `/checkout/complete` verifies the
 session server-side). Needs STRIPE_SECRET_KEY and
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in Vercel; without them the buttons open
-the inquiry form.
+the inquiry form. `/api/stripe-webhook` (STRIPE_WEBHOOK_SECRET, event
+checkout.session.completed) emails James every payment and emails kit
+buyers their download link.
 
 ## Rules
 

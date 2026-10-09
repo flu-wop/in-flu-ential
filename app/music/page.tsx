@@ -1,9 +1,15 @@
 import { StudioPage, ChannelHeader, Panel, PanelText, Rows, Cta } from "@/components/studio/Studio";
+import type { Metadata } from "next";
 import k from "@/components/studio/studio.module.css";
 import PinBoard, { type Credit } from "@/components/music/PinBoard";
 import s from "./music.module.css";
 
 // What was actually done on each: produced, recorded (engineered), or both.
+export const metadata: Metadata = {
+  title: "Music | IN-FLU-ENTIAL LLC",
+  description: "Production and engineering credits: Curren$y, Wiz Khalifa, Quando Rondo, NoCap, Boosie Badazz, Kevin Gates and more.",
+};
+
 // Add a photo for any credit with photo: "/credits/<name>.webp" (square, ~1000x1000).
 const CREDITS: Credit[] = [
   {

@@ -11,7 +11,7 @@ const caveat = Caveat({ subsets: ["latin"], weight: ["500", "600"], variable: "-
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "IN-FLU-ENTIAL LLC | Producer, engineer, builder",
+  title: "IN-FLU-ENTIAL LLC | Producer, Engineer, Builder",
   description:
     "Websites, social media marketing and AI tools from a producer and engineer. Mix the session on the console.",
   openGraph: {
