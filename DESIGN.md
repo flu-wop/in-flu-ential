@@ -38,13 +38,63 @@ which was abandoned after repeated failed 3D executions.
   panel, which links to the full page. Faders mix; they do not navigate.
 - **The audio is real.** Each channel carries one stem of "Hang Glider"
   (Curren$y, produced by Flu): Music = vocal, Business = 808, Work = drums,
-  Vault = sample. Knobs run live Web Audio EQ (HF/MF/LF) and a reverb send.
-  Session config lives in `lib/session.ts`; stems in `/public/session`.
+  Vault = sample. Knobs run live Web Audio EQ (HF/MF/LF), a reverb send and
+  a pan. Session config lives in `lib/session.ts`; stems in `/public/session`.
+  The stems are placeholder synthesized parts until James supplies the real ones.
+- **Strip controls.** Every channel has Mute (red) and Solo (yellow) and a
+  fader; every non-vault channel has a Pan knob in a small row under the 2x2
+  EQ/Send block. Solo is solo-in-place: non-soloed channels and their reverb
+  sends go silent. Mute beats solo. All changes ramp over 20 ms. Vault
+  Mute/Solo stay disabled until it unlocks.
+- **Master** has Mute, an Original Mix button, the fader and the meter.
+- **Bounce vs stems.** The page opens on the bounce (`public/session/bounce.*`),
+  a render of the stems through the same engine chain, flat, with the vault
+  sample out. Bounce and stems run together at the same position and only the
+  bounce is audible. Touching any EQ, send, pan, channel fader, mute or solo
+  crossfades (about 150 ms) to the stems; the vault unlocking does too. Master
+  fader, master mute and the transport volume do not leave the bounce. The
+  bounce loads first and the stems decode in the background. Original Mix sets
+  every channel control flat and crossfades back to the bounce (the vault stays
+  open at fader 0; master controls are left alone).
+  The bounce is pre-limiter (the limiter's makeup gain can't be baked in) and
+  scaled by `lib/bounce.json`; the live path trims by 1/scale.
+  **Re-render it whenever the stems or the mix chain change:** `npm run bounce`
+  (needs ffmpeg and Chrome; set `CHROME_PATH` if Chrome is elsewhere). The
+  script renders `components/console/mixChain.ts` in an OfflineAudioContext.
+- **Master panel is the hero.** The console opens on Master: eyebrow
+  "Main · Stereo Out", title, cover art, rows (Produced By, Tempo, Playing:
+  Original Mix or Your Mix), the line "Press play. Touch any control to open up
+  the mix.", quiet patch-in links to Music, Business and Work, and a Reset to
+  Original Mix link. Tapping Master returns to it. No New Orleans on the hero,
+  footer or metadata.
+- **Play and Loop.** The session screen has Play and Loop buttons, and the
+  transport bar has a loop toggle. Loop is on by default (brackets on the
+  ruler). Off plays once, stops and returns to the start.
 - **Vault** is locked until its three dials hit the combination; then the
   sample stem fades into the mix. That's a game, not security. Private
   material is behind `/vault`, which checks a signed cookie on the server
   (`lib/vault-access.ts`, `VAULT_PASSWORD` env var). Vault items live in
   `lib/vault-items.ts` and must never be imported by a client component.
+  The vault's Contact Sheet photos are private: they are served by the
+  server, never placed in `/public` or the repo.
+
+## Image slots
+
+All photos are placeholders until filled. Constants live in `lib/images.ts`
+(empty string = labelled placeholder); polaroid photos in `lib/polaroids.ts`.
+All files are .webp except the icon and OG.
+
+| Slot | Path | Size |
+| --- | --- | --- |
+| Hang Glider cover art (Master panel, session screen, transport bar) | `/public/cover/hang-glider.webp` | 1400x1400 |
+| Credits | `/public/credits/<slug>.webp` | square ~1000 |
+| On The Wall (Music) | `/public/studio/<name>.webp` | square ~1000 |
+| Bio | `/public/bio` | 4:5, 1200x1500 |
+| Booking portrait | `/public/bio/booking.webp` | 4:5, 1200x1500 |
+| Job site (AI for Contractors lane) | `/public/business/job-site.webp` | 1600x1000 |
+| Work screenshots | `/public/work/<slug>.webp` | 960x600 |
+| Open graph | `/public/og-image.png` | 1200x630 |
+| Favicon / app icon | `app/icon.png` (placeholder mark) | 512x512 |
 
 ## Subpages: the studio kit
 
@@ -58,11 +108,13 @@ Don't hand-style a page; extend the kit instead.
 - **Work** lists every live site build in category accordions, with a
   screenshot in `/public/work/<slug>.webp` (960x600) and a live link.
 - No pitch decks anywhere on the site, vault included.
-- **Music credits are a Polaroid pin board** (`components/music/PinBoard.tsx`):
-  each photo develops the first time it scrolls into view, and tapping flips
-  it to handwritten notes. Photos go in `/public/credits` (square) via the
-  `photo` field; the bio portrait goes in `/public/bio` via `BIO_PHOTO`.
-  Keep back-of-card descriptions short so cards stay even.
+- **Polaroids** share one flip card (`components/polaroid`): each photo
+  develops the first time it scrolls into view, and tapping flips it to a
+  handwritten note, with a one-line caption under the photo. Used for the
+  Music credits (`PinBoard.tsx`, photos in `/public/credits`), the On The Wall
+  strip on Music (studio and behind the scenes, `lib/polaroids.ts`) and the
+  Contact Sheet in the vault. The bio portrait goes in `/public/bio` via
+  `BIO_PHOTO`. Keep notes short so cards stay even.
 - **The session persists.** `SessionProvider` in the root layout owns the
   audio engine and the mix (knobs, faders, vault), so the song keeps playing
   across pages and loops until stopped (resuming if the phone pauses audio).

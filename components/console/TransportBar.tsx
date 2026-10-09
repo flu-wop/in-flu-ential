@@ -4,11 +4,12 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { CHANNELS, SESSION } from "@/lib/session";
 import { useSession } from "./SessionProvider";
+import CoverArt from "./CoverArt";
 import s from "./transport.module.css";
 
 // Slim transport on every subpage: keeps the session playing between pages.
 export default function TransportBar() {
-  const { engine, playing, loaded, loadError, toggle, master, setMaster } = useSession();
+  const { engine, playing, ready, loadError, loop, setLoop, toggle, master, setMaster, masterMuted, setMasterMuted } = useSession();
   const meterRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function TransportBar() {
     return () => cancelAnimationFrame(raf);
   }, [engine]);
 
-  const status = loadError ? "Audio unavailable" : playing ? "Playing" : engine && !loaded ? "Loading" : "Stopped";
+  const status = loadError ? "Audio unavailable" : playing ? "Playing" : engine && !ready ? "Loading" : "Stopped";
 
   return (
     <>
@@ -43,6 +44,20 @@ export default function TransportBar() {
         >
           {playing ? <span className={s.stopIcon} /> : <span className={s.playIcon} />}
         </button>
+        <button
+          type="button"
+          className={`${s.loop} ${loop ? s.loopOn : ""}`}
+          onClick={() => setLoop(!loop)}
+          aria-pressed={loop}
+          aria-label="Loop"
+        >
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M17 2l4 4-4 4" />
+            <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+            <path d="M7 22l-4-4 4-4" />
+            <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+          </svg>
+        </button>
         <div className={s.meters} aria-hidden="true">
           {CHANNELS.map((c, i) => (
             <span key={c.id} className={s.meterWell}>
@@ -56,6 +71,9 @@ export default function TransportBar() {
             </span>
           ))}
         </div>
+        <span className={s.cover}>
+          <CoverArt size={36} />
+        </span>
         <div className={s.info}>
           <strong>{SESSION.title}</strong>
           <span>
@@ -63,13 +81,25 @@ export default function TransportBar() {
           </span>
         </div>
         <label className={s.volume} htmlFor="transport-volume">
-          <span className={s.volIcon} aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <button
+            type="button"
+            className={s.volIcon}
+            onClick={() => setMasterMuted(!masterMuted)}
+            aria-pressed={masterMuted}
+            aria-label={masterMuted ? "Unmute" : "Mute"}
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
               <path d="M4 10v4h4l5 4V6L8 10H4Z" fill="currentColor" stroke="none" />
-              {master > 0.01 && <path d="M16 9.5a3.5 3.5 0 0 1 0 5" />}
-              {master > 0.5 && <path d="M18.5 7a7 7 0 0 1 0 10" />}
+              {masterMuted ? (
+                <path d="M16.5 9.5l5 5M21.5 9.5l-5 5" stroke="#e0563b" />
+              ) : (
+                <>
+                  {master > 0.01 && <path d="M16 9.5a3.5 3.5 0 0 1 0 5" />}
+                  {master > 0.5 && <path d="M18.5 7a7 7 0 0 1 0 10" />}
+                </>
+              )}
             </svg>
-          </span>
+          </button>
           <input
             id="transport-volume"
             type="range"

@@ -12,6 +12,7 @@
   --cap-blue: #3c66a3;
   --cap-green: #3d8753;
   --cap-brown: #87613a;
+  --cap-gray: #77726a;
   --led-g: #5ec26a;
   --led-a: #e8b33a;
   --led-r: #e0563b;
@@ -57,6 +58,24 @@
   cursor: pointer;
 }
 .transport:disabled { opacity: 0.4; cursor: default; }
+.loopBtn {
+  flex: none;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 9px;
+  border-radius: 4px;
+  border: 1px solid #3c3a33;
+  background: #2a2823;
+  color: var(--legend-dim);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.loopOn { color: var(--gold); border-color: #5e4d2c; }
 .playIcon {
   width: 0;
   height: 0;
@@ -217,6 +236,12 @@
 .cap:focus-visible,
 .scribble:focus-visible,
 .transport:focus-visible,
+.loopBtn:focus-visible,
+.ms:focus-visible,
+.origBtn:focus-visible,
+.masterLabel:focus-visible,
+.resetLink:focus-visible,
+.patch a:focus-visible,
 .startOverlay:focus-visible,
 .cta:focus-visible { outline: 2px solid var(--legend); outline-offset: 2px; }
 .klbl,
@@ -234,7 +259,33 @@
 }
 .strip:not(.locked) .lockIcon { color: var(--gold); border-color: #5e4d2c; }
 
-.faderSec { display: flex; gap: 6px; height: 170px; }
+.faderSec { display: flex; gap: 6px; height: 170px; margin-top: auto; }
+
+/* Pan knob: a row under the 2x2 EQ / Send block, same height on every strip */
+.panRow { display: flex; justify-content: center; align-items: flex-start; min-height: 42px; width: 100%; }
+.panRow .knob { width: 26px; height: 26px; }
+.panRow .knob::after { height: 9px; transform-origin: 50% 10px; }
+
+/* Mute (red) and Solo (yellow) */
+.msRow { display: flex; gap: 4px; width: 100%; justify-content: center; }
+.ms {
+  flex: 1;
+  min-width: 0;
+  max-width: 34px;
+  height: 26px;
+  padding: 0;
+  border-radius: 3px;
+  border: 1px solid #3c3a33;
+  background: #2a2823;
+  color: var(--legend-dim);
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 11px;
+  cursor: pointer;
+}
+.ms:disabled { opacity: 0.35; cursor: not-allowed; }
+.mute[aria-pressed="true"] { background: #c0412e; border-color: #e0563b; color: #fff6ee; }
+.solo[aria-pressed="true"] { background: #e8c63a; border-color: #f4dc6a; color: #1d1a14; }
 .meter { display: flex; flex-direction: column-reverse; gap: 2px; width: 7px; }
 .led { flex: 1; background: var(--led-off); border-radius: 1px; }
 .led.on { background: var(--led-g); }
@@ -364,18 +415,28 @@
 /* Master section */
 .masterStrip { background: #14130f; border-color: #3d3a32; }
 .masterTop {
-  height: 96px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2px;
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--legend-dim);
+  gap: 10px;
+  width: 100%;
 }
+.origBtn {
+  width: 100%;
+  padding: 6px 1px;
+  border-radius: 3px;
+  border: 1px solid #3c3a33;
+  background: #2a2823;
+  color: var(--legend-dim);
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 8px;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.origOn { color: var(--gold); border-color: #8a6f3b; box-shadow: inset 0 0 0 1px #3a2f18; }
 .masterLabel {
   width: 100%;
   text-align: center;
@@ -388,10 +449,37 @@
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 5px 0;
+  padding: 6px 0;
+  cursor: pointer;
 }
+.masterStrip.sel .masterLabel { background: var(--gold); color: #1d1a14; }
+
+/* Master output panel */
+.masterHead { display: flex; gap: 16px; align-items: flex-start; }
+.masterTitle { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.patchRow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 18px; }
+.patch { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 16px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+.patch span { color: var(--legend-dim); }
+.patch a { color: var(--legend); text-decoration: underline; text-decoration-color: var(--panel-edge); text-underline-offset: 4px; padding: 8px 0; }
+.patch a:hover { text-decoration-color: var(--gold); }
+.resetLink {
+  padding: 8px 0;
+  border: 0;
+  background: none;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: underline;
+  text-decoration-color: rgba(212, 175, 119, 0.4);
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.resetLink:disabled { color: var(--legend-dim); text-decoration: none; cursor: default; }
 @media (max-width: 400px) {
-  .masterTop { height: 88px; }
   .masterLabel { font-size: 9px; letter-spacing: 0.02em; }
   .scribble { font-size: 9px; letter-spacing: 0.02em; }
+  .loopBtn span { display: none; }
+  .loopBtn { padding: 0 8px; }
 }

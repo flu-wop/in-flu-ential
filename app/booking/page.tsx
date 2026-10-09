@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { StudioPage, ChannelHeader, Panel } from "@/components/studio/Studio";
 import BookingForm from "@/components/booking/BookingForm";
+import { IMAGES } from "@/lib/images";
+import k from "@/components/studio/studio.module.css";
 
 export const metadata: Metadata = {
   title: "Start a Project | IN-FLU-ENTIAL LLC",
@@ -25,7 +27,19 @@ export default function BookingPage() {
         ]}
       />
       <Panel title="Input · Inquiry" meta="* Required">
-        <BookingForm />
+        <div className={k.portraitRow}>
+          <figure className={`${k.portrait} ${IMAGES.bookingPortrait ? "" : k.photoEmpty}`}>
+            {IMAGES.bookingPortrait ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={IMAGES.bookingPortrait} alt="James Afflu" />
+            ) : (
+              <span>Portrait</span>
+            )}
+          </figure>
+          <div className={k.portraitForm}>
+            <BookingForm />
+          </div>
+        </div>
       </Panel>
     </StudioPage>
   );

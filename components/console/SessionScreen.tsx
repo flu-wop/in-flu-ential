@@ -3,15 +3,21 @@
 import { useEffect, useRef } from "react";
 import { CHANNELS, LOOP_SECONDS, SESSION, type ChannelId } from "@/lib/session";
 import type { MixEngine, KnobId } from "./mixEngine";
+import CoverArt from "./CoverArt";
 import styles from "./console.module.css";
 
 interface Props {
   engine: MixEngine | null;
+  ready: boolean;
   loaded: boolean;
   playing: boolean;
+  loop: boolean;
   vaultOpen: boolean;
   faders: Record<ChannelId, number>;
+  mutes: Record<ChannelId, boolean>;
+  solos: Record<ChannelId, boolean>;
   onToggle: () => void;
+  onLoop: (on: boolean) => void;
   eqChannel: ChannelId | null;
   knobs: Record<ChannelId, Record<KnobId, number>>;
 }
@@ -28,13 +34,27 @@ function counter(sec: number) {
   return `${String(bar).padStart(3, "0")} | ${beat} | ${String(ticks).padStart(3, "0")}`;
 }
 
-export default function SessionScreen({ engine, loaded, playing, vaultOpen, faders, onToggle, eqChannel, knobs }: Props) {
+export default function SessionScreen({
+  engine,
+  ready,
+  loaded,
+  playing,
+  loop,
+  vaultOpen,
+  faders,
+  mutes,
+  solos,
+  onToggle,
+  onLoop,
+  eqChannel,
+  knobs,
+}: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
   const eqRef = useRef<HTMLCanvasElement>(null);
   const layerRef = useRef<HTMLCanvasElement | null>(null);
-  const stateRef = useRef({ vaultOpen, faders, loaded });
-  stateRef.current = { vaultOpen, faders, loaded };
+  const stateRef = useRef({ vaultOpen, faders, loaded, loop, mutes, solos });
+  stateRef.current = { vaultOpen, faders, loaded, loop, mutes, solos };
 
   // Draws the static part (ruler, lane headers, regions, waveforms) to an offscreen layer.
   const paintLayer = (w: number, h: number, dpr: number) => {
@@ -65,12 +85,28 @@ export default function SessionScreen({ engine, loaded, playing, vaultOpen, fade
         g.fillRect(x + (q * barW) / 4, RULER_H, 1, h - RULER_H);
       }
     }
+    const { vaultOpen: vo, faders: fd, loaded: ld, loop: lp, mutes: mu, solos: so } = stateRef.current;
+
+    // Loop brackets on the ruler: the whole session loops, so they sit at its ends.
+    if (lp) {
+      g.fillStyle = "rgba(212,175,119,0.12)";
+      g.fillRect(HEADER_W, 0, tl, RULER_H);
+      g.fillStyle = "#d4af77";
+      g.fillRect(HEADER_W, 0, 2, RULER_H);
+      g.fillRect(HEADER_W, 0, 6, 2);
+      g.fillRect(HEADER_W, RULER_H - 2, 6, 2);
+      g.fillRect(w - 2, 0, 2, RULER_H);
+      g.fillRect(w - 6, 0, 6, 2);
+      g.fillRect(w - 6, RULER_H - 2, 6, 2);
+    }
+
     const laneH = (h - RULER_H) / CHANNELS.length;
-    const { vaultOpen: vo, faders: fd, loaded: ld } = stateRef.current;
+    const anySolo = CHANNELS.some((c) => so[c.id]);
     CHANNELS.forEach((ch, i) => {
       const y = RULER_H + i * laneH;
       const locked = ch.id === "vault" && !vo;
-      const muted = fd[ch.id] <= 0.001;
+      const muteLabel = mu[ch.id] || fd[ch.id] <= 0.001;
+      const muted = muteLabel || (anySolo && !so[ch.id]); // dimmed: muted, or silenced by a solo
       g.fillStyle = i % 2 ? "#191813" : "#1b1a15";
       g.fillRect(0, y, HEADER_W, laneH);
       g.fillStyle = "#2c2a24";
@@ -80,7 +116,7 @@ export default function SessionScreen({ engine, loaded, playing, vaultOpen, fade
       g.fillText(ch.track, 8, y + laneH / 2 - 6);
       g.fillStyle = "#6f695d";
       g.font = "400 9px 'DM Mono', monospace";
-      g.fillText(locked ? "Locked" : muted ? "Muted" : "Stereo", 8, y + laneH / 2 + 8);
+      g.fillText(locked ? "Locked" : muteLabel ? "Muted" : so[ch.id] ? "Solo" : "Stereo", 8, y + laneH / 2 + 8);
 
       // region
       const rx = HEADER_W + 1;
@@ -132,7 +168,7 @@ export default function SessionScreen({ engine, loaded, playing, vaultOpen, fade
       const { w, h, dpr } = size;
       if (w > 0) {
         const s = stateRef.current;
-        const key = `${s.loaded}|${s.vaultOpen}|${CHANNELS.map((c) => (s.faders[c.id] <= 0.001 ? 0 : 1)).join("")}`;
+        const key = `${s.loaded}|${s.vaultOpen}|${s.loop}|${CHANNELS.map((c) => `${s.faders[c.id] <= 0.001 ? 0 : 1}${s.mutes[c.id] ? 1 : 0}${s.solos[c.id] ? 1 : 0}`).join("")}`;
         if (dirty || key !== lastKey) {
           paintLayer(w, h, dpr);
           dirty = false;
@@ -227,12 +263,28 @@ export default function SessionScreen({ engine, loaded, playing, vaultOpen, fade
   return (
     <div className={styles.screen}>
       <div className={styles.screenBar}>
-        <button type="button" className={styles.transport} onClick={onToggle} disabled={!loaded} aria-label={playing ? "Stop" : "Play"}>
+        <button type="button" className={styles.transport} onClick={onToggle} disabled={!ready} aria-label={playing ? "Stop" : "Play"}>
           {playing ? <span className={styles.stopIcon} /> : <span className={styles.playIcon} />}
+        </button>
+        <button
+          type="button"
+          className={`${styles.loopBtn} ${loop ? styles.loopOn : ""}`}
+          onClick={() => onLoop(!loop)}
+          aria-pressed={loop}
+          aria-label="Loop"
+        >
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M17 2l4 4-4 4" />
+            <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+            <path d="M7 22l-4-4 4-4" />
+            <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+          </svg>
+          <span>Loop</span>
         </button>
         <span className={styles.counter} ref={counterRef}>
           001 | 1 | 000
         </span>
+        <CoverArt size={30} />
         <span className={styles.sessionName}>
           <strong>{SESSION.title}</strong>
           <span>
@@ -244,8 +296,8 @@ export default function SessionScreen({ engine, loaded, playing, vaultOpen, fade
       <div className={styles.edit}>
         <canvas ref={canvasRef} className={styles.editCanvas} aria-label="Session edit window with four tracks" />
         {!playing && (
-          <button type="button" className={styles.startOverlay} onClick={onToggle} disabled={!loaded}>
-            {loaded ? "Press play to start the session" : "Loading session"}
+          <button type="button" className={styles.startOverlay} onClick={onToggle} disabled={!ready}>
+            {ready ? "Press play to start the session" : "Loading session"}
           </button>
         )}
         {eqDef && (

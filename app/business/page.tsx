@@ -5,6 +5,7 @@ import CheckoutButton from "@/components/checkout/CheckoutButton";
 import { stripeReady } from "@/lib/stripe";
 import { PRODUCTS, type ProductId } from "@/lib/products";
 import { SITE_COUNT } from "@/lib/work";
+import { IMAGES } from "@/lib/images";
 
 export const metadata: Metadata = {
   title: "Business | IN-FLU-ENTIAL LLC",
@@ -167,6 +168,16 @@ export default function BusinessPage() {
                 <span>{l.slot}</span>
               </div>
               <h3 className={k.cardTitle}>{l.title}</h3>
+              {l.id === "ai" && (
+                <div className={`${k.photo} ${IMAGES.jobSite ? "" : k.photoEmpty}`}>
+                  {IMAGES.jobSite ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={IMAGES.jobSite} alt="A contractor's job site" loading="lazy" />
+                  ) : (
+                    <span>Job-Site Photo</span>
+                  )}
+                </div>
+              )}
               <p className={k.cardText}>{l.text}</p>
               <div className={k.chips}>
                 {l.chips.map((c) => (

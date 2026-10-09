@@ -1,5 +1,6 @@
 // Server-only: imported by app/vault/page.tsx and passed to the client only
 // after the vault cookie checks out. Never import this from a "use client" file.
+import type { PolaroidItem } from "@/lib/polaroids";
 
 export type VaultCategory = "All" | "Music" | "Work in Progress" | "Strategy" | "Press Kit";
 
@@ -62,3 +63,15 @@ export const VAULT_ITEMS: VaultItem[] = [
   },
 ];
 
+
+// The Contact Sheet: Polaroids shown only inside the vault. Photos here are
+// private, so don't put them in /public or the repo (both are public): host
+// them somewhere private and set photo to that URL. Square, ~1000x1000.
+export const CONTACT_SHEET: PolaroidItem[] = [
+  { id: "frame-01", caption: "Frame 01", note: "Photo and note coming soon." },
+  { id: "frame-02", caption: "Frame 02", note: "Photo and note coming soon." },
+  { id: "frame-03", caption: "Frame 03", note: "Photo and note coming soon." },
+  { id: "frame-04", caption: "Frame 04", note: "Photo and note coming soon." },
+  { id: "frame-05", caption: "Frame 05", note: "Photo and note coming soon." },
+  { id: "frame-06", caption: "Frame 06", note: "Photo and note coming soon." },
+];

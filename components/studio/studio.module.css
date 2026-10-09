@@ -214,3 +214,16 @@
 .siteLink:hover { color: var(--gold-lt); }
 .siteLink:focus-visible { outline: 2px solid var(--legend); outline-offset: 2px; }
 .bio { margin: 0; font-size: 16px; line-height: 1.75; color: var(--body); max-width: 64ch; }
+
+/* Photo slots: a labelled placeholder until the image is set in lib/images.ts */
+.photo { aspect-ratio: 16 / 10; border-radius: 6px; overflow: hidden; background: var(--well); display: grid; place-items: center; }
+.photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photoEmpty { border: 1px dashed #4a473e; font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #6f695d; }
+.portraitRow { display: grid; grid-template-columns: 1fr; gap: 18px; }
+.portrait { margin: 0; aspect-ratio: 4 / 5; width: min(180px, 55%); border-radius: 6px; overflow: hidden; background: var(--well); display: grid; place-items: center; }
+.portrait img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.portraitForm { min-width: 0; }
+@media (min-width: 720px) {
+  .portraitRow { grid-template-columns: 200px minmax(0, 1fr); gap: 26px; align-items: start; }
+  .portrait { width: 100%; }
+}

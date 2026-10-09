@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CHANNELS, VAULT_COMBO, type ChannelId } from "@/lib/session";
+import { CHANNELS, SESSION, VAULT_COMBO, type ChannelId } from "@/lib/session";
 import { KNOB_DEFAULTS, type KnobId } from "./mixEngine";
 import { useSession } from "./SessionProvider";
 import SessionScreen from "./SessionScreen";
+import CoverArt from "./CoverArt";
 import { OUTPUTS } from "./outputs";
 import styles from "./console.module.css";
 
@@ -41,17 +42,21 @@ function useDrag(onDelta: (dy: number, dx: number) => void, onStart?: () => void
 function Knob({
   value,
   label,
+  caption,
   cap,
   readout,
   onChange,
   onReset,
+  onTouch,
 }: {
   value: number;
-  label: string;
+  label: string; // accessible name, and the visible text unless a caption is given
+  caption?: string;
   cap: string;
   readout?: string;
   onChange: (v: number) => void;
   onReset?: () => void;
+  onTouch?: () => void; // finger or pointer down on the knob
 }) {
   const acc = useRef(0);
   const valRef = useRef(value);
@@ -63,7 +68,7 @@ function Knob({
       acc.current -= steps * 7;
       onChange(Math.max(0, Math.min(30, valRef.current + steps)));
     }
-  });
+  }, onTouch);
   return (
     <div className={styles.knobWrap}>
       <div
@@ -85,7 +90,7 @@ function Knob({
         }}
         {...drag}
       />
-      <span className={readout !== undefined ? styles.kval : styles.klbl}>{readout ?? label}</span>
+      <span className={readout !== undefined ? styles.kval : styles.klbl}>{readout ?? caption ?? label}</span>
     </div>
   );
 }
@@ -95,11 +100,13 @@ function Fader({
   label,
   locked,
   onChange,
+  onTouch,
 }: {
   value: number;
   label: string;
   locked: boolean;
   onChange: (v: number) => void;
+  onTouch?: () => void;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const setFromY = (y: number) => {
@@ -114,6 +121,7 @@ function Fader({
       onPointerDown={(e) => {
         e.currentTarget.setPointerCapture(e.pointerId);
         active.current = true;
+        onTouch?.();
         setFromY(e.clientY);
       }}
       onPointerMove={(e) => active.current && setFromY(e.clientY)}
@@ -147,10 +155,54 @@ function Fader({
   );
 }
 
+// Red Mute, yellow Solo. Vault's pair stays disabled until it's unlocked.
+function MuteSolo({
+  name,
+  muted,
+  soloed,
+  disabled,
+  onMute,
+  onSolo,
+}: {
+  name: string;
+  muted: boolean;
+  soloed: boolean;
+  disabled?: boolean;
+  onMute: () => void;
+  onSolo: () => void;
+}) {
+  return (
+    <div className={styles.msRow}>
+      <button
+        type="button"
+        className={`${styles.ms} ${styles.mute}`}
+        aria-pressed={muted}
+        aria-label={`Mute ${name}`}
+        disabled={disabled}
+        onClick={onMute}
+      >
+        M
+      </button>
+      <button
+        type="button"
+        className={`${styles.ms} ${styles.solo}`}
+        aria-pressed={soloed}
+        aria-label={`Solo ${name}`}
+        disabled={disabled}
+        onClick={onSolo}
+      >
+        S
+      </button>
+    </div>
+  );
+}
+
+const panReadout = (v: number) => (v === 15 ? undefined : `${v < 15 ? "L" : "R"}${Math.round((Math.abs(v - 15) / 15) * 100)}`);
+
 export default function Console() {
   const session = useSession();
-  const { engine, loaded, loadError, playing, knobs, faders, combo, vaultOpen, ensureEngine, toggle } = session;
-  const [selected, setSelected] = useState<ChannelId>("music");
+  const { engine, ready, loaded, loadError, stemsError, playing, loop, mixMode, knobs, faders, mutes, solos, combo, vaultOpen, ensureEngine, toggle } = session;
+  const [selected, setSelected] = useState<ChannelId | "master">("master");
   const [eqChannel, setEqChannel] = useState<ChannelId | null>(null);
   const [isIOS, setIsIOS] = useState(false);
   const eqTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -202,7 +254,7 @@ export default function Console() {
 
   const setKnob = (ch: ChannelId, k: KnobId, v: number) => {
     session.setKnob(ch, k, v);
-    if (k !== "send") showEq(ch);
+    if (k !== "send" && k !== "pan") showEq(ch);
   };
 
   const setFader = (ch: ChannelId, v: number) => session.setFader(ch, v);
@@ -211,24 +263,34 @@ export default function Console() {
     if (session.setComboKnob(i, v)) setSelected("vault");
   };
 
-  const out = selected === "vault" && !vaultOpen ? OUTPUTS.vaultLocked : OUTPUTS[selected];
-  const sel = CHANNELS.find((c) => c.id === selected)!;
+  const sel = selected === "master" ? null : CHANNELS.find((c) => c.id === selected)!;
+  const out = selected === "master" ? null : selected === "vault" && !vaultOpen ? OUTPUTS.vaultLocked : OUTPUTS[selected];
+  const original = mixMode === "original";
 
   return (
     <div className={styles.root}>
       <SessionScreen
         engine={engine}
+        ready={ready}
         loaded={loaded}
         playing={playing}
+        loop={loop}
         vaultOpen={vaultOpen}
         faders={faders}
+        mutes={mutes}
+        solos={solos}
         onToggle={toggle}
+        onLoop={session.setLoop}
         eqChannel={eqChannel}
         knobs={knobs}
       />
-      {(loadError || isIOS) && (
+      {(loadError || stemsError || isIOS) && (
         <p className={styles.note}>
-          {loadError ? "The session audio couldn't load. Refresh to try again." : "No sound? Turn off silent mode on your iPhone."}
+          {loadError
+            ? "The session audio couldn't load. Refresh to try again."
+            : stemsError
+              ? "The mix controls couldn't load. Refresh to try again."
+              : "No sound? Turn off silent mode on your iPhone."}
         </p>
       )}
 
@@ -262,10 +324,35 @@ export default function Console() {
                           value={knobs[c.id][k.id]}
                           onChange={(v) => setKnob(c.id, k.id, v)}
                           onReset={() => setKnob(c.id, k.id, KNOB_DEFAULTS[k.id])}
+                          onTouch={session.engageMix}
                         />
                       ))}
                   {c.id === "vault" && <span className={styles.lockIcon} aria-hidden="true">{vaultOpen ? "OPEN" : "LOCK"}</span>}
                 </div>
+                {c.id === "vault" ? (
+                  <div className={styles.panRow} aria-hidden="true" />
+                ) : (
+                  <div className={styles.panRow}>
+                    <Knob
+                      label={`${c.name} pan`}
+                      caption="Pan"
+                      cap="var(--cap-gray)"
+                      value={knobs[c.id].pan}
+                      readout={panReadout(knobs[c.id].pan)}
+                      onChange={(v) => setKnob(c.id, "pan", v)}
+                      onReset={() => setKnob(c.id, "pan", KNOB_DEFAULTS.pan)}
+                      onTouch={session.engageMix}
+                    />
+                  </div>
+                )}
+                <MuteSolo
+                  name={c.name}
+                  muted={mutes[c.id]}
+                  soloed={solos[c.id]}
+                  disabled={locked}
+                  onMute={() => session.setMute(c.id, !mutes[c.id])}
+                  onSolo={() => session.setSolo(c.id, !solos[c.id])}
+                />
                 <div className={styles.faderSec}>
                   <div
                     className={styles.meter}
@@ -278,7 +365,13 @@ export default function Console() {
                       <div key={k} className={[styles.led, k >= LEDS - 2 ? styles.red : k >= LEDS - 5 ? styles.amber : ""].join(" ")} />
                     ))}
                   </div>
-                  <Fader value={faders[c.id]} label={c.name} locked={locked} onChange={(v) => setFader(c.id, v)} />
+                  <Fader
+                    value={faders[c.id]}
+                    label={c.name}
+                    locked={locked}
+                    onChange={(v) => setFader(c.id, v)}
+                    onTouch={locked ? undefined : session.engageMix}
+                  />
                 </div>
                 <button type="button" className={styles.scribble} onClick={() => setSelected(c.id)} aria-pressed={selected === c.id}>
                   {c.name}
@@ -286,11 +379,28 @@ export default function Console() {
               </div>
             );
           })}
-          <div className={`${styles.strip} ${styles.masterStrip}`}>
+          <div className={`${styles.strip} ${styles.masterStrip} ${selected === "master" ? styles.sel : ""}`}>
             <span className={styles.chnum}>Main</span>
             <div className={styles.masterTop}>
-              <span>Stereo</span>
-              <span>Out</span>
+              <div className={styles.msRow}>
+                <button
+                  type="button"
+                  className={`${styles.ms} ${styles.mute}`}
+                  aria-pressed={session.masterMuted}
+                  aria-label="Mute Master"
+                  onClick={() => session.setMasterMuted(!session.masterMuted)}
+                >
+                  M
+                </button>
+              </div>
+              <button
+                type="button"
+                className={`${styles.origBtn} ${original ? styles.origOn : ""}`}
+                aria-pressed={original}
+                onClick={session.resetToOriginal}
+              >
+                Original Mix
+              </button>
             </div>
             <div className={styles.faderSec}>
               <div className={styles.meter} ref={masterMeterRef} aria-hidden="true">
@@ -300,32 +410,81 @@ export default function Console() {
               </div>
               <Fader value={session.master} label="Master" locked={false} onChange={session.setMaster} />
             </div>
-            <span className={styles.masterLabel}>Master</span>
+            <button
+              type="button"
+              className={styles.masterLabel}
+              onClick={() => setSelected("master")}
+              aria-pressed={selected === "master"}
+            >
+              Master
+            </button>
           </div>
         </div>
-        <p className={styles.hint}>Tap a channel name to open it. Turn the knobs and ride the faders to mix.</p>
+        <p className={styles.hint}>Tap a channel name to open it. Turn the knobs, ride the faders, mute and solo to mix.</p>
       </div>
 
       <section className={styles.out} aria-live="polite">
-        <span className={styles.eyebrow}>
-          Channel 0{CHANNELS.indexOf(sel) + 1} · {sel.name}
-        </span>
-        <h2>{out.title}</h2>
-        {out.body && <p>{out.body}</p>}
-        {out.rows && (
-          <div className={styles.rows}>
-            {out.rows.map(([a, b]) => (
-              <div className={styles.row} key={a}>
-                <span>{a}</span>
-                <span>{b}</span>
+        {selected === "master" || !sel || !out ? (
+          <>
+            <div className={styles.masterHead}>
+              <CoverArt size={112} />
+              <div className={styles.masterTitle}>
+                <span className={styles.eyebrow}>Main · Stereo Out</span>
+                <h2>
+                  {SESSION.title} by {SESSION.artist}
+                </h2>
               </div>
-            ))}
-          </div>
-        )}
-        {out.cta && (
-          <Link href={out.cta.href} className={styles.cta}>
-            {out.cta.label} <span aria-hidden="true">→</span>
-          </Link>
+            </div>
+            <div className={styles.rows}>
+              <div className={styles.row}>
+                <span>Produced By</span>
+                <span>{SESSION.credit.replace(/^Produced by /, "")}</span>
+              </div>
+              <div className={styles.row}>
+                <span>Tempo</span>
+                <span>{SESSION.bpm} BPM</span>
+              </div>
+              <div className={styles.row}>
+                <span>Playing</span>
+                <span>{original ? "Original Mix" : "Your Mix"}</span>
+              </div>
+            </div>
+            <p>Press play. Touch any control to open up the mix.</p>
+            <div className={styles.patchRow}>
+              <nav className={styles.patch} aria-label="Patch in">
+                <span>Patch In</span>
+                <Link href="/music">Music</Link>
+                <Link href="/business">Business</Link>
+                <Link href="/portfolio">Work</Link>
+              </nav>
+              <button type="button" className={styles.resetLink} onClick={session.resetToOriginal} disabled={original}>
+                Reset to Original Mix
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <span className={styles.eyebrow}>
+              Channel 0{CHANNELS.indexOf(sel) + 1} · {sel.name}
+            </span>
+            <h2>{out.title}</h2>
+            {out.body && <p>{out.body}</p>}
+            {out.rows && (
+              <div className={styles.rows}>
+                {out.rows.map(([a, b]) => (
+                  <div className={styles.row} key={a}>
+                    <span>{a}</span>
+                    <span>{b}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {out.cta && (
+              <Link href={out.cta.href} className={styles.cta}>
+                {out.cta.label} <span aria-hidden="true">→</span>
+              </Link>
+            )}
+          </>
         )}
       </section>
     </div>

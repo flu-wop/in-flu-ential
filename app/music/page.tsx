@@ -2,6 +2,8 @@ import { StudioPage, ChannelHeader, Panel, PanelText, Rows, Cta } from "@/compon
 import type { Metadata } from "next";
 import k from "@/components/studio/studio.module.css";
 import PinBoard, { type Credit } from "@/components/music/PinBoard";
+import PolaroidBoard from "@/components/polaroid/PolaroidBoard";
+import { WALL } from "@/lib/polaroids";
 import s from "./music.module.css";
 
 // What was actually done on each: produced, recorded (engineered), or both.
@@ -160,6 +162,10 @@ export default function MusicPage() {
 
       <Panel title="Session · Credits" meta="Tap a Polaroid to flip it">
         <PinBoard credits={CREDITS} />
+      </Panel>
+
+      <Panel title="Wall · On the Wall" meta="Studio and Behind the Scenes">
+        <PolaroidBoard items={WALL} />
       </Panel>
 
       <Panel title="Inserts · Services" meta="Signal flows A → D" heading="Music Services That Move Things">

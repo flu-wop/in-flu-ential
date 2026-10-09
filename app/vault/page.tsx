@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import VaultGate from "@/components/vault/VaultGate";
 import VaultUnlocked from "@/components/vault/VaultUnlocked";
-import { VAULT_ITEMS } from "@/lib/vault-items";
+import { CONTACT_SHEET, VAULT_ITEMS } from "@/lib/vault-items";
 import { VAULT_COOKIE, hasVaultAccess } from "@/lib/vault-access";
 
 // Checked on the server for every request: the private items are only sent to
@@ -12,5 +12,5 @@ export const metadata = { title: "Vault | IN-FLU-ENTIAL LLC", robots: { index: f
 export default async function VaultPage() {
   const jar = await cookies();
   if (!hasVaultAccess(jar.get(VAULT_COOKIE)?.value)) return <VaultGate />;
-  return <VaultUnlocked items={VAULT_ITEMS} />;
+  return <VaultUnlocked items={VAULT_ITEMS} contactSheet={CONTACT_SHEET} />;
 }

@@ -49,11 +49,30 @@
 @media (prefers-reduced-motion: reduce) { .meter { transition: none; } }
 
 .volume { flex: none; display: flex; align-items: center; gap: 6px; color: #a89880; }
-.volIcon { display: grid; place-items: center; }
+.volIcon { display: grid; place-items: center; width: 28px; height: 32px; margin: 0 -4px 0 -6px; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; }
+.volIcon:focus-visible { outline: 2px solid #ece4cf; outline-offset: 2px; }
+.loop {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  border: 1px solid #3c3a33;
+  background: #2a2823;
+  color: #8f887a;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.loop:focus-visible { outline: 2px solid #ece4cf; outline-offset: 2px; }
+.loopOn { color: #d4af77; border-color: #5e4d2c; }
+.cover { flex: none; display: grid; }
 .slider { width: 84px; accent-color: #d4af77; cursor: pointer; }
 .slider:focus-visible { outline: 2px solid #ece4cf; outline-offset: 3px; }
 @media (max-width: 420px) {
+  .bar { gap: 8px; padding-left: 12px; padding-right: 12px; }
   .meters { display: none; }
-  .slider { width: 64px; }
+  .play { width: 36px; }
+  .loop { width: 32px; height: 36px; }
+  .slider { width: 52px; }
   .console { padding: 8px 8px; letter-spacing: 0.1em; }
 }
