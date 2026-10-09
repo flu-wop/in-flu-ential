@@ -1,307 +1,124 @@
-"use client";
+import type { Metadata } from "next";
+import { StudioPage, ChannelHeader, Panel, Accordion, Cta } from "@/components/studio/Studio";
+import k from "@/components/studio/studio.module.css";
 
-import { useState, useRef } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import CinematicNav from "@/components/cinematic/CinematicNav";
-import CinematicFooter from "@/components/cinematic/CinematicFooter";
+export const metadata: Metadata = {
+  title: "Work | IN-FLU-ENTIAL LLC",
+  description: "Every website IN-FLU-ENTIAL LLC has built, grouped by industry, with live links.",
+};
 
-type FilterType = "All" | "Websites" | "Branding" | "Campaigns" | "Music";
+interface Site {
+  name: string;
+  url: string;
+  shot: string; // /public/work/<shot>.webp
+  blurb: string;
+  built: string[];
+}
 
-const FILTERS: FilterType[] = ["All", "Websites", "Branding", "Campaigns", "Music"];
-
-const WORK = [
+// Screenshots live in /public/work. To add a site: add an entry here and a
+// 960x600 .webp screenshot with the matching name.
+const CATEGORIES: { title: string; sites: Site[] }[] = [
   {
-    id: "fluhaul",
-    title: "Flu-Haul",
-    category: "Websites" as FilterType,
-    type: "Full Site Build",
-    description: "Cinematic junk removal brand. Lenis + GSAP parallax. Full booking system with Stripe.",
-    url: "https://fluhaul.com",
-    tags: ["Next.js", "Framer Motion", "Stripe"],
-    year: "2026",
+    title: "Artists and music",
+    sites: [
+      { name: "Graham Hill", url: "https://graham-hill.vercel.app", shot: "graham-hill", blurb: "Campaign site for the Beach House drummer's self-titled debut LP.", built: ["Album campaign", "Sync licensing", "Press"] },
+      { name: "Donald Markowitz", url: "https://www.donaldmarkowitz.com", shot: "donald-markowitz", blurb: "Artist site for the Academy Award-winning composer and producer.", built: ["Credits", "Catalog", "Merch"] },
+      { name: "Tyron Benoit Band", url: "https://tyron-benoit.vercel.app", shot: "tyron-benoit", blurb: "Song campaign site for “Hope You Find Heaven.”", built: ["Song campaign", "Press kit"] },
+      { name: "Doug Belote", url: "https://dougbelote.vercel.app", shot: "doug-belote", blurb: "Site for the New Orleans drummer and percussionist.", built: ["Credits", "Media", "Booking"] },
+      { name: "DJ Jade the Gem", url: "https://www.dahiddengem.com", shot: "jade-the-gem", blurb: "DJ site with mixes, events and direct booking.", built: ["Booking", "Mixes", "Events"] },
+      { name: "Lil Squiggle", url: "https://lilsquiggle.vercel.app", shot: "lil-squiggle", blurb: "Release site for “Don't Drink & Dial,” with a merch shop.", built: ["Release site", "Shop"] },
+      { name: "Street Beat", url: "https://nolastreetbeat.vercel.app", shot: "streetbeat", blurb: "Documentary site with a paid streaming paywall.", built: ["Paywall", "Stripe", "Trailer"] },
+    ],
   },
   {
-    id: "midcitysound",
-    title: "Mid City Sound Studios",
-    category: "Websites" as FilterType,
-    type: "Full Site Build",
-    description: "Premium recording studio site. Online booking, session payments, room calendar.",
-    url: "https://midcitysound.com",
-    tags: ["Next.js", "Booking System", "Turso"],
-    year: "2026",
+    title: "Studios and production",
+    sites: [
+      { name: "Mid City Sound Studios", url: "https://www.midcitysound.com", shot: "mid-city-sound", blurb: "Recording studio site with session booking and Stripe checkout.", built: ["Booking", "Stripe", "Calendar invites"] },
+      { name: "Fire on the Bayou", url: "https://fireonthebayou.vercel.app", shot: "fire-on-the-bayou", blurb: "Video production house making commercials and brand films in New Orleans.", built: ["Showreel", "Portfolio"] },
+      { name: "Breaks In The Simulation", url: "https://bits-weld.vercel.app", shot: "bits", blurb: "Artist wellness and creative services organization.", built: ["Programs", "Events"] },
+    ],
   },
   {
-    id: "epoch-skin",
-    title: "Epoch Skin",
-    category: "Websites" as FilterType,
-    type: "Full Site Build",
-    description: "Luxury waxing + organic skincare brand. Booking, product pages, Stripe checkout.",
-    url: "https://epoch-skin.com",
-    tags: ["Next.js", "E-commerce", "Stripe"],
-    year: "2026",
+    title: "Beauty and retail",
+    sites: [
+      { name: "Epoch Skin", url: "https://epoch-skin.com", shot: "epoch-skin", blurb: "Waxing studio and organic skincare brand.", built: ["Booking", "Store", "Automated newsletter"] },
+      { name: "Liquid Gold Skin Co.", url: "https://www.liquidgoldskinco.com", shot: "liquid-gold", blurb: "Island-inspired body care store.", built: ["Store", "Square checkout", "Admin panel"] },
+      { name: "EGOFF Essentials", url: "https://www.egoffessentials.com", shot: "egoff", blurb: "Luxury handcrafted natural soap brand.", built: ["Brand site", "Checkout"] },
+      { name: "Akua Method", url: "https://akua-method.vercel.app", shot: "akua-method", blurb: "Luxury perfume oils inspired by Ghanaian heritage.", built: ["Store", "Brand story"] },
+      { name: "MVC Creations", url: "https://mvc-creations.vercel.app", shot: "mvc-creations", blurb: "Nail artist in Kenner, with chair booking.", built: ["Booking", "Gallery"] },
+    ],
   },
   {
-    id: "graham-hill",
-    title: "Graham Hill",
-    category: "Campaigns" as FilterType,
-    type: "Artist Campaign",
-    description: "Debut LP campaign for Beach House drummer. Site, press, social rollout strategy.",
-    url: "#",
-    tags: ["Campaign", "Artist Dev", "Web"],
-    year: "2026",
-  },
-  {
-    id: "lil-squiggle",
-    title: "Lil Squiggle",
-    category: "Campaigns" as FilterType,
-    type: "Brand + Campaign",
-    description: "Reggae-dub chibi Lego creative brand. Merch, landing page, social presence.",
-    url: "https://lilsquiggle.vercel.app",
-    tags: ["Branding", "Merch", "Social"],
-    year: "2025",
-  },
-  {
-    id: "donaldmarkowitz",
-    title: "Donald Markowitz",
-    category: "Websites" as FilterType,
-    type: "Artist Site",
-    description: "Artist site for creative partner Donny Markowitz. Clean, minimal, press-ready.",
-    url: "https://donaldmarkowitz.com",
-    tags: ["Next.js", "Artist Site"],
-    year: "2026",
-  },
-  {
-    id: "prof-longhair",
-    title: "Professor Longhair Documentary",
-    category: "Campaigns" as FilterType,
-    type: "Investor Pitch",
-    description: "Full pitch deck for Fish Pot Studios. Narrative arc, market positioning, funding strategy.",
-    url: "#",
-    tags: ["Pitch Deck", "Strategy", "Film"],
-    year: "2026",
-  },
-  {
-    id: "mvc-creations",
-    title: "MVC Creations",
-    category: "Websites" as FilterType,
-    type: "E-commerce Site",
-    description: "Luxury press-on nail brand. Next.js 15, Shopify integration, premium visual identity.",
-    url: "#",
-    tags: ["Next.js", "Shopify", "Luxury"],
-    year: "2026",
-  },
-  {
-    id: "influential-brand",
-    title: "IN-FLU-ENTIAL Brand System",
-    category: "Branding" as FilterType,
-    type: "Brand Identity",
-    description: "Full brand architecture, visual language, voice guide, and design system for the studio itself.",
-    url: "#",
-    tags: ["Identity", "Design System", "Strategy"],
-    year: "2025",
+    title: "Local business",
+    sites: [
+      { name: "Bourbon Daiquiris Wings & Things", url: "https://bourbondaiquiris.vercel.app", shot: "bourbon-daiquiris", blurb: "Westbank daiquiri and wings spot with a build-your-cup menu.", built: ["Menu builder", "Ordering"] },
+      { name: "Flu-Haul", url: "https://www.fluhaul.com", shot: "flu-haul", blurb: "Junk removal company with instant quotes and booking.", built: ["Quotes", "Booking", "Stripe"] },
+      { name: "A&B Supply & Surplus", url: "https://www.absupply.us", shot: "ab-supply", blurb: "Industrial surplus and heavy equipment parts store.", built: ["Store", "Stripe"] },
+      { name: "Once In A Room", url: "https://once-in-a-room.vercel.app", shot: "once-in-a-room", blurb: "Interior design consultations, booked online.", built: ["Booking", "Portfolio"] },
+    ],
   },
 ];
 
-function WorkCard({ item, index }: { item: typeof WORK[0]; index: number }) {
+const host = (u: string) => new URL(u).hostname.replace(/^www\./, "");
+const total = CATEGORIES.reduce((n, c) => n + c.sites.length, 0);
+
+export default function WorkPage() {
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.96 }}
-      transition={{ delay: index * 0.06, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="group"
-    >
-      <div
-        className="relative overflow-hidden h-full transition-all duration-500 group-hover:-translate-y-1"
-        style={{
-          background: "linear-gradient(155deg, #131108 0%, #0d0d0a 100%)",
-          border: "1px solid rgba(212,175,119,0.1)",
-          boxShadow: "0 8px 40px rgba(0,0,0,0.4)",
-        }}
-      >
-        <div className="absolute top-0 left-0 right-0 h-px origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500"
-          style={{ background: "linear-gradient(to right, transparent, #D4AF77, transparent)" }}
-        />
+    <StudioPage>
+      <ChannelHeader
+        channel="Channel 03 · Work"
+        title={
+          <>
+            Sites that <em>ship</em>
+          </>
+        }
+        lede="Every site here is live. Booking systems, stores, paywalls and campaigns, built for artists and local businesses. Open a category, then tap through to the real thing."
+        meta={[
+          ["Sites live", String(total)],
+          ["Categories", String(CATEGORIES.length)],
+          ["Based", "New Orleans"],
+        ]}
+        actions={<Cta href="/booking" solid>Start a project</Cta>}
+      />
 
-        <div className="p-6">
-          <div className="flex items-start justify-between gap-3 mb-4">
-            <span className="text-[9px] tracking-[0.4em] text-[#D4AF77]/40 uppercase" style={{ fontFamily: "DM Sans, sans-serif" }}>
-              {item.type}
-            </span>
-            <span className="text-[9px] tracking-[0.3em] text-[#A89880]/30" style={{ fontFamily: "DM Sans, sans-serif" }}>
-              {item.year}
-            </span>
-          </div>
-
-          <h3
-            className="text-xl font-light text-[#F5EDD8] mb-2 group-hover:text-[#E8C97A] transition-colors duration-500"
-            style={{ fontFamily: "Cormorant Garamond, serif" }}
-          >
-            {item.title}
-          </h3>
-
-          <p className="text-xs text-[#A89880]/65 leading-relaxed mb-4" style={{ fontFamily: "DM Sans, sans-serif" }}>
-            {item.description}
-          </p>
-
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {item.tags.map(tag => (
-              <span
-                key={tag}
-                className="text-[8px] tracking-[0.25em] text-[#A89880]/40 uppercase px-2 py-1 border border-[#D4AF77]/8"
-                style={{ fontFamily: "DM Sans, sans-serif" }}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          <div className="pt-4 border-t border-[#D4AF77]/8">
-            {item.url !== "#" ? (
-              <a
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-[10px] tracking-[0.3em] text-[#D4AF77]/50 uppercase hover:text-[#D4AF77] transition-colors duration-300"
-                style={{ fontFamily: "DM Sans, sans-serif" }}
-              >
-                View Live ↗
-              </a>
-            ) : (
-              <span className="text-[10px] tracking-[0.3em] text-[#A89880]/25 uppercase" style={{ fontFamily: "DM Sans, sans-serif" }}>
-                Private / NDA
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-export default function PortfolioPage() {
-  const [activeFilter, setActiveFilter] = useState<FilterType>("All");
-  const heroRef = useRef<HTMLDivElement>(null);
-
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
-  const op  = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-
-  const filtered = activeFilter === "All" ? WORK : WORK.filter(w => w.category === activeFilter);
-
-  return (
-    <main className="bg-[#080808] overflow-x-hidden">
-      <CinematicNav />
-
-      {/* ── HERO ─────────────────────────────────────────── */}
-      <section ref={heroRef} className="relative h-[120vh]">
-        <div className="sticky top-0 h-screen overflow-hidden">
-          <motion.div style={{ y: bgY }} className="absolute inset-0 will-change-transform">
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{
-                backgroundImage: `url('https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=2400&q=85&auto=format&fit=crop')`,
-                filter: "saturate(0.3) brightness(0.3) sepia(0.2)",
-              }}
-            />
-          </motion.div>
-          <div className="absolute inset-0 pointer-events-none" style={{
-            background: "linear-gradient(to top, #080808 0%, rgba(8,8,8,0.4) 50%, rgba(8,8,8,0.65) 100%)",
-          }} />
-
-          <motion.div style={{ opacity: op }} className="absolute inset-0 flex flex-col justify-end px-8 md:px-20 pb-20">
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.9 }} className="flex items-center gap-4 mb-5">
-              <div className="h-px w-10 bg-[#D4AF77]/50" />
-              <span className="text-[10px] tracking-[0.5em] text-[#D4AF77] uppercase" style={{ fontFamily: "DM Sans, sans-serif" }}>Portfolio</span>
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-[clamp(3rem,10vw,8rem)] font-light leading-none text-[#F5EDD8] mb-6"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
-            >
-              The work
-              <br /><em className="text-[#D4AF77]">speaks</em>
-            </motion.h1>
-            <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.9 }}
-              className="text-[#A89880] text-base max-w-md" style={{ fontFamily: "DM Sans, sans-serif" }}>
-              Websites, campaigns, brand systems, and music — all built at the same standard, regardless of client size.
-            </motion.p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── FILTER + GRID ────────────────────────────────── */}
-      <section className="relative py-20 px-8 md:px-12 lg:px-20">
-        {/* Filter bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-6xl mx-auto flex flex-wrap gap-2 mb-12"
-        >
-          {FILTERS.map(filter => (
-            <button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className="px-5 py-2.5 text-[10px] tracking-[0.35em] uppercase transition-all duration-300"
-              style={{
-                fontFamily: "DM Sans, sans-serif",
-                background: activeFilter === filter ? "rgba(212,175,119,0.12)" : "transparent",
-                border: `1px solid ${activeFilter === filter ? "rgba(212,175,119,0.35)" : "rgba(212,175,119,0.1)"}`,
-                color: activeFilter === filter ? "#D4AF77" : "#A89880",
-              }}
-            >
-              {filter}
-            </button>
+      <Panel title="Session · Builds" meta={`${total} sites`}>
+        <div>
+          {CATEGORIES.map((cat, ci) => (
+            <Accordion key={cat.title} title={cat.title} meta={`${cat.sites.length} sites`} open={ci === 0}>
+              <div className={k.sites}>
+                {cat.sites.map((site) => (
+                  <article className={k.site} key={site.name}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      className={k.shot}
+                      src={`/work/${site.shot}.webp`}
+                      alt={`${site.name} homepage`}
+                      loading="lazy"
+                      width={960}
+                      height={600}
+                    />
+                    <div className={k.siteBody}>
+                      <span className={k.siteName}>{site.name}</span>
+                      <span className={k.siteUrl}>{host(site.url)}</span>
+                      <p className={k.cardText}>{site.blurb}</p>
+                      <div className={k.chips}>
+                        {site.built.map((b) => (
+                          <span className={k.chip} key={b}>
+                            {b}
+                          </span>
+                        ))}
+                      </div>
+                      <a className={k.siteLink} href={site.url} target="_blank" rel="noopener noreferrer">
+                        Visit site ↗
+                      </a>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </Accordion>
           ))}
-          <span className="ml-auto self-center text-[10px] tracking-[0.3em] text-[#A89880]/30 uppercase" style={{ fontFamily: "DM Sans, sans-serif" }}>
-            {filtered.length} projects
-          </span>
-        </motion.div>
-
-        {/* Grid */}
-        <div className="max-w-6xl mx-auto">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeFilter}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
-            >
-              {filtered.map((item, i) => (
-                <WorkCard key={item.id} item={item} index={i} />
-              ))}
-            </motion.div>
-          </AnimatePresence>
         </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-24 px-8 md:px-20 border-t border-[#D4AF77]/8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-5xl mx-auto text-center"
-        >
-          <h2 className="text-[clamp(2rem,5vw,4rem)] font-light text-[#F5EDD8] mb-4" style={{ fontFamily: "Cormorant Garamond, serif" }}>
-            Want to be on this list?
-          </h2>
-          <p className="text-[#A89880] text-sm mb-8" style={{ fontFamily: "DM Sans, sans-serif" }}>
-            We take on a limited number of new projects each quarter.
-          </p>
-          <a
-            href="/booking"
-            className="inline-block px-12 py-4 text-[11px] tracking-[0.4em] uppercase text-[#080808] bg-[#D4AF77] hover:bg-[#E8C97A] transition-colors duration-300"
-            style={{ fontFamily: "DM Sans, sans-serif" }}
-          >
-            Start a Conversation
-          </a>
-        </motion.div>
-      </section>
-
-      <CinematicFooter />
-    </main>
+      </Panel>
+    </StudioPage>
   );
 }

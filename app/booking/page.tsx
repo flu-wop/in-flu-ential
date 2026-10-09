@@ -1,34 +1,32 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { StudioPage, ChannelHeader, Panel } from "@/components/studio/Studio";
 import BookingForm from "@/components/booking/BookingForm";
 
 export const metadata: Metadata = {
-  title: "Book a Consultation | IN-FLU-ENTIAL LLC",
-  description:
-    "Schedule a strategy session with IN-FLU-ENTIAL LLC — creative direction, brand development, and music marketing rooted in New Orleans.",
+  title: "Start a Project | IN-FLU-ENTIAL LLC",
+  description: "Tell IN-FLU-ENTIAL LLC what you're building. Every inquiry gets a personal reply within one business day.",
 };
 
 export default function BookingPage() {
   return (
-    <main className="relative min-h-screen bg-[#080808] px-6 py-20 md:py-28">
-      {/* Gold top line */}
-      <div
-        className="absolute top-0 left-0 right-0 h-px"
-        style={{ background: "linear-gradient(to right, transparent, #D4AF77 30%, #D4AF77 70%, transparent)" }}
+    <StudioPage>
+      <ChannelHeader
+        channel="Channel 04 · Book"
+        title={
+          <>
+            Start a <em>project</em>
+          </>
+        }
+        lede="Tell me what you're working on. Every inquiry gets a personal reply within one business day."
+        meta={[
+          ["Reply", "1 business day"],
+          ["From", "A human"],
+          ["Email", "flu.wop@gmail.com"],
+        ]}
       />
-
-      {/* Back link */}
-      <div className="max-w-xl mx-auto mb-12">
-        <Link
-          href="/"
-          className="text-[10px] tracking-[0.35em] text-[#A89880]/70 hover:text-[#D4AF77] uppercase transition-colors"
-          style={{ fontFamily: "DM Sans, sans-serif" }}
-        >
-          ← Back home
-        </Link>
-      </div>
-
-      <BookingForm />
-    </main>
+      <Panel title="Input · Inquiry" meta="* Required">
+        <BookingForm />
+      </Panel>
+    </StudioPage>
   );
 }

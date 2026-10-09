@@ -1,0 +1,86 @@
+.bay {
+  background: #23221e;
+  border: 1px solid #34322c;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+  background: #1e1c17;
+  border-bottom: 1px solid #34322c;
+  font-family: "DM Mono", ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #ece4cf;
+}
+.barMeta { color: #d4af77; letter-spacing: 0.08em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) 1px repeat(6, minmax(0, 1fr));
+  align-items: start;
+  gap: 2px;
+  padding: 12px 8px 34px;
+}
+.divider { align-self: stretch; background: #34322c; margin: 4px 0; }
+.jack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  text-decoration: none;
+  min-width: 0;
+  border-radius: 6px;
+  padding: 4px 0;
+}
+.jack:focus-visible { outline: 2px solid #ece4cf; outline-offset: 1px; }
+.label {
+  font-family: "DM Mono", ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #1d1a14;
+  background: #ece4cf;
+  border-radius: 2px;
+  padding: 2px 4px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.source .label { background: #d4af77; }
+.active .label { background: #d4af77; }
+.socket {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #2f2d27;
+  border: 1px solid #4a473e;
+  display: grid;
+  place-items: center;
+}
+.hole { width: 11px; height: 11px; border-radius: 50%; background: #070706; }
+.jack:hover .socket { border-color: #d4af77; }
+.sub { font-family: "DM Mono", ui-monospace, monospace; font-size: 9px; color: #6f695d; }
+.cable { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
+.cableUnder { fill: none; stroke: #5a4520; stroke-width: 6; stroke-linecap: round; }
+.cableTop { fill: none; stroke: #d4af77; stroke-width: 3.5; stroke-linecap: round; }
+.plug { fill: #e8c97a; stroke: #5a4520; stroke-width: 1.5; }
+
+@media (min-width: 768px) {
+  .row { padding: 14px 16px 48px; gap: 8px; }
+  .label { font-size: 10px; padding: 2px 6px; letter-spacing: 0.12em; }
+  .socket { width: 30px; height: 30px; }
+  .hole { width: 13px; height: 13px; }
+}
+
+.full { display: none; }
+.short { display: inline; }
+@media (min-width: 560px) {
+  .full { display: inline; }
+  .short { display: none; }
+}

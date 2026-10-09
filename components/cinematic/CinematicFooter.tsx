@@ -1,164 +1,115 @@
-"use client";
-
-import { motion } from "framer-motion";
 import Link from "next/link";
+import { Wordmark } from "./CinematicNav";
 
-const LINKS = {
-  Services: [
-    { label: "Creative Direction", href: "/business" },
-    { label: "Social & Growth", href: "/business" },
-    { label: "Music Marketing", href: "/business" },
-    { label: "Brand Development", href: "/business" },
-    { label: "Executive Strategy", href: "/business" },
-  ],
-  Navigate: [
-    { label: "Home", href: "/" },
-    { label: "Portfolio", href: "/portfolio" },
-    { label: "Music", href: "/music" },
-    { label: "Business", href: "/business" },
-    { label: "The Vault", href: "/vault" },
-  ],
-  Contact: [
-    { label: "Book a Call", href: "/booking" },
-    { label: "Mid City Sound", href: "https://midcitysound.com" },
-    { label: "Flu-Haul", href: "https://fluhaul.com" },
-    { label: "flu.wop@gmail.com", href: "mailto:flu.wop@gmail.com" },
-  ],
-};
+const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
+  {
+    title: "Channels",
+    links: [
+      { label: "Console", href: "/" },
+      { label: "Music", href: "/music" },
+      { label: "Business", href: "/business" },
+      { label: "Work", href: "/portfolio" },
+      { label: "Vault", href: "/vault" },
+    ],
+  },
+  {
+    title: "Services",
+    links: [
+      { label: "Websites", href: "/business" },
+      { label: "Campaigns", href: "/business" },
+      { label: "AI for contractors", href: "/business#ai" },
+      { label: "Starter kits", href: "/products" },
+    ],
+  },
+  {
+    title: "Contact",
+    links: [
+      { label: "Start a project", href: "/booking" },
+      { label: "Mid City Sound", href: "https://midcitysound.com" },
+      { label: "flu.wop@gmail.com", href: "mailto:flu.wop@gmail.com" },
+    ],
+  },
+];
 
 const SOCIALS = [
+  { label: "Instagram", href: "https://instagram.com/flu_wop" },
   { label: "X", href: "https://x.com/its_FluWop" },
-  { label: "IG", href: "#" },
-  { label: "TK", href: "#" },
 ];
+
+const mono = { fontFamily: "DM Mono, monospace" } as const;
 
 export default function CinematicFooter() {
   return (
-    <footer className="relative bg-[#080808] border-t border-[#D4AF77]/10">
-      {/* Gold accent top */}
-      <div
-        className="h-px w-full"
-        style={{
-          background: "linear-gradient(to right, transparent, rgba(212,175,119,0.25) 30%, rgba(212,175,119,0.25) 70%, transparent)",
-        }}
-      />
-
-      <div className="px-8 md:px-16 lg:px-24 py-20">
-        {/* Top block */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-16">
-          {/* Wordmark */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9 }}
-          >
-            <span
-              className="block text-[clamp(2.5rem,8vw,5rem)] font-light leading-none text-[#F5EDD8] tracking-[0.06em]"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
-            >
-              IN-FLU-ENTIAL
+    <footer className="bg-[#080808] border-t border-[#34322C]">
+      <div className="max-w-[960px] mx-auto px-4 md:px-10 py-14 flex flex-col gap-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="flex flex-col gap-2">
+            <Wordmark size="lg" />
+            <span className="text-[10px] tracking-[0.3em] text-[#8F887A] uppercase" style={mono}>
+              New Orleans
             </span>
-            <span
-              className="block text-[10px] tracking-[0.45em] text-[#A89880] mt-2 uppercase"
-              style={{ fontFamily: "DM Sans, sans-serif" }}
-            >
-              LLC · New Orleans
-            </span>
-            {/* Signature line */}
-            <p
-              className="mt-4 text-xs text-[#A89880]/40 italic max-w-xs"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
-            >
-              The house where influence is made.
-            </p>
-          </motion.div>
-
-          {/* CTA block */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.15, duration: 0.9 }}
-            className="flex flex-col items-start md:items-end gap-4"
-          >
-            <a
-              href="/booking"
-              className="inline-block px-10 py-4 text-[11px] tracking-[0.4em] uppercase text-[#080808] bg-[#D4AF77] hover:bg-[#E8C97A] transition-colors duration-300"
-              style={{ fontFamily: "DM Sans, sans-serif" }}
-            >
-              Start a Conversation
-            </a>
-            <p
-              className="text-[10px] text-[#A89880]/40 tracking-[0.2em]"
-              style={{ fontFamily: "DM Sans, sans-serif" }}
-            >
-              Always a human. Never a template.
-            </p>
-          </motion.div>
-        </div>
-
-        {/* Links grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2, duration: 0.9 }}
-          className="grid grid-cols-2 md:grid-cols-3 gap-10 mb-16"
-        >
-          {Object.entries(LINKS).map(([category, links]) => (
-            <div key={category}>
-              <span
-                className="text-[9px] tracking-[0.4em] text-[#D4AF77]/50 uppercase block mb-5"
-                style={{ fontFamily: "DM Sans, sans-serif" }}
-              >
-                {category}
-              </span>
-              <ul className="space-y-3">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-xs text-[#A89880]/60 hover:text-[#D4AF77] transition-colors duration-300"
-                      style={{ fontFamily: "DM Sans, sans-serif" }}
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </motion.div>
-
-        {/* Bottom bar */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3, duration: 0.9 }}
-          className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 pt-8 border-t border-[#D4AF77]/8"
-        >
-          <span
-            className="text-[10px] text-[#A89880]/30 tracking-[0.2em]"
+          </div>
+          <Link
+            href="/booking"
+            className="self-start md:self-auto px-6 py-3.5 text-[11px] tracking-[0.35em] uppercase text-[#080808] bg-[#D4AF77] hover:bg-[#E8C97A] transition-colors duration-300"
             style={{ fontFamily: "DM Sans, sans-serif" }}
           >
-            © {new Date().getFullYear()} IN-FLU-ENTIAL LLC. All Rights Reserved.
-          </span>
+            Start a project
+          </Link>
+        </div>
 
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+          {COLUMNS.map((col) => (
+            <div key={col.title} className="flex flex-col gap-3">
+              <span className="text-[9px] tracking-[0.3em] text-[#D4AF77] uppercase" style={mono}>
+                {col.title}
+              </span>
+              {col.links.map((l) =>
+                l.href.startsWith("http") || l.href.startsWith("mailto") ? (
+                  <a
+                    key={l.label}
+                    href={l.href}
+                    className="text-[13px] text-[#A89880] hover:text-[#F5EDD8] transition-colors break-words"
+                    {...(l.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  >
+                    {l.label}
+                  </a>
+                ) : (
+                  <Link key={l.label} href={l.href} className="text-[13px] text-[#A89880] hover:text-[#F5EDD8] transition-colors">
+                    {l.label}
+                  </Link>
+                )
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-6 border-t border-[#34322C]">
+          <span className="text-[10px] text-[#8F887A] tracking-[0.15em]" style={mono}>
+            © {new Date().getFullYear()} IN-FLU-ENTIAL LLC ·{" "}
+            <Link href="/privacy" className="hover:text-[#F5EDD8]">
+              Privacy
+            </Link>{" "}
+            ·{" "}
+            <Link href="/terms" className="hover:text-[#F5EDD8]">
+              Terms
+            </Link>
+          </span>
           <div className="flex items-center gap-6">
             {SOCIALS.map((s) => (
               <a
                 key={s.label}
                 href={s.href}
-                className="text-[10px] tracking-[0.3em] text-[#A89880]/40 hover:text-[#D4AF77] transition-colors duration-300 uppercase"
-                style={{ fontFamily: "DM Sans, sans-serif" }}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] tracking-[0.25em] text-[#A89880] hover:text-[#D4AF77] transition-colors uppercase"
+                style={mono}
               >
                 {s.label}
               </a>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </footer>
   );

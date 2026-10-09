@@ -46,6 +46,19 @@ which was abandoned after repeated failed 3D executions.
   (`lib/vault-access.ts`, `VAULT_PASSWORD` env var). Vault items live in
   `lib/vault-items.ts` and must never be imported by a client component.
 
+## Subpages: the studio kit
+
+Every subpage is built from `components/studio` (StudioPage, ChannelHeader,
+Panel, Rows, Accordion, Cta, card and form classes in studio.module.css).
+Don't hand-style a page; extend the kit instead.
+
+- **Patch bay nav** (`PatchBay.tsx`) sits at the top of every subpage: a
+  cable from "Desk out" into the current page's jack. Choosing another jack
+  repatches the cable, then navigates. Reduced motion skips the animation.
+- **Work** lists every live site build in category accordions, with a
+  screenshot in `/public/work/<slug>.webp` (960x600) and a live link.
+- No pitch decks anywhere on the site, vault included.
+
 ## Rules
 
 - **No WebGL on the homepage.** The console is HTML, CSS and canvas 2D.

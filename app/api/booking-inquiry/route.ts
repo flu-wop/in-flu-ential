@@ -22,7 +22,7 @@ function rateLimited(ip: string): boolean {
   return recent.length > MAX_PER_WINDOW;
 }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_RE = /^[^\s@<>"'&]+@[^\s@<>"'&]+\.[^\s@<>"'&]+$/;
 
 export async function POST(req: Request) {
   try {
@@ -39,7 +39,22 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { name, email, project, timeline, message, label, company } = body;
+    // Everything below is interpolated into HTML emails, so escape it first.
+    const esc = (v: unknown) =>
+      String(v ?? "")
+        .slice(0, 5000)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    const company = body.company;
+    const name = esc(body.name);
+    const email = String(body.email ?? "").trim();
+    const project = esc(body.project);
+    const timeline = esc(body.timeline);
+    const message = esc(body.message);
+    const label = esc(body.label);
 
     // Honeypot — bots fill hidden fields, humans never see "company"
     if (company) {
@@ -58,7 +73,10 @@ export async function POST(req: Request) {
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
       console.error("RESEND_API_KEY not set");
-      return NextResponse.json({ error: "Email service not configured" }, { status: 500 });
+      return NextResponse.json(
+        { error: "The form isn't connected yet. Email flu.wop@gmail.com directly." },
+        { status: 503 }
+      );
     }
 
     const { Resend } = await import("resend");
@@ -74,10 +92,16 @@ export async function POST(req: Request) {
       ? `IN-FLU-ENTIAL LLC <${process.env.RESEND_FROM_EMAIL}>`
       : "IN-FLU-ENTIAL LLC <onboarding@resend.dev>";
 
+    // Inquiries go to James. Override with BOOKING_TO_EMAIL once the domain mailbox exists.
+    const TO = process.env.BOOKING_TO_EMAIL || "flu.wop@gmail.com";
+
     // ── Email to James ────────────────────────
-    await resend.emails.send({
+    // Resend returns { error } instead of throwing, so check it: a lost
+    // inquiry must not show the visitor a success message.
+    const owner = await resend.emails.send({
       from: FROM,
-      to: "hello@influential.llc",
+      to: TO,
+      replyTo: email,
       subject: `New Booking Request — ${label}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #0A0A0A; color: #F5F0E8; padding: 40px;">
@@ -102,9 +126,18 @@ export async function POST(req: Request) {
         </div>
       `,
     });
+    if (owner.error) {
+      console.error("Booking inquiry email failed:", owner.error);
+      return NextResponse.json(
+        { error: "That didn't send. Try again, or email flu.wop@gmail.com." },
+        { status: 502 }
+      );
+    }
 
-    // ── Confirmation to client ────────────────
-    await resend.emails.send({
+    // ── Confirmation to client (best effort) ──
+    // With Resend's sandbox sender this can only reach the account owner, so a
+    // failure here is logged, not shown: James already has the inquiry.
+    const confirm = await resend.emails.send({
       from: FROM,
       to: email,
       subject: `We received your request — IN-FLU-ENTIAL LLC`,
@@ -118,7 +151,7 @@ export async function POST(req: Request) {
           </p>
           <p style="font-size: 14px; color: #9A9A9A; line-height: 1.7; margin: 0 0 32px;">
             In the meantime, feel free to reply to this email or reach out at
-            <a href="mailto:hello@influential.llc" style="color: #C9A84C;">hello@influential.llc</a>.
+            <a href="mailto:flu.wop@gmail.com" style="color: #C9A84C;">flu.wop@gmail.com</a>.
           </p>
           <div style="border-top: 1px solid #1a1a1a; padding-top: 24px;">
             <p style="font-size: 11px; color: #444; margin: 0;">Global Roots. Executive Vision. Creative Execution.</p>
@@ -126,6 +159,7 @@ export async function POST(req: Request) {
         </div>
       `,
     });
+    if (confirm.error) console.error("Booking confirmation email failed:", confirm.error);
 
     return NextResponse.json({ success: true });
   } catch (err) {

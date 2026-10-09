@@ -1,16 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import k from "@/components/studio/studio.module.css";
 
 const SESSIONS = [
-  "Creative Direction",
-  "Social & Growth Strategy",
-  "Music & Artist Marketing",
-  "Brand Development",
-  "Media & Production",
-  "Executive Strategy",
-  "Not sure yet — let's talk",
+  "Website build",
+  "Campaign or artist rollout",
+  "AI tools for my business",
+  "Studio session at Mid City Sound",
+  "Starter kit help",
+  "Not sure yet, let's talk",
 ];
 
 const TIMELINES = ["Immediately", "Within 30 days", "1–3 months", "Just exploring"];
@@ -27,23 +26,21 @@ export default function BookingForm() {
     project: "",
     timeline: TIMELINES[1],
     message: "",
-    company: "", // honeypot — kept empty by real users
+    company: "", // honeypot, kept empty by real users
   });
 
-  // Pre-select the session if linked from a service modal (?service=Brand%20Development)
+  // Pre-select a session from the link (?service=Website%20build)
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const svc = params.get("service");
-    if (svc && SESSIONS.includes(svc)) {
-      setForm((f) => ({ ...f, label: svc }));
-    }
+    const svc = new URLSearchParams(window.location.search).get("service");
+    if (svc && SESSIONS.includes(svc)) setForm((f) => ({ ...f, label: svc }));
   }, []);
 
-  const update = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+  const update = (key: string, v: string) => setForm((f) => ({ ...f, [key]: v }));
 
-  async function submit() {
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
     if (!form.name || !form.email || !form.project || !form.message) {
-      setErrorMsg("Please fill in your name, email, project, and a short message.");
+      setErrorMsg("Fill in your name, email, project and a short message, then send again.");
       setStatus("error");
       return;
     }
@@ -57,177 +54,88 @@ export default function BookingForm() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Something went wrong. Please try again.");
+        throw new Error(data.error || "That didn't send. Try again, or email flu.wop@gmail.com.");
       }
       setStatus("sent");
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : "Something went wrong.");
+      setErrorMsg(err instanceof Error ? err.message : "That didn't send. Try again.");
       setStatus("error");
     }
   }
 
-  const fieldClass =
-    "w-full bg-[#0d0d0d] border border-[#D4AF77]/15 px-4 py-3 text-[#F5EDD8] text-sm placeholder:text-[#A89880]/40 focus:border-[#D4AF77]/50 focus:outline-none transition-colors";
-  const labelClass =
-    "block text-[9px] tracking-[0.4em] text-[#D4AF77]/60 uppercase mb-2.5";
-  const sansStyle = { fontFamily: "DM Sans, sans-serif" } as const;
-  const serifStyle = { fontFamily: "Cormorant Garamond, serif" } as const;
-
   if (status === "sent") {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center py-20"
-      >
-        <div className="flex items-center justify-center gap-4 mb-6">
-          <div className="h-px w-12 bg-[#D4AF77]/50" />
-          <span className="text-[10px] tracking-[0.5em] text-[#D4AF77] uppercase" style={sansStyle}>
-            Received
-          </span>
-          <div className="h-px w-12 bg-[#D4AF77]/50" />
-        </div>
-        <h2 className="text-[clamp(2rem,5vw,3.2rem)] font-light text-[#F5EDD8] mb-4" style={serifStyle}>
-          Thank you, {form.name.split(" ")[0]}.
-        </h2>
-        <p className="text-[#A89880] text-sm max-w-md mx-auto leading-relaxed" style={sansStyle}>
-          Your request for a <span className="text-[#D4AF77]">{form.label}</span> session is in.
-          You&apos;ll hear back within one business day — always from a human.
+      <div className="flex flex-col gap-3 py-6" role="status">
+        <span className={k.eyebrow}>Received</span>
+        <h2 className={k.panelHeading}>Thank you, {form.name.split(" ")[0]}.</h2>
+        <p className={k.panelText}>
+          Your request for <strong style={{ color: "var(--gold)" }}>{form.label.toLowerCase()}</strong> is in. You&apos;ll
+          hear back within one business day, from a person.
         </p>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <div className="max-w-xl mx-auto">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <div className="flex items-center justify-center gap-4 mb-6">
-          <div className="h-px w-10 bg-[#D4AF77]/50" />
-          <span className="text-[10px] tracking-[0.5em] text-[#D4AF77] uppercase" style={sansStyle}>
-            Book a Consultation
-          </span>
-          <div className="h-px w-10 bg-[#D4AF77]/50" />
-        </div>
-        <h1 className="text-[clamp(2.4rem,6vw,4rem)] font-light text-[#F5EDD8] leading-tight mb-4" style={serifStyle}>
-          Let&apos;s build something
-          <br />
-          <em className="text-[#D4AF77]">that lasts</em>
-        </h1>
-        <p className="text-[#A89880] text-sm leading-relaxed max-w-md mx-auto" style={sansStyle}>
-          Tell us what you&apos;re working on. Every inquiry gets a personal reply within one business day.
-        </p>
+    <form onSubmit={submit} className="flex flex-col gap-5" noValidate>
+      <div className={k.grid2}>
+        <label className={k.field} htmlFor="bf-name">
+          <span className={`${k.scribble} ${k.fieldLabel}`}>Name *</span>
+          <input id="bf-name" className={k.input} value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Jordan Smith" autoComplete="name" />
+        </label>
+        <label className={k.field} htmlFor="bf-email">
+          <span className={`${k.scribble} ${k.fieldLabel}`}>Email *</span>
+          <input id="bf-email" type="email" className={k.input} value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="jordan@studio.com" autoComplete="email" />
+        </label>
+      </div>
+      <div className={k.grid2}>
+        <label className={k.field} htmlFor="bf-session">
+          <span className={`${k.scribble} ${k.fieldLabel}`}>What you need</span>
+          <select id="bf-session" className={k.input} value={form.label} onChange={(e) => update("label", e.target.value)}>
+            {SESSIONS.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className={k.field} htmlFor="bf-timeline">
+          <span className={`${k.scribble} ${k.fieldLabel}`}>Timeline</span>
+          <select id="bf-timeline" className={k.input} value={form.timeline} onChange={(e) => update("timeline", e.target.value)}>
+            {TIMELINES.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <label className={k.field} htmlFor="bf-project">
+        <span className={`${k.scribble} ${k.fieldLabel}`}>Project *</span>
+        <input id="bf-project" className={k.input} value={form.project} onChange={(e) => update("project", e.target.value)} placeholder="Booking site for my salon" />
+      </label>
+      <label className={k.field} htmlFor="bf-message">
+        <span className={`${k.scribble} ${k.fieldLabel}`}>Tell me more *</span>
+        <textarea id="bf-message" rows={5} className={k.input} style={{ resize: "vertical" }} value={form.message} onChange={(e) => update("message", e.target.value)} placeholder="What are you trying to build, and where are you now?" />
+      </label>
+
+      {/* Honeypot: off-screen and not tabbable */}
+      <div aria-hidden="true" style={{ position: "absolute", left: -9999, top: -9999, height: 0, width: 0, overflow: "hidden" }}>
+        <label>
+          Company (leave blank)
+          <input tabIndex={-1} autoComplete="off" value={form.company} onChange={(e) => update("company", e.target.value)} />
+        </label>
       </div>
 
-      {/* Form */}
-      <div className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <label className={labelClass} style={sansStyle}>Name</label>
-            <input
-              className={fieldClass}
-              style={sansStyle}
-              value={form.name}
-              onChange={(e) => update("name", e.target.value)}
-              placeholder="Your name"
-            />
-          </div>
-          <div>
-            <label className={labelClass} style={sansStyle}>Email</label>
-            <input
-              type="email"
-              className={fieldClass}
-              style={sansStyle}
-              value={form.email}
-              onChange={(e) => update("email", e.target.value)}
-              placeholder="you@email.com"
-            />
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <label className={labelClass} style={sansStyle}>Session</label>
-            <select
-              className={fieldClass + " appearance-none cursor-pointer"}
-              style={sansStyle}
-              value={form.label}
-              onChange={(e) => update("label", e.target.value)}
-            >
-              {SESSIONS.map((s) => (
-                <option key={s} value={s} className="bg-[#0d0d0d]">{s}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className={labelClass} style={sansStyle}>Timeline</label>
-            <select
-              className={fieldClass + " appearance-none cursor-pointer"}
-              style={sansStyle}
-              value={form.timeline}
-              onChange={(e) => update("timeline", e.target.value)}
-            >
-              {TIMELINES.map((t) => (
-                <option key={t} value={t} className="bg-[#0d0d0d]">{t}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <label className={labelClass} style={sansStyle}>Project</label>
-          <input
-            className={fieldClass}
-            style={sansStyle}
-            value={form.project}
-            onChange={(e) => update("project", e.target.value)}
-            placeholder="e.g. Artist rollout, brand identity, studio session"
-          />
-        </div>
-
-        <div>
-          <label className={labelClass} style={sansStyle}>Tell us more</label>
-          <textarea
-            rows={5}
-            className={fieldClass + " resize-none"}
-            style={sansStyle}
-            value={form.message}
-            onChange={(e) => update("message", e.target.value)}
-            placeholder="What are you trying to build, and where are you now?"
-          />
-        </div>
-
-        {/* Honeypot — visually hidden, off-screen, not tabbable */}
-        <div aria-hidden="true" className="absolute left-[-9999px] top-[-9999px] h-0 w-0 overflow-hidden">
-          <label>
-            Company (leave blank)
-            <input
-              tabIndex={-1}
-              autoComplete="off"
-              value={form.company}
-              onChange={(e) => update("company", e.target.value)}
-            />
-          </label>
-        </div>
-
-        {status === "error" && (
-          <p className="text-sm text-[#E0846A]" style={sansStyle}>{errorMsg}</p>
-        )}
-
-        <button
-          onClick={submit}
-          disabled={status === "sending"}
-          className="w-full py-4 bg-[#D4AF77] text-[#080808] text-[11px] tracking-[0.4em] uppercase hover:bg-[#E8C97A] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-          style={sansStyle}
-        >
-          {status === "sending" ? "Sending…" : "Send Request"}
-        </button>
-
-        <p className="text-[10px] text-[#A89880]/40 text-center" style={sansStyle}>
-          Reply within one business day — always a human.
+      {status === "error" && (
+        <p className="text-sm" style={{ color: "#E0846A", margin: 0 }} role="alert">
+          {errorMsg}
         </p>
-      </div>
-    </div>
+      )}
+
+      <button type="submit" disabled={status === "sending"} className={k.ctaSolid} style={{ justifyContent: "center", cursor: "pointer" }}>
+        {status === "sending" ? "Sending…" : "Send inquiry"}
+      </button>
+    </form>
   );
 }

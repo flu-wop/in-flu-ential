@@ -13,7 +13,7 @@ export const OUTPUTS: Record<"music" | "business" | "work" | "vault" | "vaultLoc
     rows: [
       ["Curren$y", "Producer / Engineer"],
       ["Killer Mike — MICHAEL", "Engineering"],
-      ["Trapaganda", "Jet Life / EMPIRE"],
+      ["Wiz Khalifa", "Production"],
       ["Quando Rondo · NoCap · Boosie", "Production"],
     ],
     cta: { label: "Full credits", href: "/music" },
@@ -29,19 +29,19 @@ export const OUTPUTS: Record<"music" | "business" | "work" | "vault" | "vaultLoc
     cta: { label: "See engagements", href: "/business" },
   },
   work: {
-    title: "Recent sessions",
+    title: "Recent builds",
     rows: [
       ["Mid City Sound Studios", "Studio + booking"],
       ["Epoch Skin", "Brand + store"],
-      ["Graham Hill", "Album campaign"],
+      ["Graham Hill", "Album site"],
       ["Flu-Haul", "Service site"],
-      ["Professor Longhair Documentary", "Investor pitch"],
+      ["Bourbon Daiquiris", "Restaurant site"],
     ],
     cta: { label: "All work", href: "/portfolio" },
   },
   vault: {
     title: "The sample is in",
-    body: "You cracked the console. Pitch decks, unreleased sessions and private work live one door further in, by invitation.",
+    body: "You cracked the console. Unreleased sessions and private work live one door further in, by invitation.",
     cta: { label: "Enter the vault", href: "/vault" },
   },
   vaultLocked: {

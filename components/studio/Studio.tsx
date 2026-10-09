@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import type React from "react";
 import CinematicNav from "@/components/cinematic/CinematicNav";
 import CinematicFooter from "@/components/cinematic/CinematicFooter";
+import PatchBay from "./PatchBay";
 import s from "./studio.module.css";
 
 // The studio kit: every subpage is built from these so it matches the console.
@@ -11,7 +12,10 @@ export function StudioPage({ children }: { children: ReactNode }) {
   return (
     <main className={s.page}>
       <CinematicNav />
-      <div className={s.inner}>{children}</div>
+      <div className={s.inner}>
+        <PatchBay />
+        {children}
+      </div>
       <CinematicFooter />
     </main>
   );
@@ -54,15 +58,17 @@ export function Panel({
   title,
   meta,
   heading,
+  id,
   children,
 }: {
   title: string;
   meta?: string;
   heading?: ReactNode;
+  id?: string;
   children: ReactNode;
 }) {
   return (
-    <section className={s.panel}>
+    <section className={s.panel} id={id}>
       <div className={s.panelBar}>
         <span className={s.panelTitle}>{title}</span>
         {meta && <span className={s.panelMeta}>{meta}</span>}
@@ -110,4 +116,30 @@ export function Cta({ href, children, solid }: { href: string; children: ReactNo
 
 export function Scribble({ children }: { children: ReactNode }) {
   return <span className={s.scribble}>{children}</span>;
+}
+
+// Native <details> so it works without JS and is keyboard friendly.
+export function Accordion({
+  title,
+  meta,
+  open,
+  children,
+}: {
+  title: ReactNode;
+  meta?: string;
+  open?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <details className={s.acc} open={open}>
+      <summary className={s.accHead}>
+        <span className={s.accTitle}>{title}</span>
+        <span className={s.accMeta}>
+          {meta}
+          <span className={s.accIcon} aria-hidden="true" />
+        </span>
+      </summary>
+      <div className={s.accBody}>{children}</div>
+    </details>
+  );
 }

@@ -5,11 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import type { VaultCategory, VaultItem } from "@/lib/vault-items";
 
-const CATEGORIES: VaultCategory[] = ["All", "Pitch Deck", "Music", "Work in Progress", "Strategy", "Press Kit"];
+const CATEGORIES: VaultCategory[] = ["All", "Music", "Work in Progress", "Strategy", "Press Kit"];
 
 const CATEGORY_ICONS: Record<VaultCategory, string> = {
   "All": "◈",
-  "Pitch Deck": "◆",
   "Music": "♪",
   "Work in Progress": "◎",
   "Strategy": "▲",
@@ -187,7 +186,7 @@ export default function VaultContent({ items }: { items: VaultItem[] }) {
     : items.filter(item => item.category === activeCategory);
 
   return (
-    <div className="min-h-screen bg-[#080808] pt-24 pb-32 px-6 md:px-12 lg:px-20">
+    <div className="min-h-screen bg-[#080808] pt-10 pb-32 px-6 md:px-12 lg:px-20">
 
       {/* Header */}
       <motion.div

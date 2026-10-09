@@ -20,12 +20,6 @@ const CREDITS: { artist: string; role: string; description: string; did: string[
     did: ["Recorded"],
   },
   {
-    artist: "Trapaganda",
-    role: "Production",
-    description: "Flagship project released through Jet Life and EMPIRE.",
-    did: ["Produced"],
-  },
-  {
     artist: "Wiz Khalifa",
     role: "Producer",
     description: "Production on two records featuring Wiz Khalifa, one released and one unreleased.",

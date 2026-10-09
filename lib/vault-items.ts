@@ -1,7 +1,7 @@
 // Server-only: imported by app/vault/page.tsx and passed to the client only
 // after the vault cookie checks out. Never import this from a "use client" file.
 
-export type VaultCategory = "All" | "Pitch Deck" | "Music" | "Work in Progress" | "Strategy" | "Press Kit";
+export type VaultCategory = "All" | "Music" | "Work in Progress" | "Strategy" | "Press Kit";
 
 export interface VaultItem {
   id: string;
@@ -18,24 +18,6 @@ export interface VaultItem {
 
 // ── EDIT YOUR VAULT CONTENT HERE ──────────────────────────────────────────
 export const VAULT_ITEMS: VaultItem[] = [
-  {
-    id: "longhair-pitch",
-    title: "Professor Longhair Documentary",
-    category: "Pitch Deck",
-    description: "Investor pitch for Fish Pot Studios — narrative arc, market positioning, and funding strategy for a New Orleans music documentary.",
-    fileUrl: "#",
-    date: "2026-01",
-    client: "Fish Pot Studios",
-    isPrivate: true,
-  },
-  {
-    id: "influential-brand-deck",
-    title: "IN-FLU-ENTIAL Brand Strategy v2",
-    category: "Pitch Deck",
-    description: "Full brand positioning, service tiers, and 12-month growth roadmap. Internal reference deck.",
-    fileUrl: "#",
-    date: "2025-01",
-  },
   {
     id: "track-1",
     title: "Untitled 001",
