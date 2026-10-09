@@ -15,7 +15,7 @@ export const ALL_CATEGORIES: { title: string; sites: Site[] }[] = [
   {
     title: "Artists and Music",
     sites: [
-      { name: "Graham Hill", url: "https://graham-hill.vercel.app", shot: "graham-hill", blurb: "Campaign site for the Beach House drummer's self-titled debut LP.", built: ["Album Campaign", "Sync Licensing", "Press"] },
+      { name: "Graham Hill", url: "https://graham-hill.vercel.app", shot: "graham-hill", blurb: "Campaign site for the Beach House drummer's debut album, Taking In Stars.", built: ["Album Campaign", "Sync Licensing", "Press"] },
       { name: "Donald Markowitz", url: "https://www.donaldmarkowitz.com", shot: "donald-markowitz", blurb: "Artist site for the Academy Award-winning composer and producer.", built: ["Credits", "Catalog", "Merch"] },
       { hidden: true, name: "Tyron Benoit Band", url: "https://tyron-benoit.vercel.app", shot: "tyron-benoit", blurb: "Song campaign site for “Hope You Find Heaven.”", built: ["Song Campaign", "Press Kit"] },
       { hidden: true, name: "Doug Belote", url: "https://dougbelote.vercel.app", shot: "doug-belote", blurb: "Site for the New Orleans drummer and percussionist.", built: ["Credits", "Media", "Booking"] },
