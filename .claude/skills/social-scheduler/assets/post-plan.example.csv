@@ -1,0 +1,10 @@
+account,file,platforms,schedule,caption
+fishpot,out/fishpot/fishpot_wednesday_main.mp4,instagram tiktok youtube,2026-06-05T23:00:00Z,We move different. 🎷 #neworleans #livemusic
+boomerhumor,out/boomerhumor/boomerhumor_wednesday.mp4,instagram tiktok,,when the band hits different fr
+# One row per post. Copy to post-plan.csv and edit.
+# account   = fishpot | boomerhumor  (selects the Ayrshare profile via env Profile-Key)
+# file      = path to the clip, e.g. the output of make_clips.sh
+# platforms = space-separated: instagram tiktok youtube facebook ...
+# schedule  = UTC Zulu time (2026-06-05T23:00:00Z). LEAVE BLANK to post now.
+#             Convert local -> UTC with utctime.net, or see references/ayrshare.md.
+# caption   = LAST column, so commas, apostrophes, emoji, and hashtags are all safe.
