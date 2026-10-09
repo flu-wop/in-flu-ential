@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { StudioPage, ChannelHeader, Panel, PanelText, Accordion, Cta } from "@/components/studio/Studio";
+import { StudioPage, ChannelHeader, Panel, PanelText, Rows, Accordion, Cta } from "@/components/studio/Studio";
 import k from "@/components/studio/studio.module.css";
-import { CHECKOUT } from "@/lib/checkout";
+import CheckoutButton from "@/components/checkout/CheckoutButton";
+import { stripeReady } from "@/lib/stripe";
+import { PRODUCTS, type ProductId } from "@/lib/products";
 import { SITE_COUNT } from "@/lib/work";
 
 export const metadata: Metadata = {
@@ -35,9 +37,9 @@ const LANES = [
 ];
 
 interface Checkout {
-  label: string; // shown when a Stripe link is set
-  link: string;
-  service: string; // inquiry form preselect when no link is set
+  label: string;
+  product?: ProductId; // pays on the page with Stripe when set
+  service: string; // inquiry form preselect otherwise
 }
 
 interface Pkg {
@@ -65,7 +67,7 @@ const PACKAGES: Pkg[] = [
       "Two rounds of revisions",
       "Domain setup, launch and a handoff doc with every login",
     ],
-    checkout: { label: "Pay $1,500 deposit", link: CHECKOUT.websiteDeposit, service: "Website build" },
+    checkout: { label: "Pay $1,500 deposit", product: "website-deposit", service: "Website build" },
   },
   {
     name: "Social media marketing",
@@ -82,7 +84,7 @@ const PACKAGES: Pkg[] = [
     ],
     featured: true,
     tag: "Website included",
-    checkout: { label: "Pay $2,500 deposit", link: CHECKOUT.socialDeposit, service: "Campaign or artist rollout" },
+    checkout: { label: "Pay $2,500 deposit", product: "social-deposit", service: "Campaign or artist rollout" },
   },
   {
     name: "AI for contractors",
@@ -90,7 +92,7 @@ const PACKAGES: Pkg[] = [
     terms: "Scoped after a walkthrough",
     tagline: "Tools built around how your jobs actually run.",
     includes: ["Walkthrough of your current process", "Written scope and price", "Estimating, scheduling or job docs", "Training for your team"],
-    checkout: { label: "Request a quote", link: "", service: "AI tools for my business" },
+    checkout: { label: "Request a quote", service: "AI tools for my business" },
   },
 ];
 
@@ -113,20 +115,16 @@ const STEPS = [
 const FAQ = [
   { q: "When is the rest of the payment due?", a: "Half is due to start. The balance is due before your site goes live on your domain, or before your campaign launches." },
   { q: "What counts as a revision?", a: "A round is one set of changes sent together. Two rounds are included. Changes beyond that, or new features, are quoted before any work starts." },
-  { q: "What happens after the first 30 days of marketing?", a: "You can stop there with the strategy, calendar and content in hand, or keep it running on a monthly retainer." },
+  { q: "What happens after the first 30 days of marketing?", a: "You can stop there with the strategy, calendar and content in hand, or keep it running on a monthly retainer from $500 to $1,000 a month." },
   { q: "Do I need to know how to code for the starter kit?", a: "Basic comfort with a terminal and following instructions. The guide is written for first-timers, step by step." },
   { q: "How is the starter kit different from Squarespace or Wix?", a: "You own the code and the data, and pay nothing monthly beyond your domain (about $12 a year). Hosting on Vercel is free, and bookings charge clients directly to your Stripe." },
 ];
 
-// With a Stripe Payment Link: one-click checkout. Without one: the inquiry
-// form, preselected for this package.
-function CheckoutButton({ c, solid }: { c: Checkout; solid?: boolean }) {
-  if (c.link)
-    return (
-      <Cta href={c.link} solid={solid}>
-        {c.label}
-      </Cta>
-    );
+// Pays on the page through Stripe when keys are set and the product is
+// available; otherwise opens the inquiry form for that package.
+function Checkout({ c, title, solid }: { c: Checkout; title: string; solid?: boolean }) {
+  if (c.product && stripeReady() && PRODUCTS[c.product].available)
+    return <CheckoutButton product={c.product} label={c.label} title={title} solid={solid} />;
   const label = c.label.startsWith("Pay") ? "Start this package" : c.label;
   return (
     <Cta href={`/booking?service=${encodeURIComponent(c.service)}`} solid={solid}>
@@ -199,12 +197,18 @@ export default function BusinessPage() {
                 ))}
               </ul>
               <div style={{ marginTop: "auto", paddingTop: 6 }}>
-                <CheckoutButton c={t.checkout} solid={t.featured} />
+                <Checkout c={t.checkout} title={t.name} solid={t.featured} />
               </div>
             </div>
           ))}
         </div>
-        <PanelText>After launch, keep things running with a monthly retainer. Ask about it on your call.</PanelText>
+        <PanelText>After launch, keep things running month to month.</PanelText>
+        <Rows
+          rows={[
+            ["Site care: updates, fixes, small edits", "from $150 / mo"],
+            ["Marketing retainer: keep the campaign running", "$500–1,000 / mo"],
+          ]}
+        />
       </Panel>
 
       <Panel title="Kit · Do it yourself" meta="One-time" heading="Website starter kit · $50" id="kit">
@@ -218,7 +222,11 @@ export default function BusinessPage() {
           ))}
         </ul>
         <div>
-          <CheckoutButton c={{ label: "Get the kit · $50", link: CHECKOUT.starterKit, service: "Starter kit help" }} />
+          {PRODUCTS["starter-kit"].available ? (
+            <Checkout c={{ label: "Get the kit · $50", product: "starter-kit", service: "Starter kit help" }} title="Starter kit" />
+          ) : (
+            <Cta href="/booking?service=Starter%20kit%20help">Coming soon · get notified</Cta>
+          )}
         </div>
       </Panel>
 

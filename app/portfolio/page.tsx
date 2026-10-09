@@ -25,7 +25,7 @@ export default function WorkPage() {
         meta={[
           ["Sites live", String(total)],
           ["Categories", String(CATEGORIES.length)],
-          ["Based", "New Orleans"],
+          ["Stack", "Next.js"],
         ]}
         actions={<Cta href="/booking" solid>Start a project</Cta>}
       />

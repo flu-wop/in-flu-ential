@@ -70,8 +70,15 @@ Website $3,000: $1,500 to start, $1,500 before launch. Social media
 marketing $5,000 with the website included, run for at least 30 days, then
 an optional monthly retainer: $2,500 to start, $2,500 before launch. Two
 rounds of revisions per package. AI for contractors by custom quote (inquiry
-form). Website starter kit $50. Checkout buttons use Stripe Payment Links set
-in `lib/checkout.ts`; empty links fall back to the inquiry form.
+form). Website starter kit $50 (marked coming soon until `available` is
+flipped in `lib/products.ts`). Site care from $150/mo, marketing retainer
+$500–1,000/mo.
+
+Checkout is Stripe embedded checkout on the page (`/api/checkout`, prices
+only in `lib/products.ts`, return page `/checkout/complete` verifies the
+session server-side). Needs STRIPE_SECRET_KEY and
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in Vercel; without them the buttons open
+the inquiry form.
 
 ## Rules
 
