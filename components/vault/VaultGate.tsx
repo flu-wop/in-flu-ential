@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import SceneBoundary from "@/components/cinematic/SceneBoundary";
+import CinematicNav from "@/components/cinematic/CinematicNav";
 
 // Three.js must never server-render — load client-only. Loading fallback is
 // a blank matching backdrop, not text — a loading *label* is what reads as
@@ -31,30 +32,7 @@ export default function VaultGate() {
         transition={{ duration: 0.8 }}
         className="relative"
       >
-        {/* Minimal nav for vault */}
-        <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-6 md:px-16">
-          <a href="/" className="flex flex-col leading-none group">
-            <span
-              className="font-display text-lg tracking-[0.25em] text-[#D4AF77]/70 uppercase group-hover:text-[#D4AF77] transition-colors"
-              style={{ fontFamily: "Cormorant Garamond, serif" }}
-            >
-              IN-FLU-ENTIAL
-            </span>
-            <span
-              className="text-[9px] tracking-[0.4em] text-[#A89880]/40 uppercase mt-0.5"
-              style={{ fontFamily: "DM Sans, sans-serif" }}
-            >
-              LLC
-            </span>
-          </a>
-          <a
-            href="/"
-            className="text-[10px] tracking-[0.35em] text-[#A89880]/40 uppercase hover:text-[#D4AF77] transition-colors"
-            style={{ fontFamily: "DM Sans, sans-serif" }}
-          >
-            ← Home
-          </a>
-        </div>
+        <CinematicNav />
 
         <SceneBoundary
           fallback={

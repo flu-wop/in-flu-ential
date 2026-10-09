@@ -4,6 +4,10 @@ import "@flu-wop/design-system/compat.css";
 import "./globals.css";
 import { SITE_URL } from "@/lib/site-url";
 import SessionProvider from "@/components/console/SessionProvider";
+import { Caveat } from "next/font/google";
+
+// Handwriting for the Polaroid captions on Music.
+const caveat = Caveat({ subsets: ["latin"], weight: ["500", "600"], variable: "--font-hand", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -30,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html data-theme="studio" lang="en" className="scroll-smooth">
+    <html data-theme="studio" lang="en" className={`scroll-smooth ${caveat.variable}`}>
       <body>
         <SessionProvider>{children}</SessionProvider>
       </body>

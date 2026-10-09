@@ -186,44 +186,14 @@ export default function VaultContent({ items }: { items: VaultItem[] }) {
     : items.filter(item => item.category === activeCategory);
 
   return (
-    <div className="min-h-screen bg-[#080808] pt-10 pb-32 px-6 md:px-12 lg:px-20">
-
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        className="max-w-5xl mx-auto mb-16"
-      >
-        <div className="flex items-center gap-4 mb-5">
-          <div className="h-px w-10 bg-[#D4AF77]/40" />
-          <span
-            className="text-[10px] tracking-[0.5em] text-[#D4AF77] uppercase"
-            style={{ fontFamily: "DM Sans, sans-serif" }}
-          >
-            Private Vault — Unlocked
-          </span>
-        </div>
-        <h1
-          className="text-[clamp(2.5rem,7vw,5rem)] font-light text-[#F5EDD8] leading-none mb-4"
-          style={{ fontFamily: "Cormorant Garamond, serif" }}
-        >
-          Inside the vault
-        </h1>
-        <p
-          className="text-[#A89880] text-sm max-w-lg"
-          style={{ fontFamily: "DM Sans, sans-serif" }}
-        >
-          Confidential work, unreleased music, and internal strategy. Handle accordingly.
-        </p>
-      </motion.div>
+    <div className="flex flex-col">
 
       {/* Category filter */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15, duration: 0.7 }}
-        className="max-w-5xl mx-auto mb-10 flex flex-wrap gap-2"
+        className="w-full mb-6 flex flex-wrap gap-2"
       >
         {CATEGORIES.map((cat) => (
           <button
@@ -243,7 +213,7 @@ export default function VaultContent({ items }: { items: VaultItem[] }) {
       </motion.div>
 
       {/* Grid */}
-      <div className="max-w-5xl mx-auto">
+      <div className="w-full">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeCategory}
@@ -261,20 +231,6 @@ export default function VaultContent({ items }: { items: VaultItem[] }) {
       </div>
 
       {/* Back link */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5, duration: 0.8 }}
-        className="max-w-5xl mx-auto mt-20 pt-10 border-t border-[#D4AF77]/10"
-      >
-        <a
-          href="/"
-          className="text-[11px] tracking-[0.4em] text-[#A89880]/40 uppercase hover:text-[#D4AF77] transition-colors duration-300"
-          style={{ fontFamily: "DM Sans, sans-serif" }}
-        >
-          ← Back to Home
-        </a>
-      </motion.div>
     </div>
   );
 }

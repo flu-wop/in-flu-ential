@@ -1,0 +1,113 @@
+/* Credits as Polaroids pinned to a dark studio wall. */
+.wall {
+  border-radius: 8px;
+  border: 1px solid #34322c;
+  padding: 28px 14px 22px;
+  background-color: #1a1916;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1.2px);
+  background-size: 7px 7px;
+}
+.board {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px 16px;
+}
+.slot { position: relative; transform: rotate(var(--tilt)); transition: transform 0.35s ease; min-width: 0; }
+.slot:hover { transform: rotate(0deg) translateY(-4px); z-index: 2; }
+.pin {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f4dca0 0 22%, #d4af77 40%, #7a5a22 100%);
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.55);
+  z-index: 3;
+  pointer-events: none;
+}
+.card {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  perspective: 900px;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+}
+.card:focus-visible { outline: 2px solid #ece4cf; outline-offset: 4px; }
+.inner {
+  display: grid;
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transform-style: preserve-3d;
+}
+.flipped .inner { transform: rotateY(180deg); }
+.front, .back {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 2px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.front {
+  display: flex;
+  flex-direction: column;
+  background: #f6f2e8;
+  padding: 8px 8px 10px;
+  transition: box-shadow 0.35s ease;
+}
+.slot:hover .front { box-shadow: 0 16px 28px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.4); }
+.photo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+  background: #2a2823;
+  overflow: hidden;
+  filter: sepia(0.55) contrast(0.45) brightness(1.55) saturate(0.25);
+  opacity: 0.75;
+  transition: filter 2.6s ease-out, opacity 2.6s ease-out;
+}
+.photo.developed { filter: none; opacity: 1; }
+.photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.initials { font-family: "Cormorant Garamond", Georgia, serif; font-size: 2.6rem; color: #d4af77; letter-spacing: 0.04em; }
+.caption {
+  margin-top: 8px;
+  font-family: var(--font-hand), "Bradley Hand", cursive;
+  font-weight: 600;
+  font-size: 1.35rem;
+  line-height: 1.05;
+  color: #23201a;
+  overflow-wrap: anywhere;
+}
+.did { font-family: var(--font-hand), "Bradley Hand", cursive; font-size: 1.05rem; color: #7a6a4c; }
+.back {
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #ece6d6;
+  background-image: repeating-linear-gradient(#ece6d6 0 22px, #d9d1bd 22px 23px);
+  padding: 12px 12px 10px;
+  color: #2a261e;
+  overflow: hidden;
+}
+.backName { font-family: var(--font-hand), "Bradley Hand", cursive; font-weight: 600; font-size: 1.35rem; line-height: 1.05; }
+.backRole { font-family: "DM Mono", ui-monospace, monospace; font-size: 10px; letter-spacing: 0.06em; color: #7a5a22; }
+.backText { font-family: var(--font-hand), "Bradley Hand", cursive; font-size: 1.02rem; line-height: 1.15; }
+.backHint { margin-top: auto; font-family: "DM Mono", ui-monospace, monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: #8f887a; }
+
+@media (min-width: 768px) {
+  .wall { padding: 36px 26px 28px; }
+  .board { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 38px 26px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .inner, .photo, .slot { transition: none; }
+}

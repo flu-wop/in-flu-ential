@@ -11,9 +11,5 @@ export const dynamic = "force-dynamic";
 export default async function VaultPage() {
   const jar = await cookies();
   if (!hasVaultAccess(jar.get(VAULT_COOKIE)?.value)) return <VaultGate />;
-  return (
-    <main className="bg-[#060606] min-h-screen overflow-x-hidden">
-      <VaultUnlocked items={VAULT_ITEMS} />
-    </main>
-  );
+  return <VaultUnlocked items={VAULT_ITEMS} />;
 }

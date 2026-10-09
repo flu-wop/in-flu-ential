@@ -24,7 +24,6 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: "Contact",
     links: [
-      { label: "Start a Project", href: "/booking" },
       { label: "Mid City Sound", href: "https://midcitysound.com" },
       { label: "flu.wop@gmail.com", href: "mailto:flu.wop@gmail.com" },
     ],
@@ -32,8 +31,26 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
 ];
 
 const SOCIALS = [
-  { label: "Instagram", href: "https://instagram.com/flu_wop" },
-  { label: "X", href: "https://x.com/its_FluWop" },
+  {
+    label: "Instagram",
+    href: "https://instagram.com/flu_wop",
+    icon: (
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4.2" />
+        <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    label: "X",
+    href: "https://x.com/its_FluWop",
+    icon: (
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+        <path d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8L17.8 3Zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5Z" />
+      </svg>
+    ),
+  },
 ];
 
 const mono = { fontFamily: "DM Mono, monospace" } as const;
@@ -42,16 +59,7 @@ export default function CinematicFooter() {
   return (
     <footer className="bg-[#080808] border-t border-[#34322C]">
       <div className="max-w-[960px] mx-auto px-4 md:px-10 py-14 flex flex-col gap-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <Wordmark size="lg" />
-          <Link
-            href="/booking"
-            className="self-start md:self-auto px-6 py-3.5 text-[11px] tracking-[0.35em] uppercase text-[#080808] bg-[#D4AF77] hover:bg-[#E8C97A] transition-colors duration-300"
-            style={{ fontFamily: "DM Sans, sans-serif" }}
-          >
-            Start a Project
-          </Link>
-        </div>
+        <Wordmark size="lg" />
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
           {COLUMNS.map((col) => (
@@ -75,11 +83,27 @@ export default function CinematicFooter() {
                   </Link>
                 )
               )}
+              {col.title === "Contact" && (
+                <div className="flex items-center gap-3 pt-1">
+                  {SOCIALS.map((so) => (
+                    <a
+                      key={so.label}
+                      href={so.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={so.label}
+                      className="w-9 h-9 grid place-items-center rounded-full border border-[#4A473E] text-[#A89880] hover:text-[#D4AF77] hover:border-[#D4AF77] transition-colors"
+                    >
+                      {so.icon}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-6 border-t border-[#34322C]">
+        <div className="pt-6 border-t border-[#34322C]">
           <span className="text-[10px] text-[#8F887A] tracking-[0.15em]" style={mono}>
             © {new Date().getFullYear()} IN-FLU-ENTIAL LLC ·{" "}
             <Link href="/privacy" className="hover:text-[#F5EDD8]">
@@ -90,20 +114,6 @@ export default function CinematicFooter() {
               Terms
             </Link>
           </span>
-          <div className="flex items-center gap-6">
-            {SOCIALS.map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[10px] tracking-[0.25em] text-[#A89880] hover:text-[#D4AF77] transition-colors uppercase"
-                style={mono}
-              >
-                {s.label}
-              </a>
-            ))}
-          </div>
         </div>
       </div>
     </footer>

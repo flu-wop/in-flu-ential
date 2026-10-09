@@ -58,6 +58,11 @@ Don't hand-style a page; extend the kit instead.
 - **Work** lists every live site build in category accordions, with a
   screenshot in `/public/work/<slug>.webp` (960x600) and a live link.
 - No pitch decks anywhere on the site, vault included.
+- **Music credits are a Polaroid pin board** (`components/music/PinBoard.tsx`):
+  each photo develops the first time it scrolls into view, and tapping flips
+  it to handwritten notes. Photos go in `/public/credits` (square) via the
+  `photo` field; the bio portrait goes in `/public/bio` via `BIO_PHOTO`.
+  Keep back-of-card descriptions short so cards stay even.
 - **The session persists.** `SessionProvider` in the root layout owns the
   audio engine and the mix (knobs, faders, vault), so the song keeps playing
   across pages. Subpages show a slim transport bar; stems only download once
