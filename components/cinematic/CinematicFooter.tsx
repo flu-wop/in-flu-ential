@@ -5,11 +5,11 @@ import Link from "next/link";
 
 const LINKS = {
   Services: [
-    { label: "Creative Direction", href: "#hallway" },
-    { label: "Social & Growth", href: "#hallway" },
-    { label: "Music Marketing", href: "#hallway" },
-    { label: "Brand Development", href: "#hallway" },
-    { label: "Executive Strategy", href: "#vault" },
+    { label: "Creative Direction", href: "/business" },
+    { label: "Social & Growth", href: "/business" },
+    { label: "Music Marketing", href: "/business" },
+    { label: "Brand Development", href: "/business" },
+    { label: "Executive Strategy", href: "/business" },
   ],
   Navigate: [
     { label: "Home", href: "/" },

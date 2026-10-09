@@ -18,9 +18,9 @@ export default function CinematicNav() {
   }, [scrollY]);
 
   const navLinks = [
-    { label: "Approach", href: "#approach" },
-    { label: "Services", href: "#hallway" },
-    { label: "Engagement", href: "#vault" },
+    { label: "Music", href: "/music" },
+    { label: "Business", href: "/business" },
+    { label: "Work", href: "/portfolio" },
     { label: "Products", href: "/products" },
     { label: "Contact", href: "/booking" },
   ];
