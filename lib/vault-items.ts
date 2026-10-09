@@ -75,3 +75,13 @@ export const CONTACT_SHEET: PolaroidItem[] = [
   { id: "frame-05", caption: "Frame 05", note: "Photo and note coming soon." },
   { id: "frame-06", caption: "Frame 06", note: "Photo and note coming soon." },
 ];
+
+// The Wall: studio and behind-the-scenes Polaroids, shown only inside the vault.
+// Same rule as the Contact Sheet: photos are private, so host them somewhere
+// private and set photo to that URL. Square, ~1000x1000.
+export const WALL: PolaroidItem[] = [
+  { id: "control-room", caption: "Control Room", note: "Where the mix gets decided." },
+  { id: "live-room", caption: "Live Room", note: "Where the takes happen." },
+  { id: "behind-the-glass", caption: "Behind the Glass", note: "The engineer's view." },
+  { id: "between-takes", caption: "Between Takes", note: "The part nobody posts." },
+];

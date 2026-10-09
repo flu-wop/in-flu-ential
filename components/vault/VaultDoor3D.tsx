@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { useState, useRef, useEffect, useLayoutEffect, useMemo, Suspense } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox, Cylinder, Torus } from "@react-three/drei";
 import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
@@ -169,6 +169,25 @@ function DoorMesh({
   );
 }
 
+// Pulls the camera back until the whole door frame (4.6 x 6.0, plus margin)
+// fits the stage, whatever its shape: tall phone, wide desktop or the
+// beside-the-panel landscape layout. A fixed camera distance cropped the door.
+const FIT_W = 5.2;
+const FIT_H = 6.5;
+function FitCamera() {
+  const camera = useThree((st) => st.camera) as THREE.PerspectiveCamera;
+  const { width, height } = useThree((st) => st.size);
+  useLayoutEffect(() => {
+    const aspect = Math.max(width, 1) / Math.max(height, 1);
+    const tanHalf = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+    const forH = FIT_H / 2 / tanHalf;
+    const forW = FIT_W / 2 / (tanHalf * aspect);
+    camera.position.set(0, 0, Math.max(forH, forW) + 0.3);
+    camera.updateProjectionMatrix();
+  }, [camera, width, height]);
+  return null;
+}
+
 // ── Lighting + scene wrapper ────────────────────────────────────────
 function Scene({ tier, openProgress, dialSpin }: {
   tier: "mobile" | "desktop";
@@ -265,6 +284,7 @@ export default function VaultDoor3D({ onUnlock }: VaultDoor3DProps) {
           onError={() => setWebglFailed(true)}
           className="absolute inset-0"
         >
+          <FitCamera />
           <Suspense fallback={null}>
             <Scene tier={tier} openProgress={openProgress} dialSpin={dialSpin} />
           </Suspense>

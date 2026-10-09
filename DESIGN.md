@@ -75,7 +75,7 @@ which was abandoned after repeated failed 3D executions.
   material is behind `/vault`, which checks a signed cookie on the server
   (`lib/vault-access.ts`, `VAULT_PASSWORD` env var). Vault items live in
   `lib/vault-items.ts` and must never be imported by a client component.
-  The vault's Contact Sheet photos are private: they are served by the
+  The vault's Wall and Contact Sheet photos are private: they are served by the
   server, never placed in `/public` or the repo.
 
 ## Image slots
@@ -88,7 +88,7 @@ All files are .webp except the icon and OG.
 | --- | --- | --- |
 | Hang Glider cover art (Master panel, session screen, transport bar) | `/public/cover/hang-glider.webp` | 1400x1400 |
 | Credits | `/public/credits/<slug>.webp` | square ~1000 |
-| On The Wall (Music) | `/public/studio/<name>.webp` | square ~1000 |
+| On The Wall (vault, private: not in `/public`) | set in `lib/vault-items.ts` | square ~1000 |
 | Bio | `/public/bio` | 4:5, 1200x1500 |
 | Booking portrait | `/public/bio/booking.webp` | 4:5, 1200x1500 |
 | Job site (AI for Contractors lane) | `/public/business/job-site.webp` | 1600x1000 |
@@ -112,8 +112,8 @@ Don't hand-style a page; extend the kit instead.
   develops the first time it scrolls into view, and tapping flips it to a
   handwritten note, with a one-line caption under the photo. Used for the
   Music credits (`PinBoard.tsx`, photos in `/public/credits`), the On The Wall
-  strip on Music (studio and behind the scenes, `lib/polaroids.ts`) and the
-  Contact Sheet in the vault. The bio portrait goes in `/public/bio` via
+  strip (studio and behind the scenes) and the Contact Sheet, both inside the
+  vault only (`lib/vault-items.ts`). The bio portrait goes in `/public/bio` via
   `BIO_PHOTO`. Keep notes short so cards stay even.
 - **The session persists.** `SessionProvider` in the root layout owns the
   audio engine and the mix (knobs, faders, vault), so the song keeps playing
