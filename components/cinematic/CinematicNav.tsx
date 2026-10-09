@@ -8,7 +8,6 @@ const NAV_LINKS = [
   { label: "Music", href: "/music" },
   { label: "Business", href: "/business" },
   { label: "Work", href: "/portfolio" },
-  { label: "Products", href: "/products" },
   { label: "Vault", href: "/vault" },
 ];
 

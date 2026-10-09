@@ -12,7 +12,7 @@ export default function Home() {
             className="text-[10px] tracking-[0.5em] text-[#D4AF77] uppercase mb-4"
             style={{ fontFamily: "DM Mono, monospace" }}
           >
-            New Orleans · Creative direction
+            Producer · Engineer · Builder
           </p>
           <h1
             className="text-[clamp(2rem,6vw,3.4rem)] font-light text-[#F5EDD8] leading-[1.05]"

@@ -16,9 +16,9 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     title: "Services",
     links: [
       { label: "Websites", href: "/business" },
-      { label: "Campaigns", href: "/business" },
+      { label: "Social media marketing", href: "/business" },
       { label: "AI for contractors", href: "/business#ai" },
-      { label: "Starter kits", href: "/products" },
+      { label: "Starter kit", href: "/business#kit" },
     ],
   },
   {
@@ -43,12 +43,7 @@ export default function CinematicFooter() {
     <footer className="bg-[#080808] border-t border-[#34322C]">
       <div className="max-w-[960px] mx-auto px-4 md:px-10 py-14 flex flex-col gap-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="flex flex-col gap-2">
-            <Wordmark size="lg" />
-            <span className="text-[10px] tracking-[0.3em] text-[#8F887A] uppercase" style={mono}>
-              New Orleans
-            </span>
-          </div>
+          <Wordmark size="lg" />
           <Link
             href="/booking"
             className="self-start md:self-auto px-6 py-3.5 text-[11px] tracking-[0.35em] uppercase text-[#080808] bg-[#D4AF77] hover:bg-[#E8C97A] transition-colors duration-300"

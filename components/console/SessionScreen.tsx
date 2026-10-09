@@ -234,9 +234,7 @@ export default function SessionScreen({ engine, loaded, playing, vaultOpen, fade
           001 | 1 | 000
         </span>
         <span className={styles.sessionName}>
-          <strong>
-            {SESSION.artist} — {SESSION.title}
-          </strong>
+          <strong>{SESSION.title}</strong>
           <span>
             {SESSION.credit} · {SESSION.bpm} BPM
           </span>

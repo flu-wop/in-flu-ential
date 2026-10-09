@@ -57,9 +57,7 @@ export default function TransportBar() {
           ))}
         </div>
         <div className={s.info}>
-          <strong>
-            {SESSION.artist} — {SESSION.title}
-          </strong>
+          <strong>{SESSION.title}</strong>
           <span>
             {status} · {SESSION.credit}
           </span>

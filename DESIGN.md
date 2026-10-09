@@ -65,9 +65,13 @@ Don't hand-style a page; extend the kit instead.
 
 ## Pricing (Oct 2026)
 
-Website $3,000 ($1,500 deposit). Social media marketing $5,000 with the
-website included ($2,500 deposit). AI for contractors by custom quote.
-Website starter kit $50, the only low-cost option.
+All on the Business page (`/products` redirects to `/business#kit`).
+Website $3,000: $1,500 to start, $1,500 before launch. Social media
+marketing $5,000 with the website included, run for at least 30 days, then
+an optional monthly retainer: $2,500 to start, $2,500 before launch. Two
+rounds of revisions per package. AI for contractors by custom quote (inquiry
+form). Website starter kit $50. Checkout buttons use Stripe Payment Links set
+in `lib/checkout.ts`; empty links fall back to the inquiry form.
 
 ## Rules
 

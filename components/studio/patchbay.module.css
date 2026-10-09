@@ -21,7 +21,7 @@
 .row {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) 1px repeat(6, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.15fr) 1px repeat(5, minmax(0, 1fr));
   align-items: start;
   gap: 2px;
   padding: 12px 8px 34px;

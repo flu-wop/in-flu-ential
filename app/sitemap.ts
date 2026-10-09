@@ -10,7 +10,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/music",
     "/portfolio",
     "/privacy",
-    "/products",
     "/terms",
     "/vault",
   ];

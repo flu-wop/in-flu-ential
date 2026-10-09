@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
-import { StudioPage, ChannelHeader, Panel, PanelText, Rows, Cta } from "@/components/studio/Studio";
+import { StudioPage, ChannelHeader, Panel, PanelText, Accordion, Cta } from "@/components/studio/Studio";
 import k from "@/components/studio/studio.module.css";
+import { CHECKOUT } from "@/lib/checkout";
+import { SITE_COUNT } from "@/lib/work";
 
 export const metadata: Metadata = {
   title: "Business | IN-FLU-ENTIAL LLC",
-  description: "Websites from $3,000, social media marketing with a website from $5,000, and custom AI tools for contractors.",
+  description:
+    "Websites from $3,000, social media marketing with a website from $5,000, custom AI tools for contractors, and a $50 starter kit.",
 };
 
 const LANES = [
@@ -17,9 +20,9 @@ const LANES = [
   },
   {
     slot: "Lane B",
-    title: "Campaigns",
-    text: "Social media marketing for artists and local businesses: positioning, content calendars, short-form video and launch campaigns, with your website built in.",
-    chips: ["Release strategy", "Social", "Video"],
+    title: "Social media marketing",
+    text: "A strategy built for your business and run for at least 30 days, with your website built in. Keep it going afterward on a monthly retainer.",
+    chips: ["Strategy", "Content calendar", "Short-form video"],
     id: undefined,
   },
   {
@@ -31,50 +34,106 @@ const LANES = [
   },
 ];
 
-const PACKAGES = [
+interface Checkout {
+  label: string; // shown when a Stripe link is set
+  link: string;
+  service: string; // inquiry form preselect when no link is set
+}
+
+interface Pkg {
+  name: string;
+  price: string;
+  terms: string;
+  tagline: string;
+  includes: string[];
+  featured?: boolean;
+  tag?: string;
+  checkout: Checkout;
+}
+
+const PACKAGES: Pkg[] = [
   {
     name: "Website",
     price: "$3,000",
-    deposit: "$1,500 deposit to start",
+    terms: "$1,500 to start · $1,500 before launch",
     tagline: "A production site you own, built on the same stack as every site in Work.",
     includes: [
       "Custom design for your brand",
       "Booking, store or paywall where you need it",
       "Stripe or Square payments",
       "Email confirmations",
-      "Domain setup and launch",
-      "Handoff doc with every login",
+      "Two rounds of revisions",
+      "Domain setup, launch and a handoff doc with every login",
     ],
+    checkout: { label: "Pay $1,500 deposit", link: CHECKOUT.websiteDeposit, service: "Website build" },
   },
   {
     name: "Social media marketing",
     price: "$5,000",
-    deposit: "$2,500 deposit to start",
-    tagline: "A full campaign with the website included.",
+    terms: "$2,500 to start · $2,500 before launch",
+    tagline: "Strategy built and run for at least 30 days, with the website included.",
     includes: [
       "Everything in Website",
-      "Brand positioning",
+      "Brand positioning and strategy",
       "Content calendar",
       "Short-form video and clips",
-      "Launch or release campaign",
+      "At least 30 days of running the campaign",
+      "Two rounds of revisions on the strategy",
     ],
     featured: true,
+    tag: "Website included",
+    checkout: { label: "Pay $2,500 deposit", link: CHECKOUT.socialDeposit, service: "Campaign or artist rollout" },
   },
   {
     name: "AI for contractors",
     price: "Custom quote",
-    deposit: "Scoped after a walkthrough",
+    terms: "Scoped after a walkthrough",
     tagline: "Tools built around how your jobs actually run.",
     includes: ["Walkthrough of your current process", "Written scope and price", "Estimating, scheduling or job docs", "Training for your team"],
+    checkout: { label: "Request a quote", link: "", service: "AI tools for my business" },
   },
+];
+
+const KIT_INCLUDES = [
+  "Plain-English setup guide for your industry",
+  "Starter Next.js template: clone, fill in your info, push",
+  "Booking form with a Stripe deposit flow",
+  "Turso database and Resend email confirmations",
+  "Setup checklist from zero to live",
+  "Lifetime access to guide updates",
 ];
 
 const STEPS = [
   { title: "Call", text: "A short conversation about what you're building and where you are now." },
-  { title: "Proposal", text: "Scope, timeline and price in writing. Half down starts the build." },
-  { title: "Build", text: "You see progress on a live link the whole way, not a reveal at the end." },
-  { title: "Launch", text: "Domain, handoff notes and logins, plus support after it's live." },
+  { title: "Deposit", text: "Scope, timeline and price in writing. Half down starts the work." },
+  { title: "Build", text: "You see progress on a live link the whole way, with two rounds of revisions." },
+  { title: "Launch", text: "The balance is due before launch. Then your domain goes live and you get the handoff doc." },
 ];
+
+const FAQ = [
+  { q: "When is the rest of the payment due?", a: "Half is due to start. The balance is due before your site goes live on your domain, or before your campaign launches." },
+  { q: "What counts as a revision?", a: "A round is one set of changes sent together. Two rounds are included. Changes beyond that, or new features, are quoted before any work starts." },
+  { q: "What happens after the first 30 days of marketing?", a: "You can stop there with the strategy, calendar and content in hand, or keep it running on a monthly retainer." },
+  { q: "Do I need to know how to code for the starter kit?", a: "Basic comfort with a terminal and following instructions. The guide is written for first-timers, step by step." },
+  { q: "How is the starter kit different from Squarespace or Wix?", a: "You own the code and the data, and pay nothing monthly beyond your domain (about $12 a year). Hosting on Vercel is free, and bookings charge clients directly to your Stripe." },
+];
+
+// With a Stripe Payment Link: one-click checkout. Without one: the inquiry
+// form, preselected for this package.
+function CheckoutButton({ c, solid }: { c: Checkout; solid?: boolean }) {
+  if (c.link)
+    return (
+      <Cta href={c.link} solid={solid}>
+        {c.label}
+      </Cta>
+    );
+  const label = c.label.startsWith("Pay") ? "Start this package" : c.label;
+  return (
+    <Cta href={`/booking?service=${encodeURIComponent(c.service)}`} solid={solid}>
+      {label}
+    </Cta>
+  );
+}
 
 export default function BusinessPage() {
   return (
@@ -86,9 +145,9 @@ export default function BusinessPage() {
             Where the boardroom <em>meets the booth</em>
           </>
         }
-        lede="Websites, campaigns and AI tools for artists, local businesses and contractors, built by someone who has worked every side of the room."
+        lede="Websites, social media marketing and AI tools for artists, local businesses and contractors, built by someone who has worked every side of the room."
         meta={[
-          ["Sites live", "19"],
+          ["Sites live", String(SITE_COUNT)],
           ["Music credits", "29"],
           ["Field years", "10"],
         ]}
@@ -129,22 +188,37 @@ export default function BusinessPage() {
             <div className={`${k.card} ${t.featured ? k.featured : ""}`} key={t.name}>
               <div className={k.cardSlot}>
                 <span>{t.name}</span>
-                {t.featured && <span className={k.tag}>Website included</span>}
+                {t.tag && <span className={k.tag}>{t.tag}</span>}
               </div>
               <div className={k.cardPrice}>{t.price}</div>
-              <span className={k.cardNote}>{t.deposit}</span>
+              <span className={k.cardNote}>{t.terms}</span>
               <p className={k.cardText}>{t.tagline}</p>
               <ul className={k.list}>
                 {t.includes.map((i) => (
                   <li key={i}>{i}</li>
                 ))}
               </ul>
+              <div style={{ marginTop: "auto", paddingTop: 6 }}>
+                <CheckoutButton c={t.checkout} solid={t.featured} />
+              </div>
             </div>
           ))}
         </div>
-        <PanelText>Doing it yourself? The website starter kit is $50.</PanelText>
+        <PanelText>After launch, keep things running with a monthly retainer. Ask about it on your call.</PanelText>
+      </Panel>
+
+      <Panel title="Kit · Do it yourself" meta="One-time" heading="Website starter kit · $50" id="kit">
+        <PanelText>
+          For smaller budgets: the same booking and payments stack as the sites in Work, with a guide that takes you
+          from zero to live in a weekend.
+        </PanelText>
+        <ul className={k.list}>
+          {KIT_INCLUDES.map((i) => (
+            <li key={i}>{i}</li>
+          ))}
+        </ul>
         <div>
-          <Cta href="/products">See the starter kit</Cta>
+          <CheckoutButton c={{ label: "Get the kit · $50", link: CHECKOUT.starterKit, service: "Starter kit help" }} />
         </div>
       </Panel>
 
@@ -159,22 +233,16 @@ export default function BusinessPage() {
         </ol>
       </Panel>
 
-      <Panel title="Behind the desk" meta="James Afflu · Flu" heading="Who you're working with">
-        <p className={k.bio}>
-          James Afflu, known as Flu, is a producer, engineer and builder based in New Orleans. Born to Ghanaian
-          parents and shaped by Toronto and Chicago, he spent ten years in industrial demolition, working his way
-          from general labor to project manager, while building a music career alongside it: production for
-          Curren$y, Boosie Badazz and records featuring Wiz Khalifa, and an engineering credit on Killer Mike&apos;s
-          MICHAEL. He has managed Mid City Sound Studios since 2024. Today he runs IN-FLU-ENTIAL LLC, building
-          websites, campaigns and AI tools for artists, local businesses and contractors.
-        </p>
-        <Rows
-          rows={[
-            ["Roots", "Ghana"],
-            ["Shaped in", "Toronto · Chicago"],
-            ["Home", "New Orleans"],
-          ]}
-        />
+      <Panel title="Questions" meta={`${FAQ.length} answers`}>
+        <div>
+          {FAQ.map((f) => (
+            <Accordion key={f.q} title={f.q}>
+              <p className={k.cardText} style={{ fontSize: 15 }}>
+                {f.a}
+              </p>
+            </Accordion>
+          ))}
+        </div>
       </Panel>
     </StudioPage>
   );

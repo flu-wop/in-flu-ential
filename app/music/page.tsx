@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
-import { StudioPage, ChannelHeader, Panel, PanelText, Cta } from "@/components/studio/Studio";
+import { StudioPage, ChannelHeader, Panel, PanelText, Rows, Cta } from "@/components/studio/Studio";
+import k from "@/components/studio/studio.module.css";
 import s from "./music.module.css";
 
 const LANES = ["#4E9C8F", "#D4AF77", "#8A6BB0", "#4C77B4", "#B2412F", "#3D8753"];
@@ -13,10 +14,9 @@ const CREDITS: { artist: string; role: string; description: string; did: string[
     did: ["Produced", "Recorded"],
   },
   {
-    // Credit formalization in progress via Reid Whick; update wording once confirmed.
     artist: "Killer Mike — MICHAEL",
-    role: "Engineering",
-    description: "Engineering credit on the album that won Best Rap Album at the 2024 Grammys.",
+    role: "Recording engineer",
+    description: "Recorded Curren$y's verse on the album that won Best Rap Album at the 2024 Grammys. Grammy participation certificate.",
     did: ["Recorded"],
   },
   {
@@ -156,6 +156,23 @@ export default function MusicPage() {
             </div>
           ))}
         </div>
+      </Panel>
+      <Panel title="Behind the desk" meta="James Afflu · Flu" heading="Who's in the room">
+        <p className={k.bio}>
+          James Afflu, known as Flu, is a producer, engineer and builder. Born to Ghanaian parents and shaped by
+          Toronto and Chicago, he spent ten years in industrial demolition, working his way from general labor to
+          project manager, while building a music career alongside it: production for Curren$y, Boosie Badazz and
+          records featuring Wiz Khalifa, and recording Curren$y&apos;s verse on Killer Mike&apos;s Grammy-winning
+          MICHAEL. He has managed Mid City Sound Studios since 2024, and runs IN-FLU-ENTIAL LLC, building websites,
+          campaigns and AI tools for artists, local businesses and contractors.
+        </p>
+        <Rows
+          rows={[
+            ["Roots", "Ghana"],
+            ["Shaped in", "Toronto · Chicago"],
+            ["Studio", "Mid City Sound"],
+          ]}
+        />
       </Panel>
     </StudioPage>
   );

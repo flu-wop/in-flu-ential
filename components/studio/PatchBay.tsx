@@ -14,7 +14,6 @@ const JACKS = [
   { label: "Business", short: "Biz", href: "/business" },
   { label: "Work", short: "Work", href: "/portfolio" },
   { label: "Book", short: "Book", href: "/booking" },
-  { label: "Kits", short: "Kits", href: "/products" },
   { label: "Vault", short: "Vault", href: "/vault" },
 ];
 
