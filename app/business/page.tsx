@@ -22,16 +22,16 @@ const LANES = [
   },
   {
     slot: "Lane B",
-    title: "Social media marketing",
+    title: "Social Media Marketing",
     text: "A strategy built for your business and run for at least 30 days, with your website built in. Keep it going afterward on a monthly retainer.",
-    chips: ["Strategy", "Content calendar", "Short-form video"],
+    chips: ["Strategy", "Content Calendar", "Short-Form Video"],
     id: undefined,
   },
   {
     slot: "Lane C",
-    title: "AI for contractors and industrial",
+    title: "AI for Contractors and Industrial",
     text: "Ten years in industrial demolition, from general labor to project manager. I build AI tools for contractors because I've done the work they're still doing by hand: estimating, scheduling, job documentation and bids.",
-    chips: ["Estimating", "Scheduling", "Job docs", "Bids"],
+    chips: ["Estimating", "Scheduling", "Job Docs", "Bids"],
     id: "ai",
   },
 ];
@@ -67,32 +67,32 @@ const PACKAGES: Pkg[] = [
       "Two rounds of revisions",
       "Domain setup, launch and a handoff doc with every login",
     ],
-    checkout: { label: "Pay $1,500 deposit", product: "website-deposit", service: "Website build" },
+    checkout: { label: "Pay $1,500 Deposit", product: "website-deposit", service: "Website Build" },
   },
   {
-    name: "Social media marketing",
+    name: "Social Media Marketing",
     price: "$5,000",
     terms: "$2,500 to start · $2,500 before launch",
     tagline: "Strategy built and run for at least 30 days, with the website included.",
     includes: [
       "Everything in Website",
-      "Brand positioning and strategy",
-      "Content calendar",
+      "Brand Positioning and Strategy",
+      "Content Calendar",
       "Short-form video and clips",
       "At least 30 days of running the campaign",
       "Two rounds of revisions on the strategy",
     ],
     featured: true,
-    tag: "Website included",
-    checkout: { label: "Pay $2,500 deposit", product: "social-deposit", service: "Campaign or artist rollout" },
+    tag: "Website Included",
+    checkout: { label: "Pay $2,500 Deposit", product: "social-deposit", service: "Campaign or Artist Rollout" },
   },
   {
-    name: "AI for contractors",
+    name: "AI for Contractors",
     price: "Custom quote",
     terms: "Scoped after a walkthrough",
     tagline: "Tools built around how your jobs actually run.",
     includes: ["Walkthrough of your current process", "Written scope and price", "Estimating, scheduling or job docs", "Training for your team"],
-    checkout: { label: "Request a quote", service: "AI tools for my business" },
+    checkout: { label: "Request a Quote", service: "AI Tools for My Business" },
   },
 ];
 
@@ -125,7 +125,7 @@ const FAQ = [
 function Checkout({ c, title, solid }: { c: Checkout; title: string; solid?: boolean }) {
   if (c.product && stripeReady() && PRODUCTS[c.product].available)
     return <CheckoutButton product={c.product} label={c.label} title={title} solid={solid} />;
-  const label = c.label.startsWith("Pay") ? "Start this package" : c.label;
+  const label = c.label.startsWith("Pay") ? "Start This Package" : c.label;
   return (
     <Cta href={`/booking?service=${encodeURIComponent(c.service)}`} solid={solid}>
       {label}
@@ -140,7 +140,7 @@ export default function BusinessPage() {
         channel="Channel 02 · Business"
         title={
           <>
-            Where the boardroom <em>meets the booth</em>
+            Where the Boardroom <em>Meets the Booth</em>
           </>
         }
         lede="Websites, social media marketing and AI tools for artists, local businesses and contractors, built by someone who has worked every side of the room."
@@ -152,14 +152,14 @@ export default function BusinessPage() {
         actions={
           <>
             <Cta href="/booking" solid>
-              Start a project
+              Start a Project
             </Cta>
-            <Cta href="/portfolio">See the work</Cta>
+            <Cta href="/portfolio">See the Work</Cta>
           </>
         }
       />
 
-      <Panel title="Lanes · What I build" meta="3 lanes" heading="Three ways to work together">
+      <Panel title="Lanes · What I build" meta="3 lanes" heading="Three Ways to Work Together">
         <div className={k.cards}>
           {LANES.map((l) => (
             <div className={k.card} key={l.title} id={l.id}>
@@ -211,7 +211,7 @@ export default function BusinessPage() {
         />
       </Panel>
 
-      <Panel title="Kit · Do it yourself" meta="One-time" heading="Website starter kit · $50" id="kit">
+      <Panel title="Kit · Do it yourself" meta="One-time" heading="Website Starter Kit · $50" id="kit">
         <PanelText>
           For smaller budgets: the same booking and payments stack as the sites in Work, with a guide that takes you
           from zero to live in a weekend.
@@ -223,9 +223,9 @@ export default function BusinessPage() {
         </ul>
         <div>
           {PRODUCTS["starter-kit"].available ? (
-            <Checkout c={{ label: "Get the kit · $50", product: "starter-kit", service: "Starter kit help" }} title="Starter kit" />
+            <Checkout c={{ label: "Get the Kit · $50", product: "starter-kit", service: "Starter Kit Help" }} title="Starter Kit" />
           ) : (
-            <Cta href="/booking?service=Starter%20kit%20help">Coming soon · get notified</Cta>
+            <Cta href="/booking?service=Starter%20Kit%20Help">Coming Soon · Get Notified</Cta>
           )}
         </div>
       </Panel>

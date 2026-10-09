@@ -18,7 +18,7 @@ export default function WorkPage() {
         channel="Channel 03 · Work"
         title={
           <>
-            Sites that <em>ship</em>
+            Sites That <em>Ship</em>
           </>
         }
         lede="Every site here is live. Booking systems, stores, paywalls and campaigns, built for artists and local businesses. Open a category, then tap through to the real thing."
@@ -27,7 +27,7 @@ export default function WorkPage() {
           ["Categories", String(CATEGORIES.length)],
           ["Stack", "Next.js"],
         ]}
-        actions={<Cta href="/booking" solid>Start a project</Cta>}
+        actions={<Cta href="/booking" solid>Start a Project</Cta>}
       />
 
       <Panel title="Session · Builds" meta={`${total} sites`}>

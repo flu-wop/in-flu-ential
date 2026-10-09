@@ -14,7 +14,7 @@ export default function BookingPage() {
         channel="Channel 04 · Book"
         title={
           <>
-            Start a <em>project</em>
+            Start a <em>Project</em>
           </>
         }
         lede="Tell me what you're working on. Every inquiry gets a personal reply within one business day."

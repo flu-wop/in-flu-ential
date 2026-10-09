@@ -72,7 +72,7 @@ export default function CinematicNav() {
             className="text-[11px] tracking-[0.3em] text-[#080808] bg-[#D4AF77] px-5 py-2.5 uppercase hover:bg-[#E8C97A] transition-colors duration-300"
             style={{ fontFamily: "DM Sans, sans-serif" }}
           >
-            Start a project
+            Start a Project
           </Link>
         </div>
 
@@ -115,7 +115,7 @@ export default function CinematicNav() {
             className="mt-8 text-center px-6 py-4 bg-[#D4AF77] text-[#080808] text-[11px] tracking-[0.35em] uppercase"
             style={{ fontFamily: "DM Sans, sans-serif" }}
           >
-            Start a project
+            Start a Project
           </Link>
         </div>
       )}

@@ -9,13 +9,13 @@ const LANES = ["#4E9C8F", "#D4AF77", "#8A6BB0", "#4C77B4", "#B2412F", "#3D8753"]
 const CREDITS: { artist: string; role: string; description: string; did: string[] }[] = [
   {
     artist: "Curren$y",
-    role: "In-house producer / engineer",
+    role: "In-House Producer / Engineer",
     description: "Sustained creative partnership. Production, engineering, and session coordination across multiple projects, including Hang Glider.",
     did: ["Produced", "Recorded"],
   },
   {
     artist: "Killer Mike — MICHAEL",
-    role: "Recording engineer",
+    role: "Recording Engineer",
     description: "Grammy participation award for work on MICHAEL, Best Rap Album 2024. Recorded Curren$y's verse.",
     did: ["Recorded"],
   },
@@ -27,13 +27,13 @@ const CREDITS: { artist: string; role: string; description: string; did: string[
   },
   {
     artist: "Quando Rondo",
-    role: "Producer / engineer",
+    role: "Producer / Engineer",
     description: "Produced and recorded.",
     did: ["Produced", "Recorded"],
   },
   {
     artist: "NoCap",
-    role: "Producer / engineer",
+    role: "Producer / Engineer",
     description: "Produced and recorded.",
     did: ["Produced", "Recorded"],
   },
@@ -45,25 +45,25 @@ const CREDITS: { artist: string; role: string; description: string; did: string[
   },
   {
     artist: "Kevin Gates",
-    role: "Recording engineer",
+    role: "Recording Engineer",
     description: "Recording sessions.",
     did: ["Recorded"],
   },
   {
     artist: "Flau'jae",
-    role: "Recording engineer",
+    role: "Recording Engineer",
     description: "Recording sessions.",
     did: ["Recorded"],
   },
   {
     artist: "MadeinTYO",
-    role: "Recording engineer",
+    role: "Recording Engineer",
     description: "Recording sessions.",
     did: ["Recorded"],
   },
   {
     artist: "Donald Markowitz",
-    role: "Ongoing collaborator",
+    role: "Ongoing Collaborator",
     description: "Extensive, ongoing work together across records and Mid City Sound.",
     did: ["Produced", "Recorded"],
   },
@@ -72,22 +72,22 @@ const CREDITS: { artist: string; role: string; description: string; did: string[
 // The order is the order a record moves through: tracked, developed, placed, released.
 const SERVICES = [
   {
-    title: "Recording and engineering",
+    title: "Recording and Engineering",
     text: "Sessions at Mid City Sound Studios in New Orleans. Pro Tools, treated rooms, and an experienced engineer on every session.",
     note: "Single-mic demos to full band tracking.",
   },
   {
-    title: "Artist development",
+    title: "Artist Development",
     text: "Brand identity, image direction, press kit, social strategy, and a release roadmap for artists who are serious about longevity.",
     note: "Strategy first. Content second. Culture third.",
   },
   {
-    title: "Music supervision",
+    title: "Music Supervision",
     text: "Sync licensing and placement for film, TV, and brand campaigns. We know both sides of the table.",
     note: "Placement that actually fits.",
   },
   {
-    title: "Release strategy",
+    title: "Release Strategy",
     text: "From pre-save to playlist pitching to DSP optimization, every day of the rollout has a purpose.",
     note: "Single, EP, or album. The full arc.",
   },
@@ -100,7 +100,7 @@ export default function MusicPage() {
         channel="Channel 01 · Music"
         title={
           <>
-            Built in the <em>studio</em>
+            Built in the <em>Studio</em>
           </>
         }
         lede="Producer and engineer, and manager of Mid City Sound Studios in New Orleans since 2024. Artist development and music supervision, rooted in real sessions rather than theory."
@@ -112,14 +112,14 @@ export default function MusicPage() {
         actions={
           <>
             <Cta href="/booking" solid>
-              Book a session
+              Book a Session
             </Cta>
             <Cta href="https://midcitysound.com">Mid City Sound</Cta>
           </>
         }
       />
 
-      <Panel title="Session · Credits" meta={`${CREDITS.length} lanes`} heading="Who we've been in the room with">
+      <Panel title="Session · Credits" meta={`${CREDITS.length} lanes`} heading="Who We've Been in the Room with">
         <div className={s.tracks}>
           {CREDITS.map((c, i) => (
             <div className={s.track} key={c.artist} style={{ "--lane": LANES[i % LANES.length] } as CSSProperties}>
@@ -141,7 +141,7 @@ export default function MusicPage() {
         </div>
       </Panel>
 
-      <Panel title="Inserts · Services" meta="Signal flows A → D" heading="Music services that move things">
+      <Panel title="Inserts · Services" meta="Signal flows A → D" heading="Music Services That Move Things">
         <PanelText>Each service is an insert on the chain. Use one, or run a record through all four.</PanelText>
         <div className={s.inserts}>
           {SERVICES.map((svc, i) => (
@@ -157,7 +157,7 @@ export default function MusicPage() {
           ))}
         </div>
       </Panel>
-      <Panel title="Behind the desk" meta="James Afflu · Flu" heading="Who's in the room">
+      <Panel title="Behind the desk" meta="James Afflu · Flu" heading="Who's in the Room">
         <p className={k.bio}>
           James Afflu, known as Flu, is a producer, engineer and builder. Born to Ghanaian parents and shaped by
           Toronto and Chicago, he spent ten years in industrial demolition, working his way from general labor to

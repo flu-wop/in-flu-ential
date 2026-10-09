@@ -14,12 +14,14 @@ export default async function CheckoutComplete({ searchParams }: { searchParams:
   let paid = false;
   let product = "";
   let email = "";
+  let isKit = false;
   if (stripe && session_id && /^cs_[A-Za-z0-9_]+$/.test(session_id)) {
     try {
       const session = await stripe.checkout.sessions.retrieve(session_id);
       paid = session.payment_status === "paid";
       const id = session.metadata?.product;
       product = isProductId(id) ? PRODUCTS[id].name : "";
+      isKit = id === "starter-kit";
       email = session.customer_details?.email ?? "";
     } catch {
       paid = false;
@@ -30,10 +32,12 @@ export default async function CheckoutComplete({ searchParams }: { searchParams:
     <StudioPage>
       <ChannelHeader
         channel="Checkout"
-        title={paid ? <>Payment <em>received</em></> : "Payment not completed"}
+        title={paid ? <>Payment <em>Received</em></> : "Payment Not Completed"}
         lede={
           paid
-            ? "Thank you. You'll hear from me within one business day to set the kickoff call."
+            ? isKit
+              ? "Thank you. Your kit is ready to download below. Bookmark this page to download it again."
+              : "Thank you. You'll hear from me within one business day to set the kickoff call."
             : "Nothing was charged. You can try again, or send an inquiry and we'll sort it out together."
         }
       />
@@ -45,13 +49,23 @@ export default async function CheckoutComplete({ searchParams }: { searchParams:
               ["Receipt sent to", email || "your email"],
             ]}
           />
+          {isKit &&
+            (process.env.KIT_DOWNLOAD_URL ? (
+              <div>
+                <Cta href={`/api/kit?session_id=${session_id}`} solid>
+                  Download the Kit
+                </Cta>
+              </div>
+            ) : (
+              <PanelText>Your download link will be emailed to you within one business day.</PanelText>
+            ))}
           <PanelText>Stripe has emailed your receipt. Reply to it or email flu.wop@gmail.com with anything you want me to know before we talk.</PanelText>
         </Panel>
       ) : (
-        <Panel title="Next step">
+        <Panel title="Next Step">
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <Cta href="/business" solid>Back to packages</Cta>
-            <Cta href="/booking">Send an inquiry</Cta>
+            <Cta href="/business" solid>Back to Packages</Cta>
+            <Cta href="/booking">Send an Inquiry</Cta>
           </div>
         </Panel>
       )}

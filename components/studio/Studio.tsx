@@ -101,6 +101,12 @@ export function Rows({ rows }: { rows: [ReactNode, ReactNode][] }) {
 export function Cta({ href, children, solid }: { href: string; children: ReactNode; solid?: boolean }) {
   const external = href.startsWith("http");
   const cls = solid ? s.ctaSolid : s.cta;
+  if (href.startsWith("/api/"))
+    return (
+      <a href={href} className={cls}>
+        {children} <span aria-hidden="true">↓</span>
+      </a>
+    );
   if (external)
     return (
       <a href={href} className={cls} target="_blank" rel="noopener noreferrer">

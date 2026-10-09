@@ -80,7 +80,7 @@ export default function SessionScreen({ engine, loaded, playing, vaultOpen, fade
       g.fillText(ch.track, 8, y + laneH / 2 - 6);
       g.fillStyle = "#6f695d";
       g.font = "400 9px 'DM Mono', monospace";
-      g.fillText(locked ? "locked" : muted ? "muted" : "stereo", 8, y + laneH / 2 + 8);
+      g.fillText(locked ? "Locked" : muted ? "Muted" : "Stereo", 8, y + laneH / 2 + 8);
 
       // region
       const rx = HEADER_W + 1;

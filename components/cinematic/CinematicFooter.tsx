@@ -16,15 +16,15 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     title: "Services",
     links: [
       { label: "Websites", href: "/business" },
-      { label: "Social media marketing", href: "/business" },
-      { label: "AI for contractors", href: "/business#ai" },
-      { label: "Starter kit", href: "/business#kit" },
+      { label: "Social Media Marketing", href: "/business" },
+      { label: "AI for Contractors", href: "/business#ai" },
+      { label: "Starter Kit", href: "/business#kit" },
     ],
   },
   {
     title: "Contact",
     links: [
-      { label: "Start a project", href: "/booking" },
+      { label: "Start a Project", href: "/booking" },
       { label: "Mid City Sound", href: "https://midcitysound.com" },
       { label: "flu.wop@gmail.com", href: "mailto:flu.wop@gmail.com" },
     ],
@@ -49,7 +49,7 @@ export default function CinematicFooter() {
             className="self-start md:self-auto px-6 py-3.5 text-[11px] tracking-[0.35em] uppercase text-[#080808] bg-[#D4AF77] hover:bg-[#E8C97A] transition-colors duration-300"
             style={{ fontFamily: "DM Sans, sans-serif" }}
           >
-            Start a project
+            Start a Project
           </Link>
         </div>
 

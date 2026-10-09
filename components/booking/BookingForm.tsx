@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import k from "@/components/studio/studio.module.css";
 
 const SESSIONS = [
-  "Website build",
-  "Campaign or artist rollout",
-  "AI tools for my business",
-  "Studio session at Mid City Sound",
-  "Starter kit help",
-  "Not sure yet, let's talk",
+  "Website Build",
+  "Campaign or Artist Rollout",
+  "AI Tools for My Business",
+  "Studio Session at Mid City Sound",
+  "Starter Kit Help",
+  "Not Sure Yet, Let's Talk",
 ];
 
 const TIMELINES = ["Immediately", "Within 30 days", "1–3 months", "Just exploring"];

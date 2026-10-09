@@ -70,8 +70,9 @@ Website $3,000: $1,500 to start, $1,500 before launch. Social media
 marketing $5,000 with the website included, run for at least 30 days, then
 an optional monthly retainer: $2,500 to start, $2,500 before launch. Two
 rounds of revisions per package. AI for contractors by custom quote (inquiry
-form). Website starter kit $50 (marked coming soon until `available` is
-flipped in `lib/products.ts`). Site care from $150/mo, marketing retainer
+form). Website starter kit $50, sold on the page; the file is delivered by
+`/api/kit`, which checks the paid Stripe session and redirects to
+KIT_DOWNLOAD_URL (kept out of this public repo). Site care from $150/mo, marketing retainer
 $500–1,000/mo.
 
 Checkout is Stripe embedded checkout on the page (`/api/checkout`, prices
@@ -91,6 +92,8 @@ the inquiry form.
 - **Sound only starts from a tap.** Browsers block autoplay; iPhones on
   silent mute Web Audio, so the console shows a note on iOS.
 - **Type does the luxury.** Restraint reads as expensive.
+- **Title Case** for every title, label, chip and button (minor words like
+  and, of, the, for stay lowercase). Body copy stays in sentence case.
 - **Motion:** slow fade/slide, 0.8–1.2s, no bounce, no overshoot.
 - **CTA style:** gold outline, uppercase, 11px, `0.35em` tracking.
 

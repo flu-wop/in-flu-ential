@@ -154,7 +154,7 @@ export async function POST(req: Request) {
             <a href="mailto:flu.wop@gmail.com" style="color: #C9A84C;">flu.wop@gmail.com</a>.
           </p>
           <div style="border-top: 1px solid #1a1a1a; padding-top: 24px;">
-            <p style="font-size: 11px; color: #444; margin: 0;">Global Roots. Executive Vision. Creative Execution.</p>
+            <p style="font-size: 11px; color: #444; margin: 0;">IN-FLU-ENTIAL LLC</p>
           </div>
         </div>
       `,
