@@ -57,6 +57,21 @@ export async function POST(req: NextRequest) {
   });
   if (owner.error) console.error("Payment notification email failed:", owner.error);
 
+  if ((id === "website-deposit" || id === "social-deposit") && c?.email) {
+    const link = `${SITE_URL}/intake?session_id=${session.id}`;
+    const client = await resend.emails.send({
+      from: FROM,
+      to: c.email,
+      replyTo: TO,
+      subject: "Deposit received — next step: your project intake",
+      html: `<div style="font-family:sans-serif;max-width:560px">
+        <h2 style="font-weight:400">Thanks${c.name ? `, ${esc(c.name.split(" ")[0])}` : ""}. Your deposit is in.</h2>
+        <p>Next step: <a href="${esc(link)}">fill out the project intake form</a>. It takes about 10 minutes and lets me start preparing before our kickoff call.</p>
+        <p>Questions? Reply to this email.</p></div>`,
+    });
+    if (client.error) console.error("Intake email failed:", client.error);
+  }
+
   if (id === "starter-kit" && c?.email) {
     const link = `${SITE_URL}/api/kit?session_id=${session.id}`;
     const buyer = await resend.emails.send({

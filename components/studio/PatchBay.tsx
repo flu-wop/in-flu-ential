@@ -13,8 +13,8 @@ const JACKS = [
   { label: "Music", short: "Music", href: "/music" },
   { label: "Business", short: "Biz", href: "/business" },
   { label: "Work", short: "Work", href: "/portfolio" },
-  { label: "Book", short: "Book", href: "/booking" },
   { label: "Vault", short: "Vault", href: "/vault" },
+  { label: "Book", short: "Book", href: "/booking" },
 ];
 
 type Pt = { x: number; y: number };

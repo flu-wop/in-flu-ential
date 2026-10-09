@@ -5,6 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { RoundedBox, Cylinder, Torus } from "@react-three/drei";
 import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
+import g from "./vaultgate.module.css";
 import Link from "next/link";
 import { useNonBlockingTexture, useNonBlockingHDRIEnvironment } from "../cinematic/nonBlockingAssets";
 
@@ -246,14 +247,15 @@ export default function VaultDoor3D({ onUnlock }: VaultDoor3DProps) {
   };
 
   return (
-    <div className="relative w-full h-[100dvh] overflow-hidden bg-[#060606]">
+    <div className={g.gate}>
       {/* Ambient backdrop */}
       <div
         className="absolute inset-0"
         style={{ background: "radial-gradient(ellipse 120% 100% at 50% 55%, #1a1208 0%, #080808 60%, #030303 100%)" }}
       />
 
-      {/* 3D canvas */}
+      {/* 3D canvas: fills the stage, which sits between the top nav and transport bar */}
+      <div className={g.stage}>
       {!webglFailed && (
         <Canvas
           camera={{ position: [0, 0, 7], fov: tier === "mobile" ? 42 : 38 }}
@@ -271,14 +273,16 @@ export default function VaultDoor3D({ onUnlock }: VaultDoor3DProps) {
 
       {/* Fallback if WebGL unavailable */}
       {webglFailed && (
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center z-[1]">
           <p className="text-[#A89880] text-sm tracking-[0.3em] uppercase" style={{ fontFamily: "DM Sans, sans-serif" }}>
             Enter the combination below
           </p>
         </div>
       )}
 
-      {/* Password UI overlaid at bottom */}
+      </div>
+
+      {/* Password UI: below the door in portrait, beside it in landscape */}
       <AnimatePresence>
         {phase !== "open" && (
           <motion.div
@@ -286,7 +290,7 @@ export default function VaultDoor3D({ onUnlock }: VaultDoor3DProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.6 }}
-            className="absolute bottom-0 left-0 right-0 z-20 flex flex-col items-center gap-4 px-6 pb-16"
+            className={g.panel}
           >
             <div className="text-center mb-1">
               <p className="text-[9px] tracking-[0.6em] text-[#D4AF77]/50 uppercase mb-1" style={{ fontFamily: "DM Sans, sans-serif" }}>

@@ -65,8 +65,9 @@ Don't hand-style a page; extend the kit instead.
   Keep back-of-card descriptions short so cards stay even.
 - **The session persists.** `SessionProvider` in the root layout owns the
   audio engine and the mix (knobs, faders, vault), so the song keeps playing
-  across pages. Subpages show a slim transport bar; stems only download once
-  someone opens the console or presses Play.
+  across pages and loops until stopped (resuming if the phone pauses audio).
+  Subpages show a slim transport bar with volume; the console has a master
+  fader. Stems only download once someone opens the console or presses Play.
 
 ## Pricing (Oct 2026)
 
@@ -85,8 +86,10 @@ only in `lib/products.ts`, return page `/checkout/complete` verifies the
 session server-side). Needs STRIPE_SECRET_KEY and
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in Vercel; without them the buttons open
 the inquiry form. `/api/stripe-webhook` (STRIPE_WEBHOOK_SECRET, event
-checkout.session.completed) emails James every payment and emails kit
-buyers their download link.
+checkout.session.completed) emails James every payment, emails kit buyers
+their download link, and emails deposit clients their intake link.
+`/intake` (questions in `lib/intake.ts`) only opens for a paid deposit
+session and emails the answers to James.
 
 ## Rules
 

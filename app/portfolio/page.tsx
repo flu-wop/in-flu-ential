@@ -32,8 +32,8 @@ export default function WorkPage() {
 
       <Panel title="Session · Builds" meta={`${total} sites`}>
         <div>
-          {CATEGORIES.map((cat, ci) => (
-            <Accordion key={cat.title} title={cat.title} meta={`${cat.sites.length} sites`} open={ci === 0}>
+          {CATEGORIES.map((cat) => (
+            <Accordion key={cat.title} title={cat.title} meta={`${cat.sites.length} sites`} open={false}>
               <div className={k.sites}>
                 {cat.sites.map((site) => (
                   <article className={k.site} key={site.name}>

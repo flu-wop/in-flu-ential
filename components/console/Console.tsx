@@ -156,6 +156,7 @@ export default function Console() {
   const eqTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const meterRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const levels = useRef<Record<string, number>>({});
+  const masterMeterRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
@@ -178,6 +179,15 @@ export default function Console() {
         const leds = el.children;
         for (let i = 0; i < leds.length; i++) (leds[i] as HTMLElement).classList.toggle(styles.on, i < lit);
       });
+      const mEl = masterMeterRef.current;
+      if (mEl) {
+        const t = engine.masterLevel();
+        const prev = levels.current.master ?? 0;
+        const lv = t > prev ? t : prev + (t - prev) * 0.12;
+        levels.current.master = lv;
+        const lit = Math.round(lv * LEDS);
+        for (let i = 0; i < mEl.children.length; i++) (mEl.children[i] as HTMLElement).classList.toggle(styles.on, i < lit);
+      }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
@@ -276,6 +286,22 @@ export default function Console() {
               </div>
             );
           })}
+          <div className={`${styles.strip} ${styles.masterStrip}`}>
+            <span className={styles.chnum}>Main</span>
+            <div className={styles.masterTop}>
+              <span>Stereo</span>
+              <span>Out</span>
+            </div>
+            <div className={styles.faderSec}>
+              <div className={styles.meter} ref={masterMeterRef} aria-hidden="true">
+                {Array.from({ length: LEDS }, (_, k) => (
+                  <div key={k} className={[styles.led, k >= LEDS - 2 ? styles.red : k >= LEDS - 5 ? styles.amber : ""].join(" ")} />
+                ))}
+              </div>
+              <Fader value={session.master} label="Master" locked={false} onChange={session.setMaster} />
+            </div>
+            <span className={styles.masterLabel}>Master</span>
+          </div>
         </div>
         <p className={styles.hint}>Tap a channel name to open it. Turn the knobs and ride the faders to mix.</p>
       </div>

@@ -25,6 +25,8 @@ interface SessionState {
   setKnob: (ch: ChannelId, k: KnobId, v: number) => void;
   setFader: (ch: ChannelId, v: number) => void;
   setComboKnob: (i: number, v: number) => boolean; // true when this turn unlocked the vault
+  master: number;
+  setMaster: (v: number) => void;
 }
 
 const SessionContext = createContext<SessionState | null>(null);
@@ -50,6 +52,8 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
   const [faders, setFaders] = useState(initFaders);
   const [combo, setCombo] = useState<number[]>([0, 0, 0]);
   const [vaultOpen, setVaultOpen] = useState(false);
+  const [master, setMasterState] = useState(FADER_UNITY);
+  const masterRef = useRef(FADER_UNITY);
   const pathname = usePathname();
 
   // Created on first use (the console mounting, or Play in the transport bar),
@@ -61,6 +65,7 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
       (Object.keys(KNOB_DEFAULTS) as KnobId[]).forEach((k) => e.setKnob(c.id, k, KNOB_DEFAULTS[k]));
       e.setFader(c.id, c.id === "vault" ? 0 : FADER_UNITY, 0.001);
     });
+    e.setMaster(masterRef.current);
     engineRef.current = e;
     setEngine(e);
     loadRef.current = e
@@ -71,6 +76,27 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => () => engineRef.current?.dispose(), []);
+
+  // The loop runs until someone presses stop. If the phone paused audio while
+  // the page was in the background, resume when it comes back.
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible") engineRef.current?.resumeIfNeeded();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("pageshow", onVisible);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("pageshow", onVisible);
+    };
+  }, []);
+
+  const setMaster = useCallback((v: number) => {
+    const clamped = Math.max(0, Math.min(1, v));
+    masterRef.current = clamped;
+    setMasterState(clamped);
+    engineRef.current?.setMaster(clamped);
+  }, []);
 
   const toggle = useCallback(async () => {
     const e = ensureEngine();
@@ -119,7 +145,7 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
 
   return (
     <SessionContext.Provider
-      value={{ engine, loaded, loadError, playing, knobs, faders, combo, vaultOpen, ensureEngine, toggle, setKnob, setFader, setComboKnob }}
+      value={{ engine, loaded, loadError, playing, knobs, faders, combo, vaultOpen, ensureEngine, toggle, setKnob, setFader, setComboKnob, master, setMaster }}
     >
       {children}
       {showBar && <TransportBar />}

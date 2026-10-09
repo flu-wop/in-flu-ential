@@ -116,18 +116,19 @@ export default function MusicPage() {
           </div>
           <div className={s.bioText}>
             <p className={k.bio}>
-              James Afflu, known as Flu, is a producer, engineer and builder. Born to Ghanaian parents and shaped by
-              Toronto and Chicago, he spent ten years in industrial demolition, working his way from general labor to
+              James Afflu, known as Flu, is a producer, engineer and builder. Born to Ghanaian parents in Toronto and
+              shaped by Chicago and New Orleans, he spent ten years in industrial demolition, working his way from general labor to
               project manager, while building a music career alongside it: production for Curren$y, Boosie Badazz and
               records featuring Wiz Khalifa, and a Grammy participation award for his work on Killer Mike&apos;s MICHAEL,
-              Best Rap Album 2024. He has managed Mid City Sound Studios since 2024, and runs IN-FLU-ENTIAL LLC,
-              building websites, campaigns and AI tools for artists, local businesses and contractors.
+              Best Rap Album 2024. He has managed Mid City Sound Studios since 2024, and runs IN-FLU-ENTIAL LLC
+              (est. 2014), building websites, campaigns and AI tools for artists, local businesses and contractors.
             </p>
             <Rows
               rows={[
                 ["Roots", "Ghana"],
-                ["Shaped In", "Toronto · Chicago"],
-                ["Studio", "Mid City Sound"],
+                ["Born", "Toronto"],
+                ["Shaped In", "Chicago · New Orleans"],
+                ["IN-FLU-ENTIAL LLC", "Est. 2014"],
               ]}
             />
           </div>

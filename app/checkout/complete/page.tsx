@@ -37,7 +37,7 @@ export default async function CheckoutComplete({ searchParams }: { searchParams:
           paid
             ? isKit
               ? "Thank you. Your kit is ready to download below. Bookmark this page to download it again."
-              : "Thank you. You'll hear from me within one business day to set the kickoff call."
+              : "Thank you. Next, fill out the short intake form so I can start preparing before our kickoff call."
             : "Nothing was charged. You can try again, or send an inquiry and we'll sort it out together."
         }
       />
@@ -49,6 +49,13 @@ export default async function CheckoutComplete({ searchParams }: { searchParams:
               ["Receipt sent to", email || "your email"],
             ]}
           />
+          {!isKit && (
+            <div>
+              <Cta href={`/intake?session_id=${session_id}`} solid>
+                Fill Out the Intake Form
+              </Cta>
+            </div>
+          )}
           {isKit &&
             (process.env.KIT_DOWNLOAD_URL ? (
               <div>

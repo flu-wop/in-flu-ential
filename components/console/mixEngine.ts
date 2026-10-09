@@ -25,6 +25,7 @@ interface Strip {
 export class MixEngine {
   ctx: AudioContext;
   private master: GainNode;
+  private masterAnalyser: AnalyserNode;
   private strips = {} as Record<ChannelId, Strip>;
   private buffers = {} as Partial<Record<ChannelId, AudioBuffer>>;
   private sources: AudioBufferSourceNode[] = [];
@@ -44,7 +45,17 @@ export class MixEngine {
     const limiter = ctx.createDynamicsCompressor();
     limiter.threshold.value = -3;
     limiter.ratio.value = 12;
-    this.master.connect(limiter).connect(ctx.destination);
+    this.masterAnalyser = ctx.createAnalyser();
+    this.masterAnalyser.fftSize = 1024;
+    this.master.connect(limiter);
+    limiter.connect(this.masterAnalyser);
+    limiter.connect(ctx.destination);
+
+    // Phones suspend or interrupt audio (calls, screen lock, tab switches).
+    // While the session is meant to be playing, pick it back up.
+    ctx.onstatechange = () => {
+      if (this.playing && ctx.state !== "running") ctx.resume().catch(() => {});
+    };
 
     const verb = ctx.createConvolver();
     verb.buffer = this.makeImpulse(2.4);
@@ -164,6 +175,24 @@ export class MixEngine {
     const t = this.ctx.currentTime;
     if (knob === "send") s.send.gain.setTargetAtTime((value / 30) * 0.9, t, 0.03);
     else s[knob].gain.setTargetAtTime(value - 15, t, 0.03);
+  }
+
+  // Master fader / transport volume, same 0–1 scale as the channel faders.
+  setMaster(value: number) {
+    this.master.gain.setTargetAtTime(0.9 * faderToGain(value), this.ctx.currentTime, 0.03);
+  }
+
+  resumeIfNeeded() {
+    if (this.playing && this.ctx.state !== "running") this.ctx.resume().catch(() => {});
+  }
+
+  masterLevel() {
+    if (!this.playing) return 0;
+    this.masterAnalyser.getFloatTimeDomainData(this.timeBuf);
+    let sum = 0;
+    for (let i = 0; i < this.timeBuf.length; i++) sum += this.timeBuf[i] * this.timeBuf[i];
+    const db = 20 * Math.log10(Math.sqrt(sum / this.timeBuf.length) + 1e-9);
+    return Math.max(0, Math.min(1, (db + 50) / 50));
   }
 
   setFader(ch: ChannelId, value: number, smooth = 0.02) {
