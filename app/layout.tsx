@@ -4,6 +4,7 @@ import "@flu-wop/design-system/compat.css";
 import "./globals.css";
 import { SITE_URL } from "@/lib/site-url";
 import SessionProvider from "@/components/console/SessionProvider";
+import { SiteAnalytics } from "@/components/analytics/SiteAnalytics";
 import { Caveat } from "next/font/google";
 
 // Handwriting for the Polaroid captions on Music.
@@ -37,6 +38,7 @@ export default function RootLayout({
     <html data-theme="studio" lang="en" className={`scroll-smooth ${caveat.variable}`}>
       <body>
         <SessionProvider>{children}</SessionProvider>
+        <SiteAnalytics />
       </body>
     </html>
   );

@@ -5,6 +5,7 @@ import { loadStripe, type Stripe } from "@stripe/stripe-js";
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 import type { ProductId } from "@/lib/products";
 import s from "./checkout.module.css";
+import { beacon } from "@/lib/beacon";
 import k from "@/components/studio/studio.module.css";
 
 let stripePromise: Promise<Stripe | null> | null = null;
@@ -33,6 +34,7 @@ export default function CheckoutButton({ product, label, title, solid }: { produ
   }, [open]);
 
   const fetchClientSecret = useCallback(async () => {
+    beacon("checkout_click");
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
