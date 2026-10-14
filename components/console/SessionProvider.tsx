@@ -236,7 +236,7 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
     [combo, vaultOpen, engageMix]
   );
 
-  const showBar = pathname !== "/";
+  const showBar = pathname !== "/" && !pathname?.startsWith("/admin");
 
   return (
     <SessionContext.Provider

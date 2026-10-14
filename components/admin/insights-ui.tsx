@@ -12,7 +12,7 @@ export function longDate(d: string) {
 
 export function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-neutral-900 border border-neutral-800 rounded-sm p-6">
+    <div className="bg-neutral-900 border border-neutral-800 p-6">
       <h3 className="font-display text-xl text-gold mb-4">{title}</h3>
       {children}
     </div>
@@ -29,7 +29,7 @@ function Delta({ cur, prev }: { cur: number; prev: number }) {
 
 export function Stat({ label, value, cur, prev }: { label: string; value: string; cur: number; prev: number }) {
   return (
-    <div className="bg-neutral-900 border border-neutral-800 rounded-sm p-5">
+    <div className="bg-neutral-900 border border-neutral-800 p-5">
       <div className="text-xs text-neutral-400 uppercase tracking-wide mb-1">{label}</div>
       <div className="font-display text-3xl text-neutral-100 mb-1">{value}</div>
       <Delta cur={cur} prev={prev} />
@@ -65,7 +65,7 @@ export function Overview({ data }: { data: Insights }) {
       {data.attention.length > 0 && (
         <div className="grid sm:grid-cols-3 gap-3">
           {data.attention.map((a) => (
-            <div key={a.label} className={`border rounded-sm px-4 py-3 text-sm ${a.tone === "alert" && a.value > 0 ? "border-red-400/50 text-red-300" : "border-neutral-800 text-neutral-400"}`}>
+            <div key={a.label} className={`border px-4 py-3 text-sm ${a.tone === "alert" && a.value > 0 ? "border-red-400/50 text-red-300" : "border-neutral-800 text-neutral-400"}`}>
               <b className="text-neutral-100">{num(a.value)}</b> {a.label}
             </div>
           ))}
@@ -143,7 +143,7 @@ export function FunnelTab({ data }: { data: Insights }) {
                   <span className="text-neutral-100">{s.label}</span>
                   <span className="text-neutral-400">{num(s.value)}{i > 0 && f.steps[i - 1].value ? ` · ${Math.round((s.value / f.steps[i - 1].value) * 100)}% of previous` : ""}</span>
                 </div>
-                <div className="h-2 bg-neutral-800/60 rounded-sm"><div className="h-2 bg-gold rounded-sm" style={{ width: `${(s.value / top) * 100}%` }} /></div>
+                <div className="h-2 bg-neutral-800/60"><div className="h-2 bg-gold" style={{ width: `${(s.value / top) * 100}%` }} /></div>
               </div>
             ))}
             {sales && <div className="text-xs text-neutral-400 mt-4">Completed purchases in this range: <b className="text-neutral-100">{num(sales.total)}</b> (from Stripe, counted separately from visitor tracking).</div>}

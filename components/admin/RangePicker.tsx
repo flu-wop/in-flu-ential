@@ -19,14 +19,14 @@ export function RangePicker({ days }: { days: number }) {
   return (
     <div className="flex items-center gap-2">
       {pending && <span className="inline-block w-3.5 h-3.5 rounded-full border-2 border-current border-t-transparent animate-spin text-gold" role="status" aria-label="Loading" />}
-      <div role="radiogroup" aria-label="Date range" className="inline-flex p-0.5 border border-neutral-800 bg-neutral-900 rounded-sm">
+      <div role="radiogroup" aria-label="Date range" className="inline-flex p-0.5 border border-neutral-800 bg-neutral-900">
         {RANGES.map((r) => (
           <button
             key={r.v}
             role="radio"
             aria-checked={days === r.v}
             onClick={() => set(r.v)}
-            className={`px-3 min-h-[32px] text-xs tracking-wide rounded-[1px] transition-colors ${days === r.v ? "bg-gold text-neutral-950" : "text-neutral-400 hover:text-neutral-100"}`}
+            className={`px-3 min-h-[32px] text-xs tracking-wide transition-colors ${days === r.v ? "bg-gold text-neutral-950" : "text-neutral-400 hover:text-neutral-100"}`}
           >
             {r.l}
           </button>

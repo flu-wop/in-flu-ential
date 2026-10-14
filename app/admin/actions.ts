@@ -25,10 +25,10 @@ export async function loginAction(_prev: { error?: string } | undefined, form: F
     path: "/admin",
     maxAge: 60 * 60 * 24 * 7,
   });
-  redirect("/admin/system");
+  redirect("/admin");
 }
 
 export async function logoutAction() {
   (await cookies()).delete({ name: ADMIN_COOKIE, path: "/admin" });
-  redirect("/admin/system");
+  redirect("/admin");
 }

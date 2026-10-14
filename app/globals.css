@@ -99,3 +99,7 @@ html {
     box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   }
 }
+
+/* Admin: hide scrollbars on horizontally scrolling tab rows. */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
