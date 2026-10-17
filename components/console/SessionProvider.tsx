@@ -2,9 +2,11 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { CHANNELS, VAULT_COMBO, type ChannelId } from "@/lib/session";
+import { CHANNELS, LOOP_SECONDS, ORIGINAL_YOUTUBE_ID, STEMS_READY, VAULT_COMBO, type ChannelId } from "@/lib/session";
 import { MixEngine, KNOB_DEFAULTS, FADER_UNITY, type KnobId, type MixMode } from "./mixEngine";
 import TransportBar from "./TransportBar";
+import OriginalPlayer from "./OriginalPlayer";
+import { YouTubeOriginal } from "./youtube";
 
 // The session lives in the root layout, so audio and the mix survive page
 // changes: start the song on the console, keep it playing while browsing.
@@ -28,7 +30,11 @@ interface SessionState {
   masterMuted: boolean;
   combo: number[];
   vaultOpen: boolean;
-  ensureEngine: () => MixEngine;
+  ensureEngine: () => void;
+  originalOnly: boolean; // stems are off: the original mix plays from YouTube
+  getPosition: () => number; // seconds
+  getDuration: () => number; // seconds
+  registerSlot: (el: HTMLElement | null) => void; // where the console wants the video
   toggle: () => Promise<void>;
   setLoop: (on: boolean) => void;
   setKnob: (ch: ChannelId, k: KnobId, v: number) => void;
@@ -77,11 +83,30 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
   const [master, setMasterState] = useState(FADER_UNITY);
   const masterRef = useRef(FADER_UNITY);
   const pathname = usePathname();
+  const originalOnly = !STEMS_READY;
+  const ytRef = useRef<YouTubeOriginal | null>(null);
+  const ytMountRef = useRef<HTMLDivElement | null>(null);
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
+  const [ytStarted, setYtStarted] = useState(false);
+  const mutedRef = useRef(false);
 
   // Created on first use (the console mounting, or Play in the transport bar),
   // so subpage visitors don't download the session unless they ask for sound.
   const ensureEngine = useCallback(() => {
-    if (engineRef.current) return engineRef.current;
+    if (originalOnly) {
+      // No stems yet: the original mix comes from YouTube. The player itself is
+      // only created on the first tap, so just mark it ready.
+      if (!ytRef.current) {
+        ytRef.current = new YouTubeOriginal(ORIGINAL_YOUTUBE_ID, {
+          onPlaying: (p) => setPlaying(p),
+          onError: () => setLoadError(true),
+        });
+        ytRef.current.loop = true;
+        setReady(true);
+      }
+      return;
+    }
+    if (engineRef.current) return;
     const e = new MixEngine();
     CHANNELS.forEach((c) => {
       (Object.keys(KNOB_DEFAULTS) as KnobId[]).forEach((k) => e.setKnob(c.id, k, KNOB_DEFAULTS[k]));
@@ -102,10 +127,15 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
         );
       })
       .catch(() => setLoadError(true));
-    return e;
-  }, []);
+  }, [originalOnly]);
 
-  useEffect(() => () => engineRef.current?.dispose(), []);
+  useEffect(
+    () => () => {
+      engineRef.current?.dispose();
+      ytRef.current?.dispose();
+    },
+    []
+  );
 
   // The loop runs until someone presses stop. If the phone paused audio while
   // the page was in the background, resume when it comes back.
@@ -126,15 +156,33 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
     masterRef.current = clamped;
     setMasterState(clamped);
     engineRef.current?.setMaster(clamped);
+    ytRef.current?.setVolume(Math.min(1, clamped / FADER_UNITY)); // fader unity = full volume
   }, []);
 
   const setMasterMuted = useCallback((on: boolean) => {
     setMasterMutedState(on);
+    mutedRef.current = on;
     engineRef.current?.setMasterMute(on);
+    ytRef.current?.setMuted(on);
   }, []);
 
   const toggle = useCallback(async () => {
-    const e = ensureEngine();
+    if (originalOnly) {
+      ensureEngine();
+      const y = ytRef.current;
+      const mount = ytMountRef.current;
+      if (!y || !mount) return;
+      if (!y.started) {
+        setYtStarted(true);
+        await y.start(mount, Math.min(1, masterRef.current / FADER_UNITY), mutedRef.current);
+      } else {
+        y.toggle();
+      }
+      return;
+    }
+    ensureEngine();
+    const e = engineRef.current;
+    if (!e) return;
     if (e.playing) {
       e.stop();
       setPlaying(false);
@@ -144,57 +192,60 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
     if (!e.ready) return;
     await e.play();
     setPlaying(true);
-  }, [ensureEngine]);
+  }, [ensureEngine, originalOnly]);
 
   const setLoop = useCallback((on: boolean) => {
     setLoopState(on);
     engineRef.current?.setLoop(on);
+    if (ytRef.current) ytRef.current.loop = on;
   }, []);
 
   // Touching any channel control (EQ, send, pan, fader, mute, solo) hands the
   // sound over from the bounce to the live stems.
   const engageMix = useCallback(() => {
+    if (originalOnly) return;
     engineRef.current?.setMode("yours");
     setMixMode("yours");
-  }, []);
+  }, [originalOnly]);
 
   const setKnob = useCallback(
     (ch: ChannelId, k: KnobId, v: number) => {
+      if (originalOnly) return;
       setKnobs((prev) => ({ ...prev, [ch]: { ...prev[ch], [k]: v } }));
       engineRef.current?.setKnob(ch, k, v);
       engageMix();
     },
-    [engageMix]
+    [engageMix, originalOnly]
   );
 
   const setFader = useCallback(
     (ch: ChannelId, v: number) => {
-      if (ch === "vault" && !vaultOpen) return;
+      if (originalOnly || (ch === "vault" && !vaultOpen)) return;
       setFaders((prev) => ({ ...prev, [ch]: v }));
       engineRef.current?.setFader(ch, v);
       engageMix();
     },
-    [vaultOpen, engageMix]
+    [vaultOpen, engageMix, originalOnly]
   );
 
   const setMute = useCallback(
     (ch: ChannelId, on: boolean) => {
-      if (ch === "vault" && !vaultOpen) return;
+      if (originalOnly || (ch === "vault" && !vaultOpen)) return;
       setMutes((prev) => ({ ...prev, [ch]: on }));
       engineRef.current?.setMute(ch, on);
       engageMix();
     },
-    [vaultOpen, engageMix]
+    [vaultOpen, engageMix, originalOnly]
   );
 
   const setSolo = useCallback(
     (ch: ChannelId, on: boolean) => {
-      if (ch === "vault" && !vaultOpen) return;
+      if (originalOnly || (ch === "vault" && !vaultOpen)) return;
       setSolos((prev) => ({ ...prev, [ch]: on }));
       engineRef.current?.setSolo(ch, on);
       engageMix();
     },
-    [vaultOpen, engageMix]
+    [vaultOpen, engageMix, originalOnly]
   );
 
   // Back to the song as it was bounced: every control flat, then crossfade to
@@ -221,7 +272,7 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
 
   const setComboKnob = useCallback(
     (i: number, v: number) => {
-      if (vaultOpen) return false;
+      if (originalOnly || vaultOpen) return false;
       const next = combo.map((x, j) => (j === i ? v : x));
       setCombo(next);
       if (next.every((x, j) => x === VAULT_COMBO[j])) {
@@ -233,7 +284,16 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
       }
       return false;
     },
-    [combo, vaultOpen, engageMix]
+    [combo, vaultOpen, engageMix, originalOnly]
+  );
+
+  const getPosition = useCallback(
+    () => (originalOnly ? ytRef.current?.time() ?? 0 : engineRef.current?.position() ?? 0),
+    [originalOnly]
+  );
+  const getDuration = useCallback(
+    () => (originalOnly ? ytRef.current?.duration() || 0 : LOOP_SECONDS),
+    [originalOnly]
   );
 
   const showBar = pathname !== "/" && !pathname?.startsWith("/admin");
@@ -257,6 +317,10 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
         combo,
         vaultOpen,
         ensureEngine,
+        originalOnly,
+        getPosition,
+        getDuration,
+        registerSlot: setSlot,
         toggle,
         setLoop,
         setKnob,
@@ -272,6 +336,9 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
+      {originalOnly && (
+        <OriginalPlayer videoId={ORIGINAL_YOUTUBE_ID} slot={slot} started={ytStarted} mountRef={ytMountRef} onPlay={toggle} />
+      )}
       {showBar && <TransportBar />}
     </SessionContext.Provider>
   );

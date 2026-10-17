@@ -483,3 +483,19 @@
   .loopBtn span { display: none; }
   .loopBtn { padding: 0 8px; }
 }
+
+/* Stems aren't in yet: the channel controls are switched off (master stays live). */
+.stemsOff .strip:not(.masterStrip) .knobGrid,
+.stemsOff .strip:not(.masterStrip) .panRow,
+.stemsOff .strip:not(.masterStrip) .msRow,
+.stemsOff .strip:not(.masterStrip) .faderSec { opacity: 0.35; filter: saturate(0.4); }
+.stemsOff .strip:not(.masterStrip) .knobGrid,
+.stemsOff .strip:not(.masterStrip) .panRow,
+.stemsOff .strip:not(.masterStrip) .msRow,
+.stemsOff .strip:not(.masterStrip) .faderSec { pointer-events: none; }
+.stemsOff .origBtn { opacity: 0.45; cursor: default; }
+
+/* Where the YouTube player sits on the Master panel. */
+.videoSlot { width: 100%; max-width: 356px; height: 200px; margin: 14px 0 4px; }
+.ytLink { align-self: flex-start; font: 500 10px "DM Mono", monospace; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted, #a89880); text-decoration: none; margin-bottom: 8px; }
+.ytLink:hover { color: #d4af77; }

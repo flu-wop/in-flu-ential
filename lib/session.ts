@@ -27,6 +27,13 @@ export const SESSION = {
   placeholder: true, // shows a "demo stems" tag on the session screen
 };
 
+// The original mix plays from the official YouTube upload of "Hang Glider".
+// The stems (and the mix controls built on them) are switched off until the real
+// stems are in: when they are, drop the files in /public/session, re-render the
+// bounce (npm run bounce), and set STEMS_READY to true.
+export const ORIGINAL_YOUTUBE_ID = "bxv0wI-iomo";
+export const STEMS_READY = false;
+
 export const LOOP_SECONDS = (SESSION.bars * 4 * 60) / SESSION.bpm;
 
 export const CHANNELS: ChannelDef[] = [

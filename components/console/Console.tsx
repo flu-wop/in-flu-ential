@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CHANNELS, SESSION, VAULT_COMBO, type ChannelId } from "@/lib/session";
+import { CHANNELS, ORIGINAL_YOUTUBE_ID, SESSION, VAULT_COMBO, type ChannelId } from "@/lib/session";
 import { KNOB_DEFAULTS, type KnobId } from "./mixEngine";
 import { useSession } from "./SessionProvider";
 import SessionScreen from "./SessionScreen";
@@ -48,7 +48,9 @@ function Knob({
   onChange,
   onReset,
   onTouch,
+  disabled,
 }: {
+  disabled?: boolean;
   value: number;
   label: string; // accessible name, and the visible text unless a caption is given
   caption?: string;
@@ -75,20 +77,22 @@ function Knob({
         className={styles.knob}
         style={{ "--cap": cap, "--a": `${-135 + (value / 30) * 270}deg` } as React.CSSProperties}
         role="slider"
-        tabIndex={0}
+        tabIndex={disabled ? -1 : 0}
         aria-label={label}
         aria-valuemin={0}
         aria-valuemax={30}
         aria-valuenow={value}
-        onDoubleClick={onReset}
+        aria-disabled={disabled || undefined}
+        onDoubleClick={disabled ? undefined : onReset}
         onKeyDown={(e) => {
+          if (disabled) return;
           const d = ({ ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1 } as Record<string, number>)[e.key];
           if (d) {
             e.preventDefault();
             onChange(Math.max(0, Math.min(30, value + d)));
           }
         }}
-        {...drag}
+        {...(disabled ? {} : drag)}
       />
       <span className={readout !== undefined ? styles.kval : styles.klbl}>{readout ?? caption ?? label}</span>
     </div>
@@ -99,12 +103,14 @@ function Fader({
   value,
   label,
   locked,
+  disabled,
   onChange,
   onTouch,
 }: {
   value: number;
   label: string;
   locked: boolean;
+  disabled?: boolean;
   onChange: (v: number) => void;
   onTouch?: () => void;
 }) {
@@ -119,6 +125,7 @@ function Fader({
       ref={trackRef}
       className={styles.track}
       onPointerDown={(e) => {
+        if (disabled) return;
         e.currentTarget.setPointerCapture(e.pointerId);
         active.current = true;
         onTouch?.();
@@ -137,13 +144,14 @@ function Fader({
         className={styles.cap}
         style={{ top: `calc(${(1 - value) * 100}% - ${(1 - value) * 18}px)` }}
         role="slider"
-        tabIndex={0}
+        tabIndex={disabled ? -1 : 0}
         aria-label={`${label} fader`}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.round(value * 100)}
-        aria-disabled={locked}
+        aria-disabled={locked || disabled}
         onKeyDown={(e) => {
+          if (disabled) return;
           const d = ({ ArrowUp: 0.05, ArrowDown: -0.05 } as Record<string, number>)[e.key];
           if (d) {
             e.preventDefault();
@@ -201,7 +209,7 @@ const panReadout = (v: number) => (v === 15 ? undefined : `${v < 15 ? "L" : "R"}
 
 export default function Console() {
   const session = useSession();
-  const { engine, ready, loaded, loadError, stemsError, playing, loop, mixMode, knobs, faders, mutes, solos, combo, vaultOpen, ensureEngine, toggle } = session;
+  const { engine, ready, loaded, loadError, stemsError, playing, loop, mixMode, knobs, faders, mutes, solos, combo, vaultOpen, ensureEngine, toggle, originalOnly, getPosition, getDuration, registerSlot } = session;
   const [selected, setSelected] = useState<ChannelId | "master">("master");
   const [eqChannel, setEqChannel] = useState<ChannelId | null>(null);
   const [isIOS, setIsIOS] = useState(false);
@@ -281,6 +289,9 @@ export default function Console() {
         solos={solos}
         onToggle={toggle}
         onLoop={session.setLoop}
+        originalOnly={originalOnly}
+        getPosition={getPosition}
+        getDuration={getDuration}
         eqChannel={eqChannel}
         knobs={knobs}
       />
@@ -294,7 +305,7 @@ export default function Console() {
         </p>
       )}
 
-      <div className={styles.desk} aria-label="Console">
+      <div className={`${styles.desk} ${originalOnly ? styles.stemsOff : ""}`} aria-label="Console">
         <div className={styles.strips}>
           {CHANNELS.map((c, i) => {
             const locked = c.id === "vault" && !vaultOpen;
@@ -314,6 +325,7 @@ export default function Console() {
                           value={vaultOpen ? VAULT_COMBO[j] : combo[j]}
                           readout={String(vaultOpen ? VAULT_COMBO[j] : combo[j]).padStart(2, "0")}
                           onChange={(v) => setComboKnob(j, v)}
+                          disabled={originalOnly}
                         />
                       ))
                     : EQ_KNOBS.map((k) => (
@@ -325,6 +337,7 @@ export default function Console() {
                           onChange={(v) => setKnob(c.id, k.id, v)}
                           onReset={() => setKnob(c.id, k.id, KNOB_DEFAULTS[k.id])}
                           onTouch={session.engageMix}
+                          disabled={originalOnly}
                         />
                       ))}
                   {c.id === "vault" && <span className={styles.lockIcon} aria-hidden="true">{vaultOpen ? "OPEN" : "LOCK"}</span>}
@@ -342,6 +355,7 @@ export default function Console() {
                       onChange={(v) => setKnob(c.id, "pan", v)}
                       onReset={() => setKnob(c.id, "pan", KNOB_DEFAULTS.pan)}
                       onTouch={session.engageMix}
+                      disabled={originalOnly}
                     />
                   </div>
                 )}
@@ -349,7 +363,7 @@ export default function Console() {
                   name={c.name}
                   muted={mutes[c.id]}
                   soloed={solos[c.id]}
-                  disabled={locked}
+                  disabled={locked || originalOnly}
                   onMute={() => session.setMute(c.id, !mutes[c.id])}
                   onSolo={() => session.setSolo(c.id, !solos[c.id])}
                 />
@@ -369,6 +383,7 @@ export default function Console() {
                     value={faders[c.id]}
                     label={c.name}
                     locked={locked}
+                    disabled={originalOnly}
                     onChange={(v) => setFader(c.id, v)}
                     onTouch={locked ? undefined : session.engageMix}
                   />
@@ -398,6 +413,7 @@ export default function Console() {
                 className={`${styles.origBtn} ${original ? styles.origOn : ""}`}
                 aria-pressed={original}
                 onClick={session.resetToOriginal}
+                disabled={originalOnly}
               >
                 Original Mix
               </button>
@@ -420,7 +436,11 @@ export default function Console() {
             </button>
           </div>
         </div>
-        <p className={styles.hint}>Tap a channel name to open it. Turn the knobs, ride the faders, mute and solo to mix.</p>
+        <p className={styles.hint}>
+          {originalOnly
+            ? "Stems Coming Soon. The channel controls unlock when they're in. Tap a channel name to open it."
+            : "Tap a channel name to open it. Turn the knobs, ride the faders, mute and solo to mix."}
+        </p>
       </div>
 
       <section className={styles.out} aria-live="polite">
@@ -435,6 +455,14 @@ export default function Console() {
                 </h2>
               </div>
             </div>
+            {originalOnly && (
+              <>
+                <div ref={registerSlot} className={styles.videoSlot} />
+                <a className={styles.ytLink} href={`https://youtu.be/${ORIGINAL_YOUTUBE_ID}`} target="_blank" rel="noopener noreferrer">
+                  Watch on YouTube <span aria-hidden="true">↗</span>
+                </a>
+              </>
+            )}
             <div className={styles.rows}>
               <div className={styles.row}>
                 <span>Produced By</span>
@@ -449,7 +477,7 @@ export default function Console() {
                 <span>{original ? "Original Mix" : "Your Mix"}</span>
               </div>
             </div>
-            <p>Press play. Touch any control to open up the mix.</p>
+            <p>{originalOnly ? "Press play to hear the original mix." : "Press play. Touch any control to open up the mix."}</p>
             <div className={styles.patchRow}>
               <nav className={styles.patch} aria-label="Patch in">
                 <span>Patch In</span>

@@ -18,6 +18,9 @@ interface Props {
   solos: Record<ChannelId, boolean>;
   onToggle: () => void;
   onLoop: (on: boolean) => void;
+  originalOnly: boolean;
+  getPosition: () => number;
+  getDuration: () => number;
   eqChannel: ChannelId | null;
   knobs: Record<ChannelId, Record<KnobId, number>>;
 }
@@ -34,6 +37,9 @@ function counter(sec: number) {
   return `${String(bar).padStart(3, "0")} | ${beat} | ${String(ticks).padStart(3, "0")}`;
 }
 
+const mmss = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
+const clock2 = (pos: number, dur: number) => `${mmss(pos)} / ${dur ? mmss(dur) : "-:--"}`;
+
 export default function SessionScreen({
   engine,
   ready,
@@ -46,6 +52,9 @@ export default function SessionScreen({
   solos,
   onToggle,
   onLoop,
+  originalOnly,
+  getPosition,
+  getDuration,
   eqChannel,
   knobs,
 }: Props) {
@@ -55,6 +64,8 @@ export default function SessionScreen({
   const layerRef = useRef<HTMLCanvasElement | null>(null);
   const stateRef = useRef({ vaultOpen, faders, loaded, loop, mutes, solos });
   stateRef.current = { vaultOpen, faders, loaded, loop, mutes, solos };
+  const clockRef = useRef({ originalOnly, getPosition, getDuration });
+  clockRef.current = { originalOnly, getPosition, getDuration };
 
   // Draws the static part (ruler, lane headers, regions, waveforms) to an offscreen layer.
   const paintLayer = (w: number, h: number, dpr: number) => {
@@ -178,8 +189,10 @@ export default function SessionScreen({
         g.setTransform(1, 0, 0, 1, 0, 0);
         g.drawImage(layerRef.current!, 0, 0);
         g.setTransform(dpr, 0, 0, dpr, 0, 0);
-        const pos = engine ? engine.position() : 0;
-        const x = HEADER_W + (pos / LOOP_SECONDS) * (w - HEADER_W);
+        const clock = clockRef.current;
+        const pos = clock.getPosition();
+        const dur = clock.getDuration() || LOOP_SECONDS;
+        const x = HEADER_W + Math.min(1, pos / dur) * (w - HEADER_W);
         g.fillStyle = "#e9e1cc";
         g.fillRect(Math.round(x), 0, 1, h);
         g.beginPath();
@@ -187,7 +200,7 @@ export default function SessionScreen({
         g.lineTo(x + 5, 0);
         g.lineTo(x, 7);
         g.fill();
-        if (counterRef.current) counterRef.current.textContent = counter(pos);
+        if (counterRef.current) counterRef.current.textContent = clock.originalOnly ? clock2(pos, dur) : counter(pos);
       }
       raf = requestAnimationFrame(draw);
     };
@@ -282,16 +295,20 @@ export default function SessionScreen({
           <span>Loop</span>
         </button>
         <span className={styles.counter} ref={counterRef}>
-          001 | 1 | 000
+          {originalOnly ? "0:00 / -:--" : "001 | 1 | 000"}
         </span>
         <CoverArt size={30} />
         <span className={styles.sessionName}>
           <strong>{SESSION.title}</strong>
           <span>
-            {SESSION.credit} · {SESSION.bpm} BPM
+            {SESSION.credit}{originalOnly ? "" : ` · ${SESSION.bpm} BPM`}
           </span>
         </span>
-        {SESSION.placeholder && <span className={styles.demoTag}>Demo stems</span>}
+        {originalOnly ? (
+          <span className={styles.demoTag}>Original Mix · Stems Soon</span>
+        ) : (
+          SESSION.placeholder && <span className={styles.demoTag}>Demo stems</span>
+        )}
       </div>
       <div className={styles.edit}>
         <canvas ref={canvasRef} className={styles.editCanvas} aria-label="Session edit window with four tracks" />

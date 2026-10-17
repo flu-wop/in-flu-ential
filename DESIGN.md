@@ -36,34 +36,44 @@ which was abandoned after repeated failed 3D executions.
 - **Four channel strips are the navigation.** Music, Business, Work, Vault.
   Tapping the scribble strip (channel name) opens that channel's output
   panel, which links to the full page. Faders mix; they do not navigate.
-- **The audio is real.** Each channel carries one stem of "Hang Glider"
-  (Curren$y, produced by Flu): Music = vocal, Business = 808, Work = drums,
-  Vault = sample. Knobs run live Web Audio EQ (HF/MF/LF), a reverb send and
-  a pan. Session config lives in `lib/session.ts`; stems in `/public/session`.
-  The stems are placeholder synthesized parts until James supplies the real ones.
-- **Strip controls.** Every channel has Mute (red) and Solo (yellow) and a
-  fader; every non-vault channel has a Pan knob in a small row under the 2x2
-  EQ/Send block. Solo is solo-in-place: non-soloed channels and their reverb
-  sends go silent. Mute beats solo. All changes ramp over 20 ms. Vault
-  Mute/Solo stay disabled until it unlocks.
+- **The original mix is the YouTube upload (Oct 17, 2026).** "Hang Glider"
+  (Curren$y, produced by Flu) plays from its official YouTube upload through
+  YouTube's own embedded player (`youtube.ts`, `OriginalPlayer.tsx`, id in
+  `lib/session.ts`); the audio is never downloaded or re-hosted. YouTube
+  requires the player to stay visible (200 x 200 minimum), so it is never
+  hidden: it sits in the Master panel's video slot on the console and docks
+  above the transport bar on other pages, so the song keeps playing. Before
+  the first tap it shows a poster and loads nothing from YouTube. Master fader,
+  master mute, loop and play drive it (fader unity = full volume).
+- **Stems are switched off until James supplies them** (`STEMS_READY = false`
+  in `lib/session.ts`). The per-channel knobs, pan, mute, solo, faders, the
+  vault dials and Original Mix are dimmed and inert, and the hint reads "Stems
+  Coming Soon". The Web Audio engine, mix chain, crossfade and bounce code stay
+  in the repo, untouched, for when they are back. To turn them on: drop the real
+  stems in `/public/session`, re-render the bounce, set `STEMS_READY = true`.
+- **Channel controls (when stems are on).** Every channel has Mute (red) and
+  Solo (yellow) and a fader; every non-vault channel has a Pan knob in a small
+  row under the 2x2 EQ/Send block. Solo is solo-in-place: non-soloed channels
+  and their reverb sends go silent. Mute beats solo. All changes ramp over
+  20 ms. Vault Mute/Solo stay disabled until it unlocks.
 - **Master** has Mute, an Original Mix button, the fader and the meter.
-- **Bounce vs stems.** The page opens on the bounce (`public/session/bounce.*`),
-  a render of the stems through the same engine chain, flat, with the vault
-  sample out. Bounce and stems run together at the same position and only the
-  bounce is audible. Touching any EQ, send, pan, channel fader, mute or solo
-  crossfades (about 150 ms) to the stems; the vault unlocking does too. Master
-  fader, master mute and the transport volume do not leave the bounce. The
-  bounce loads first and the stems decode in the background. Original Mix sets
-  every channel control flat and crossfades back to the bounce (the vault stays
-  open at fader 0; master controls are left alone).
-  The bounce is pre-limiter (the limiter's makeup gain can't be baked in) and
-  scaled by `lib/bounce.json`; the live path trims by 1/scale.
+- **Bounce vs stems (when stems are on).** The page opens on the bounce
+  (`public/session/bounce.*`), a render of the stems through the same engine
+  chain, flat, with the vault sample out. Bounce and stems run together at the
+  same position and only the bounce is audible. Touching any EQ, send, pan,
+  channel fader, mute or solo crossfades (about 150 ms) to the stems; the vault
+  unlocking does too. Master fader, master mute and the transport volume do not
+  leave the bounce. The bounce loads first and the stems decode in the
+  background. Original Mix sets every channel control flat and crossfades back
+  to the bounce (the vault stays open at fader 0; master controls are left
+  alone). The bounce is pre-limiter (the limiter's makeup gain can't be baked
+  in) and scaled by `lib/bounce.json`; the live path trims by 1/scale.
   **Re-render it whenever the stems or the mix chain change:** `npm run bounce`
   (needs ffmpeg and Chrome; set `CHROME_PATH` if Chrome is elsewhere). The
   script renders `components/console/mixChain.ts` in an OfflineAudioContext.
 - **Master panel is the hero.** The console opens on Master: eyebrow
   "Main · Stereo Out", title, cover art, rows (Produced By, Tempo, Playing:
-  Original Mix or Your Mix), the line "Press play. Touch any control to open up
+  Original Mix or Your Mix), the video slot while stems are off, the line "Press play. Touch any control to open up
   the mix.", quiet patch-in links to Music, Business and Work, and a Reset to
   Original Mix link. Tapping Master returns to it. No New Orleans on the hero,
   footer or metadata.
