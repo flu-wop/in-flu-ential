@@ -1,4 +1,4 @@
-// ── IMAGE SLOTS ─────────────────────────────────────────────────────────────
+// ── IMAGE SLOTS ─────────────────────────────────────────────────────────────────
 // Every photo the site is waiting on. An empty string shows a labelled
 // placeholder; to go live, drop the file in /public at the path shown and set
 // the constant to that path. Everything is .webp. (Existing slots, set where
@@ -9,7 +9,7 @@
 export const IMAGES = {
   // Hang Glider cover art, square 1400x1400. Shown on the console's Master
   // panel, the session screen and the transport bar.
-  cover: "", // "/cover/hang-glider.webp"
+  cover: "/cover/hang-glider.jpg", // 7/30 back cover
 
   // AI for Contractors lane on Business, landscape 1600x1000: a real job site.
   jobSite: "", // "/business/job-site.webp"
