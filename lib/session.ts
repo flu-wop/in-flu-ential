@@ -1,4 +1,4 @@
-// ── SESSION CONFIG ──────────────────────────────────────────────────────────
+// ── SESSION CONFIG ─────────────────────────────────────────────────────────────────
 // The homepage console plays this session. To swap in the real stems:
 //   1. Export vocal / 808 / drums / sample / bounce, same length, same start bar.
 //   2. Convert each to AAC and MP3 (MP3 is the fallback for browsers without AAC):
@@ -27,11 +27,9 @@ export const SESSION = {
   placeholder: true, // shows a "demo stems" tag on the session screen
 };
 
-// The original mix plays from the official YouTube upload of "Hang Glider".
-// The stems (and the mix controls built on them) are switched off until the real
+// Stems (and the mix controls built on them) are switched off until the real
 // stems are in: when they are, drop the files in /public/session, re-render the
 // bounce (npm run bounce), and set STEMS_READY to true.
-export const ORIGINAL_YOUTUBE_ID = "bxv0wI-iomo";
 export const STEMS_READY = false;
 
 export const LOOP_SECONDS = (SESSION.bars * 4 * 60) / SESSION.bpm;
