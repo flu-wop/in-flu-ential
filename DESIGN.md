@@ -36,15 +36,12 @@ which was abandoned after repeated failed 3D executions.
 - **Four channel strips are the navigation.** Music, Business, Work, Vault.
   Tapping the scribble strip (channel name) opens that channel's output
   panel, which links to the full page. Faders mix; they do not navigate.
-- **The original mix is the YouTube upload (Oct 17, 2026).** "Hang Glider"
-  (Curren$y, produced by Flu) plays from its official YouTube upload through
-  YouTube's own embedded player (`youtube.ts`, `OriginalPlayer.tsx`, id in
-  `lib/session.ts`); the audio is never downloaded or re-hosted. YouTube
-  requires the player to stay visible (200 x 200 minimum), so it is never
-  hidden: it sits in the Master panel's video slot on the console and docks
-  above the transport bar on other pages, so the song keeps playing. Before
-  the first tap it shows a poster and loads nothing from YouTube. Master fader,
-  master mute, loop and play drive it (fader unity = full volume).
+- **The original mix is the finished track (Oct 27, 2026).** "Hang Glider"
+  (Curren$y, produced by Flu) plays from `public/session/original.mp3` through a
+  plain audio element (`originalAudio.ts`), created on the first tap so nothing
+  downloads until someone presses play. No YouTube anywhere. Note `/public` is
+  served openly, so anyone can fetch that file. Master fader, master mute, loop
+  and play drive it (fader unity = full volume); the playhead and time follow it.
 - **Stems are switched off until James supplies them** (`STEMS_READY = false`
   in `lib/session.ts`). The per-channel knobs, pan, mute, solo, faders, the
   vault dials and Original Mix are dimmed and inert, and the hint reads "Stems
@@ -73,7 +70,7 @@ which was abandoned after repeated failed 3D executions.
   script renders `components/console/mixChain.ts` in an OfflineAudioContext.
 - **Master panel is the hero.** The console opens on Master: eyebrow
   "Main · Stereo Out", title, cover art, rows (Produced By, Tempo, Playing:
-  Original Mix or Your Mix), the video slot while stems are off, the line "Press play. Touch any control to open up
+  Original Mix or Your Mix), the line "Press play. Touch any control to open up
   the mix.", quiet patch-in links to Music, Business and Work, and a Reset to
   Original Mix link. Tapping Master returns to it. No New Orleans on the hero,
   footer or metadata.
@@ -96,7 +93,7 @@ All files are .webp except the icon and OG.
 
 | Slot | Path | Size |
 | --- | --- | --- |
-| Hang Glider cover art (Master panel, session screen, transport bar) | `/public/cover/hang-glider.webp` | 1400x1400 |
+| Hang Glider cover art (Master panel, session screen, transport bar) | `/public/cover/hang-glider.jpg` (set in `lib/images.ts`; a missing file shows the placeholder) | 1400x1400 |
 | Credits | `/public/credits/<slug>.webp` | square ~1000 |
 | On The Wall (vault, private: not in `/public`) | set in `lib/vault-items.ts` | square ~1000 |
 | Bio | `/public/bio` | 4:5, 1200x1500 |

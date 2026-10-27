@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { CHANNELS, ORIGINAL_YOUTUBE_ID, SESSION, VAULT_COMBO, type ChannelId } from "@/lib/session";
+import { CHANNELS, SESSION, VAULT_COMBO, type ChannelId } from "@/lib/session";
 import { KNOB_DEFAULTS, type KnobId } from "./mixEngine";
 import { useSession } from "./SessionProvider";
 import SessionScreen from "./SessionScreen";
@@ -209,7 +209,7 @@ const panReadout = (v: number) => (v === 15 ? undefined : `${v < 15 ? "L" : "R"}
 
 export default function Console() {
   const session = useSession();
-  const { engine, ready, loaded, loadError, stemsError, playing, loop, mixMode, knobs, faders, mutes, solos, combo, vaultOpen, ensureEngine, toggle, originalOnly, getPosition, getDuration, registerSlot } = session;
+  const { engine, ready, loaded, loadError, stemsError, playing, loop, mixMode, knobs, faders, mutes, solos, combo, vaultOpen, ensureEngine, toggle, originalOnly, getPosition, getDuration } = session;
   const [selected, setSelected] = useState<ChannelId | "master">("master");
   const [eqChannel, setEqChannel] = useState<ChannelId | null>(null);
   const [isIOS, setIsIOS] = useState(false);
@@ -455,14 +455,6 @@ export default function Console() {
                 </h2>
               </div>
             </div>
-            {originalOnly && (
-              <>
-                <div ref={registerSlot} className={styles.videoSlot} />
-                <a className={styles.ytLink} href={`https://youtu.be/${ORIGINAL_YOUTUBE_ID}`} target="_blank" rel="noopener noreferrer">
-                  Watch on YouTube <span aria-hidden="true">↗</span>
-                </a>
-              </>
-            )}
             <div className={styles.rows}>
               <div className={styles.row}>
                 <span>Produced By</span>

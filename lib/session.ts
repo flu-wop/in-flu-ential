@@ -27,9 +27,11 @@ export const SESSION = {
   placeholder: true, // shows a "demo stems" tag on the session screen
 };
 
-// Stems (and the mix controls built on them) are switched off until the real
+// The original mix is the finished track, /public/session/original.mp3. The
+// stems (and the mix controls built on them) are switched off until the real
 // stems are in: when they are, drop the files in /public/session, re-render the
 // bounce (npm run bounce), and set STEMS_READY to true.
+export const ORIGINAL_SRC = "/session/original.mp3";
 export const STEMS_READY = false;
 
 export const LOOP_SECONDS = (SESSION.bars * 4 * 60) / SESSION.bpm;

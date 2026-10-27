@@ -2,9 +2,10 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { CHANNELS, LOOP_SECONDS, STEMS_READY, VAULT_COMBO, type ChannelId } from "@/lib/session";
+import { CHANNELS, LOOP_SECONDS, ORIGINAL_SRC, STEMS_READY, VAULT_COMBO, type ChannelId } from "@/lib/session";
 import { MixEngine, KNOB_DEFAULTS, FADER_UNITY, type KnobId, type MixMode } from "./mixEngine";
 import TransportBar from "./TransportBar";
+import { OriginalAudio } from "./originalAudio";
 
 // The session lives in the root layout, so audio and the mix survive page
 // changes: start the song on the console, keep it playing while browsing.
@@ -32,7 +33,6 @@ interface SessionState {
   originalOnly: boolean;
   getPosition: () => number;
   getDuration: () => number;
-  registerSlot: (el: HTMLElement | null) => void;
   toggle: () => Promise<void>;
   setLoop: (on: boolean) => void;
   setKnob: (ch: ChannelId, k: KnobId, v: number) => void;
@@ -82,9 +82,19 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
   const masterRef = useRef(FADER_UNITY);
   const pathname = usePathname();
   const originalOnly = !STEMS_READY;
+  const audioRef = useRef<OriginalAudio | null>(null);
+  const mutedRef = useRef(false);
 
   const ensureEngine = useCallback(() => {
     if (originalOnly) {
+      // No stems yet: the original mix is the finished track, loaded on the first tap.
+      if (!audioRef.current) {
+        audioRef.current = new OriginalAudio(ORIGINAL_SRC, {
+          onPlaying: (p) => setPlaying(p),
+          onError: () => setLoadError(true),
+        });
+        audioRef.current.loop = true;
+      }
       setReady(true);
       return;
     }
@@ -110,7 +120,13 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
       .catch(() => setLoadError(true));
   }, [originalOnly]);
 
-  useEffect(() => () => { engineRef.current?.dispose(); }, []);
+  useEffect(
+    () => () => {
+      engineRef.current?.dispose();
+      audioRef.current?.dispose();
+    },
+    []
+  );
 
   useEffect(() => {
     const onVisible = () => {
@@ -129,16 +145,24 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
     masterRef.current = clamped;
     setMasterState(clamped);
     engineRef.current?.setMaster(clamped);
+    audioRef.current?.setVolume(Math.min(1, clamped / FADER_UNITY)); // fader unity = full volume
   }, []);
 
   const setMasterMuted = useCallback((on: boolean) => {
     setMasterMutedState(on);
+    mutedRef.current = on;
     engineRef.current?.setMasterMute(on);
+    audioRef.current?.setMuted(on);
   }, []);
 
   const toggle = useCallback(async () => {
     if (originalOnly) {
-      setLoadError(true);
+      ensureEngine();
+      const a = audioRef.current;
+      if (!a) return;
+      a.setVolume(Math.min(1, masterRef.current / FADER_UNITY));
+      a.setMuted(mutedRef.current);
+      await a.toggle();
       return;
     }
     ensureEngine();
@@ -158,6 +182,7 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
   const setLoop = useCallback((on: boolean) => {
     setLoopState(on);
     engineRef.current?.setLoop(on);
+    if (audioRef.current) audioRef.current.loop = on;
   }, []);
 
   const engageMix = useCallback(() => {
@@ -241,8 +266,14 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
     [combo, vaultOpen, engageMix, originalOnly]
   );
 
-  const getPosition = useCallback(() => (originalOnly ? 0 : engineRef.current?.position() ?? 0), [originalOnly]);
-  const getDuration = useCallback(() => (originalOnly ? 0 : LOOP_SECONDS), [originalOnly]);
+  const getPosition = useCallback(
+    () => (originalOnly ? audioRef.current?.time() ?? 0 : engineRef.current?.position() ?? 0),
+    [originalOnly]
+  );
+  const getDuration = useCallback(
+    () => (originalOnly ? audioRef.current?.duration() ?? 0 : LOOP_SECONDS),
+    [originalOnly]
+  );
 
   const showBar = pathname !== "/" && !pathname?.startsWith("/admin");
 
@@ -268,7 +299,6 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
         originalOnly,
         getPosition,
         getDuration,
-        registerSlot: () => {},
         toggle,
         setLoop,
         setKnob,
