@@ -17,8 +17,8 @@ export const PRODUCTS: Record<ProductId, { name: string; description: string; ce
   "starter-kit": {
     name: "Website Starter Kit",
     description: "Setup guide and template for launching your own site.",
-    cents: 5_000,
-    available: true, // set KIT_DOWNLOAD_URL in Vercel to deliver the file
+    cents: 10_000, // $100, never discounted
+    available: false, // flip to true once the kit exists and KIT_DOWNLOAD_URL is set in Vercel
   },
 };
 

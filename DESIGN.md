@@ -145,7 +145,7 @@ Website $3,000: $1,500 to start, $1,500 before launch. Social media
 marketing $5,000 with the website included, run for at least 30 days, then
 an optional monthly retainer: $2,500 to start, $2,500 before launch. Two
 rounds of revisions per package. AI for contractors by custom quote (inquiry
-form). Website starter kit $50, sold on the page; the file is delivered by
+form). Website starter kit $100 (never discounted, and no promo code ever applies to it), sold on the page once `PRODUCTS["starter-kit"].available` is true (it is off until the kit file exists); the file is delivered by
 `/api/kit`, which checks the paid Stripe session and redirects to
 KIT_DOWNLOAD_URL (kept out of this public repo). Site care from $150/mo, marketing retainer
 $500–1,000/mo.

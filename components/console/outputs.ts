@@ -25,7 +25,7 @@ export const OUTPUTS: Record<"music" | "business" | "work" | "vault" | "vaultLoc
       ["Website", "$3,000"],
       ["Social Media Marketing + Website", "$5,000"],
       ["AI for Contractors", "Custom quote"],
-      ["Website Starter Kit", "$50"],
+      ["Website Starter Kit", "$100"],
     ],
     cta: { label: "See Packages", href: "/business" },
   },

@@ -9,7 +9,7 @@ import { SITE_COUNT } from "@/lib/work";
 export const metadata: Metadata = {
   title: "Business | IN-FLU-ENTIAL LLC",
   description:
-    "Websites from $3,000, social media marketing with a website from $5,000, custom AI tools for contractors, and a $50 starter kit.",
+    "Websites from $3,000, social media marketing with a website from $5,000, custom AI tools for contractors, and a $100 starter kit.",
 };
 
 const LANES = [
@@ -211,7 +211,7 @@ export default function BusinessPage() {
         />
       </Panel>
 
-      <Panel title="Kit · Do it yourself" meta="One-time" heading="Website Starter Kit · $50" id="kit">
+      <Panel title="Kit · Do it yourself" meta="One-time" heading="Website Starter Kit · $100" id="kit">
         <PanelText>
           For smaller budgets: the same booking and payments stack as the sites in Work, with a guide that takes you
           from zero to live in a weekend.
@@ -223,7 +223,7 @@ export default function BusinessPage() {
         </ul>
         <div>
           {PRODUCTS["starter-kit"].available ? (
-            <Checkout c={{ label: "Get the Kit · $50", product: "starter-kit", service: "Starter Kit Help" }} title="Starter Kit" />
+            <Checkout c={{ label: "Get the Kit · $100", product: "starter-kit", service: "Starter Kit Help" }} title="Starter Kit" />
           ) : (
             <Cta href="/booking?service=Starter%20Kit%20Help">Coming Soon · Get Notified</Cta>
           )}
