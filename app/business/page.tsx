@@ -16,7 +16,7 @@ const LANES = [
   {
     slot: "Lane A",
     title: "Websites",
-    text: "Production sites with real booking, payments, stores and email confirmations. You own the code and the data, with no monthly platform fees.",
+    text: "Production sites with real booking, payments, stores and email confirmations. You own the code and the data, and no platform takes a cut.",
     chips: ["Booking", "Stripe or Square", "Stores", "Paywalls"],
     id: undefined,
   },
@@ -117,7 +117,7 @@ const FAQ = [
   { q: "What counts as a revision?", a: "A round is one set of changes sent together. Two rounds are included. Changes beyond that, or new features, are quoted before any work starts." },
   { q: "What happens after the first 30 days of marketing?", a: "You can stop there with the strategy, calendar and content in hand, or keep it running on a monthly retainer from $500 to $1,000 a month." },
   { q: "Do I need to know how to code for the starter kit?", a: "Basic comfort with a terminal and following instructions. The guide is written for first-timers, step by step." },
-  { q: "How is the starter kit different from Squarespace or Wix?", a: "You own the code and the data, and pay nothing monthly beyond your domain (about $12 a year). Hosting on Vercel is free, and bookings charge clients directly to your Stripe." },
+  { q: "How is the starter kit different from Squarespace or Wix?", a: "You own the code and the data, and no platform takes a cut. Hosting runs on Vercel: its free plan is for personal, non-commercial use, so plan on Pro (about $20 a month) once your site takes payments, plus a domain at about $12 a year. Bookings charge clients directly to your Stripe." },
 ];
 
 // Pays on the page through Stripe when keys are set and the product is
