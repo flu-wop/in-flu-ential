@@ -4,14 +4,14 @@ export type ProductId = "website-deposit" | "social-deposit" | "starter-kit";
 export const PRODUCTS: Record<ProductId, { name: string; description: string; cents: number; available: boolean }> = {
   "website-deposit": {
     name: "Website Build — 50% Deposit",
-    description: "Deposit for a $3,000 website build. The $1,500 balance is due before launch.",
-    cents: 150_000,
+    description: "Deposit for a $6,000 website build. The $3,000 balance is due before launch.",
+    cents: 300_000, // half of the $6,000 list price
     available: true,
   },
   "social-deposit": {
     name: "Social Media Marketing — 50% Deposit",
-    description: "Deposit for the $5,000 social media marketing package, website included. The $2,500 balance is due before launch.",
-    cents: 250_000,
+    description: "Deposit for the $10,000 social media marketing package, website included. The $5,000 balance is due before launch.",
+    cents: 500_000, // half of the $10,000 list price
     available: true,
   },
   "starter-kit": {

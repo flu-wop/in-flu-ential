@@ -22,8 +22,8 @@ export const SESSION = {
   title: "Hang Glider",
   artist: "Curren$y",
   credit: "Produced by Flu",
-  bpm: 78,
-  bars: 60, // grid only: the whole song, rounded to bars at `bpm`
+  bpm: 150,
+  bars: 115, // grid only: the whole song, rounded to bars at `bpm`
   placeholder: false, // true shows a "demo stems" tag on the session screen
 };
 

@@ -22,9 +22,9 @@ export const OUTPUTS: Record<"music" | "business" | "work" | "vault" | "vaultLoc
     title: "Websites, Campaigns and AI Tools",
     body: "Production websites, social media marketing with the site built in, and AI tools for contractors. Half down starts any project.",
     rows: [
-      ["Website", "$3,000"],
-      ["Social Media Marketing + Website", "$5,000"],
-      ["AI for Contractors", "Custom quote"],
+      ["Website", "$6,000"],
+      ["Social Media Marketing + Website", "$10,000"],
+      ["AI for Contractors", "From $25,000"],
       ["Website Starter Kit", "$100"],
     ],
     cta: { label: "See Packages", href: "/business" },

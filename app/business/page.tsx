@@ -9,7 +9,7 @@ import { SITE_COUNT } from "@/lib/work";
 export const metadata: Metadata = {
   title: "Business | IN-FLU-ENTIAL LLC",
   description:
-    "Websites from $3,000, social media marketing with a website from $5,000, custom AI tools for contractors, and a $100 starter kit.",
+    "Websites from $6,000, social media marketing with a website from $10,000, custom AI tools for contractors from $25,000, and a $100 starter kit.",
 };
 
 const LANES = [
@@ -56,8 +56,8 @@ interface Pkg {
 const PACKAGES: Pkg[] = [
   {
     name: "Website",
-    price: "$3,000",
-    terms: "$1,500 to start · $1,500 before launch",
+    price: "$6,000",
+    terms: "$3,000 to start · $3,000 before launch",
     tagline: "A production site you own, built on the same stack as every site in Work.",
     includes: [
       "Custom design for your brand",
@@ -67,12 +67,12 @@ const PACKAGES: Pkg[] = [
       "Two rounds of revisions",
       "Domain setup, launch and a handoff doc with every login",
     ],
-    checkout: { label: "Pay $1,500 Deposit", product: "website-deposit", service: "Website Build" },
+    checkout: { label: "Pay $3,000 Deposit", product: "website-deposit", service: "Website Build" },
   },
   {
     name: "Social Media Marketing",
-    price: "$5,000",
-    terms: "$2,500 to start · $2,500 before launch",
+    price: "$10,000",
+    terms: "$5,000 to start · $5,000 before launch",
     tagline: "Strategy built and run for at least 30 days, with the website included.",
     includes: [
       "Everything in Website",
@@ -84,12 +84,12 @@ const PACKAGES: Pkg[] = [
     ],
     featured: true,
     tag: "Website Included",
-    checkout: { label: "Pay $2,500 Deposit", product: "social-deposit", service: "Campaign or Artist Rollout" },
+    checkout: { label: "Pay $5,000 Deposit", product: "social-deposit", service: "Campaign or Artist Rollout" },
   },
   {
     name: "AI for Contractors",
-    price: "Custom quote",
-    terms: "Scoped after a walkthrough",
+    price: "From $25,000",
+    terms: "Custom quote, scoped after a walkthrough",
     tagline: "Tools built around how your jobs actually run.",
     includes: ["Walkthrough of your current process", "Written scope and price", "Estimating, scheduling or job docs", "Training for your team"],
     checkout: { label: "Request a Quote", service: "AI Tools for My Business" },

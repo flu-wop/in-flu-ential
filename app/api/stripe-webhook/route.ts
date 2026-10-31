@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
     html: `<div style="font-family:sans-serif;max-width:560px">
       <h2 style="font-weight:400">${esc(product?.name ?? "Payment")} — ${esc(amount)}</h2>
       <p>${esc(c?.name)}<br/>${esc(c?.email)}<br/>${esc(c?.phone)}</p>
+      ${session.metadata?.code ? `<p>Promo code used: ${esc(session.metadata.code)}</p>` : ""}
       <p style="color:#777;font-size:12px">Stripe session ${esc(session.id)}</p></div>`,
   });
   if (owner.error) console.error("Payment notification email failed:", owner.error);

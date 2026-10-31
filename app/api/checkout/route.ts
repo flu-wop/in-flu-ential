@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { PRODUCTS, isProductId } from "@/lib/products";
+import { resolveCode } from "@/lib/discounts";
 
 // Creates an embedded Stripe Checkout session. The amount comes from
 // lib/products.ts, never from the request.
@@ -27,14 +28,31 @@ export async function POST(req: NextRequest) {
   if (!stripe) return NextResponse.json({ error: "Checkout isn't connected yet." }, { status: 503 });
 
   let product: unknown;
+  let rawCode: unknown;
   try {
-    product = (await req.json())?.product;
+    const body = await req.json();
+    product = body?.product;
+    rawCode = body?.code;
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   if (!isProductId(product)) return NextResponse.json({ error: "Unknown product" }, { status: 400 });
   const p = PRODUCTS[product];
   if (!p.available) return NextResponse.json({ error: "That isn't available yet." }, { status: 400 });
+
+  // An optional promo code, checked on the server. A wrong code is an error,
+  // never silently ignored, so nobody pays full price thinking they had a discount.
+  let unitAmount = p.cents;
+  let description = p.description;
+  let appliedCode = "";
+  if (typeof rawCode === "string" && rawCode.trim()) {
+    const hit = resolveCode(rawCode, product);
+    if (!hit) return NextResponse.json({ error: "That code isn't valid." }, { status: 400 });
+    appliedCode = hit.code;
+    unitAmount = Math.round((p.cents * (100 - hit.percent)) / 100);
+    const total = (p.cents * 2 * (100 - hit.percent)) / 100 / 100;
+    description = `${p.name.split(" — ")[0]} deposit with ${hit.percent}% off. Project total $${total.toLocaleString("en-US")}; the other half is due before launch.`;
+  }
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -45,15 +63,15 @@ export async function POST(req: NextRequest) {
           quantity: 1,
           price_data: {
             currency: "usd",
-            unit_amount: p.cents,
-            product_data: { name: p.name, description: p.description },
+            unit_amount: unitAmount,
+            product_data: { name: p.name, description },
           },
         },
       ],
       customer_creation: "always",
       billing_address_collection: "auto",
       phone_number_collection: { enabled: true },
-      metadata: { product },
+      metadata: { product, ...(appliedCode ? { code: appliedCode } : {}) },
       return_url: `${req.nextUrl.origin}/checkout/complete?session_id={CHECKOUT_SESSION_ID}`,
     });
     return NextResponse.json({ clientSecret: session.client_secret });

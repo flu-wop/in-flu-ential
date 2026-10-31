@@ -141,11 +141,15 @@ Don't hand-style a page; extend the kit instead.
 ## Pricing (Oct 2026)
 
 All on the Business page (`/products` redirects to `/business#kit`).
-Website $3,000: $1,500 to start, $1,500 before launch. Social media
-marketing $5,000 with the website included, run for at least 30 days, then
-an optional monthly retainer: $2,500 to start, $2,500 before launch. Two
-rounds of revisions per package. AI for contractors by custom quote (inquiry
-form). Website starter kit $100 (never discounted, and no promo code ever applies to it), sold on the page once `PRODUCTS["starter-kit"].available` is true (it is off until the kit file exists); the file is delivered by
+Website $6,000: $3,000 to start, $3,000 before launch. Social media
+marketing $10,000 with the website included, run for at least 30 days, then
+an optional monthly retainer: $5,000 to start, $5,000 before launch. Two
+rounds of revisions per package. AI for contractors from $25,000 by custom quote (inquiry
+form). Promo codes: the checkout panel asks for an optional code before payment. Codes
+live only in the `DISCOUNT_CODES` env var (`CODE:PERCENT`, comma separated), are
+checked on the server (`lib/discounts.ts`), apply to the two deposits only, and
+never to the kit. The intended use is a 50% code (the old $3,000 and $5,000 price),
+given out privately and removed from the variable to retire it. Website starter kit $100 (never discounted, and no promo code ever applies to it), sold on the page once `PRODUCTS["starter-kit"].available` is true (it is off until the kit file exists); the file is delivered by
 `/api/kit`, which checks the paid Stripe session and redirects to
 KIT_DOWNLOAD_URL (kept out of this public repo). Site care from $150/mo, marketing retainer
 $500–1,000/mo.
