@@ -21,6 +21,7 @@ const CREDITS: Credit[] = [
   },
   {
     artist: "Killer Mike — MICHAEL",
+    photo: "/credits/killer-mike-michael.webp",
     role: "Recording Engineer",
     description: "Grammy participation award for work on MICHAEL, Best Rap Album 2024. Recorded Curren$y's verse.",
     did: ["Recorded"],
@@ -34,6 +35,7 @@ const CREDITS: Credit[] = [
   },
   {
     artist: "Quando Rondo",
+    photo: "/credits/quando-rondo.webp",
     role: "Producer / Engineer",
     description: "Produced and recorded.",
     did: ["Produced", "Recorded"],
