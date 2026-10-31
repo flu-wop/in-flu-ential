@@ -85,7 +85,6 @@ export const CONTACT_SHEET: PolaroidItem[] = [
 
 // On The Wall: studio and behind-the-scenes Polaroids, private. Square, ~1000x1000.
 export const WALL: PolaroidItem[] = [
-  ["alchemist", "Alchemist x Flu"],
   ["zaytoven", "Zaytoven x Flu"],
   ["ugly-god", "Ugly God x Flu"],
   ["jay-elec", "Jay Elec x Flu"],

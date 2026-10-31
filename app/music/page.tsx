@@ -53,6 +53,13 @@ const CREDITS: Credit[] = [
     did: ["Produced"],
   },
   {
+    artist: "Alchemist",
+    photo: "/credits/alchemist.webp",
+    role: "Recording Engineer",
+    description: "Recorded parts of Spiral Staircases.",
+    did: ["Recorded"],
+  },
+  {
     artist: "Kevin Gates",
     photo: "/credits/kevin-gates.webp",
     role: "Recording Engineer",

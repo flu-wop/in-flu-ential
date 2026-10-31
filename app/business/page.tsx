@@ -102,7 +102,7 @@ const KIT_INCLUDES = [
   "Booking form with a Stripe deposit flow",
   "Turso database and Resend email confirmations",
   "Setup checklist from zero to live",
-  "Lifetime access to guide updates",
+  "A private admin page to see bookings and messages",
 ];
 
 const STEPS = [
