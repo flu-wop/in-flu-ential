@@ -71,7 +71,7 @@ export const VAULT_ITEMS: VaultItem[] = [
 
 // Private vault media lives in a private Blob store (never /public or the repo)
 // and is served by /api/vault-media only after the vault unlocks. Upload with
-// `npm run vault:upload -- <folder>` (contact/*.webp, demolition/*.mp4,
+// `npm run vault:upload -- <folder>` (wall/*.webp, contact/*.webp, demolition/*.mp4,
 // unreleased/*.mp3). Until a file is uploaded the card shows its placeholder.
 // The Contact Sheet: Polaroids shown only inside the vault. Square, ~1000x1000.
 export const CONTACT_SHEET: PolaroidItem[] = [
@@ -82,6 +82,20 @@ export const CONTACT_SHEET: PolaroidItem[] = [
   { id: "irma", caption: "Irma x Flu", note: "", photo: media("contact/irma.webp") },
   { id: "desk", caption: "At the Desk", note: "", photo: media("contact/at-the-desk.webp") },
 ];
+
+// On The Wall: studio and behind-the-scenes Polaroids, private. Square, ~1000x1000.
+export const WALL: PolaroidItem[] = [
+  ["alchemist", "Alchemist x Flu"],
+  ["zaytoven", "Zaytoven x Flu"],
+  ["ugly-god", "Ugly God x Flu"],
+  ["jay-elec", "Jay Elec x Flu"],
+  ["fuse808-mafia", "Fuse 808 Mafia x Flu"],
+  ["mac-phipps", "Mac Phipps x Disha x Flu"],
+  ["kwon-alexander", "Kwon Alexander x Flu"],
+  ["blac-chyna", "Blac Chyna x Flu"],
+  ["narduwar", "Narduwar x Flu"],
+  ["fee-banks", "Fee Banks x Flu"],
+].map(([slug, caption]) => ({ id: slug, caption, note: "", photo: media(`wall/${slug}.webp`) }));
 
 // The Demolition Wall: clips only (H.264 mp4, compressed, no location data).
 export interface WallClip {

@@ -104,13 +104,12 @@ All files are .webp except the icon and OG.
 | --- | --- | --- |
 | Hang Glider cover art (Master panel, session screen, transport bar) | `/public/cover/hang-glider.jpg` (set in `lib/images.ts`; a missing file shows the placeholder) | 1400x1400 |
 | Credits | `/public/credits/<slug>.webp` | square ~1000 |
-| On The Wall (Music page, public) | `/public/wall/<slug>.webp`, listed in `app/music/page.tsx` | square ~1000 |
+| On The Wall (vault, private) | Blob store `vault/wall/<slug>.webp`, listed in `lib/vault-items.ts` | square ~1000 |
 | Contact Sheet (vault, private) | Blob store `vault/contact/<slug>.webp` | square ~1000 |
 | Demolition Wall (vault, private, clips) | Blob store `vault/demolition/<slug>.mp4` | H.264, max 1280 |
 | Unreleased previews (vault, private) | Blob store `vault/unreleased/<name>.mp3` | compressed preview |
 | Bio | `/public/bio` | 4:5, 1200x1500 |
 | Booking portrait | `/public/bio/booking.webp` | 4:5, 1200x1500 |
-| Job site (AI for Contractors lane) | `/public/business/job-site.webp` | 1600x1000 |
 | Work screenshots | `/public/work/<slug>.webp` | 960x600 |
 | Open graph | `/public/og-image.png` | 1200x630 |
 | Favicon / app icon | `app/icon.png` (placeholder mark) | 512x512 |
@@ -131,8 +130,7 @@ Don't hand-style a page; extend the kit instead.
   develops the first time it scrolls into view, and tapping flips it to a
   handwritten note, with a one-line caption under the photo. Used for the
   Music credits (`PinBoard.tsx`, photos in `/public/credits`), the On The Wall
-  strip on Music (`/public/wall`) and the Contact Sheet inside the vault
-  (`lib/vault-items.ts`). The bio portrait goes in `/public/bio` via
+  strip and the Contact Sheet, both inside the vault only (`lib/vault-items.ts`). The bio portrait goes in `/public/bio` via
   `BIO_PHOTO`. Keep notes short so cards stay even.
 - **The session persists.** `SessionProvider` in the root layout owns the
   audio engine and the mix (knobs, faders, vault), so the song keeps playing

@@ -11,9 +11,6 @@ export const IMAGES = {
   // panel, the session screen and the transport bar.
   cover: "/cover/hang-glider.jpg", // 7/30 back cover
 
-  // AI for Contractors lane on Business, landscape 1600x1000: a real job site.
-  jobSite: "", // "/business/job-site.webp"
-
   // Portrait on Booking, 4:5 1200x1500.
   bookingPortrait: "", // "/bio/booking.webp"
 } as const;
