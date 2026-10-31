@@ -4,6 +4,8 @@ import type { PolaroidItem } from "@/lib/polaroids";
 
 export type VaultCategory = "All" | "Music" | "Work in Progress" | "Strategy" | "Press Kit";
 
+const media = (path: string) => `/api/vault-media/${path}`;
+
 export interface VaultItem {
   id: string;
   title: string;
@@ -18,6 +20,9 @@ export interface VaultItem {
 }
 
 // ── EDIT YOUR VAULT CONTENT HERE ──────────────────────────────────────────
+// The two Music cards are the Unreleased playlist, still placeholders. When the
+// previews are ready, upload them to unreleased/<name>.mp3 and set audioUrl to
+// media("unreleased/<name>.mp3") (compressed previews, not masters).
 export const VAULT_ITEMS: VaultItem[] = [
   {
     id: "track-1",
@@ -64,24 +69,28 @@ export const VAULT_ITEMS: VaultItem[] = [
 ];
 
 
-// The Contact Sheet: Polaroids shown only inside the vault. Photos here are
-// private, so don't put them in /public or the repo (both are public): host
-// them somewhere private and set photo to that URL. Square, ~1000x1000.
+// Private vault media lives in a private Blob store (never /public or the repo)
+// and is served by /api/vault-media only after the vault unlocks. Upload with
+// `npm run vault:upload -- <folder>` (contact/*.webp, demolition/*.mp4,
+// unreleased/*.mp3). Until a file is uploaded the card shows its placeholder.
+// The Contact Sheet: Polaroids shown only inside the vault. Square, ~1000x1000.
 export const CONTACT_SHEET: PolaroidItem[] = [
-  { id: "frame-01", caption: "Frame 01", note: "Photo and note coming soon." },
-  { id: "frame-02", caption: "Frame 02", note: "Photo and note coming soon." },
-  { id: "frame-03", caption: "Frame 03", note: "Photo and note coming soon." },
-  { id: "frame-04", caption: "Frame 04", note: "Photo and note coming soon." },
-  { id: "frame-05", caption: "Frame 05", note: "Photo and note coming soon." },
-  { id: "frame-06", caption: "Frame 06", note: "Photo and note coming soon." },
+  { id: "grammy", caption: "Grammy Award", note: "", photo: media("contact/grammy-31st.webp") },
+  { id: "curreny-fee", caption: "Curren$y x Fee", note: "", photo: media("contact/curreny-x-fee.webp") },
+  { id: "flaujae-oscar", caption: "Flau'jae x Donny's Oscar", note: "", photo: media("contact/flaujae-donnys-oscar.webp") },
+  { id: "patrick-troy", caption: "Patrick Collier x Troy Anderson", note: "", photo: media("contact/patrick-collier-troy-anderson.webp") },
+  { id: "irma", caption: "Irma x Flu", note: "", photo: media("contact/irma.webp") },
+  { id: "desk", caption: "At the Desk", note: "", photo: media("contact/at-the-desk.webp") },
 ];
 
-// The Wall: studio and behind-the-scenes Polaroids, shown only inside the vault.
-// Same rule as the Contact Sheet: photos are private, so host them somewhere
-// private and set photo to that URL. Square, ~1000x1000.
-export const WALL: PolaroidItem[] = [
-  { id: "control-room", caption: "Control Room", note: "Where the mix gets decided." },
-  { id: "live-room", caption: "Live Room", note: "Where the takes happen." },
-  { id: "behind-the-glass", caption: "Behind the Glass", note: "The engineer's view." },
-  { id: "between-takes", caption: "Between Takes", note: "The part nobody posts." },
+// The Demolition Wall: clips only (H.264 mp4, compressed, no location data).
+export interface WallClip {
+  id: string;
+  title: string;
+  src: string;
+}
+export const DEMOLITION_WALL: WallClip[] = [
+  { id: "flu-haul-job", title: "Flu-Haul Job", src: media("demolition/flu-haul-job.mp4") },
+  { id: "flu-haul-job-2", title: "Flu-Haul Job 2", src: media("demolition/flu-haul-job-2.mp4") },
+  { id: "recycling-at-emr", title: "Recycling at EMR", src: media("demolition/recycling-at-emr.mp4") },
 ];

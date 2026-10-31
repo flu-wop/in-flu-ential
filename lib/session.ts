@@ -23,8 +23,8 @@ export const SESSION = {
   artist: "Curren$y",
   credit: "Produced by Flu",
   bpm: 78,
-  bars: 8,
-  placeholder: true, // shows a "demo stems" tag on the session screen
+  bars: 60, // grid only: the whole song, rounded to bars at `bpm`
+  placeholder: false, // true shows a "demo stems" tag on the session screen
 };
 
 // The original mix is the finished track, /public/session/original.mp3. The
@@ -32,9 +32,12 @@ export const SESSION = {
 // stems are in: when they are, drop the files in /public/session, re-render the
 // bounce (npm run bounce), and set STEMS_READY to true.
 export const ORIGINAL_SRC = "/session/original.mp3";
-export const STEMS_READY = false;
+export const STEMS_READY = true;
 
-export const LOOP_SECONDS = (SESSION.bars * 4 * 60) / SESSION.bpm;
+// The session is the whole song: stems and bounce are all this long.
+export const SONG_SECONDS = 183.637;
+
+export const LOOP_SECONDS = SONG_SECONDS;
 
 export const CHANNELS: ChannelDef[] = [
   { id: "music", name: "Music", stem: "vocal", track: "Vocal", laneColor: "#4E9C8F", href: "/music" },

@@ -42,12 +42,17 @@ which was abandoned after repeated failed 3D executions.
   downloads until someone presses play. No YouTube anywhere. Note `/public` is
   served openly, so anyone can fetch that file. Master fader, master mute, loop
   and play drive it (fader unity = full volume); the playhead and time follow it.
-- **Stems are switched off until James supplies them** (`STEMS_READY = false`
-  in `lib/session.ts`). The per-channel knobs, pan, mute, solo, faders, the
-  vault dials and Original Mix are dimmed and inert, and the hint reads "Stems
-  Coming Soon". The Web Audio engine, mix chain, crossfade and bounce code stay
-  in the repo, untouched, for when they are back. To turn them on: drop the real
-  stems in `/public/session`, re-render the bounce, set `STEMS_READY = true`.
+- **Stems are live (Oct 31, 2026).** `STEMS_READY = true` in `lib/session.ts`.
+  The session is the whole song, 3:03.637 (`SONG_SECONDS`). Channels: Vocal
+  (vocals.wav), 808 (808s.wav), Drums (drums.wav) and the vault's Sample
+  (sample.mp3, trimmed to length). All are padded to the same length and encoded
+  to AAC (m4a) and MP3 at 160k in `/public/session`. `SESSION.bars` and `bpm` only
+  draw the ruler grid; the bpm (78) is a placeholder until confirmed.
+- **The bounce is the finished song, not a render.** `bounce.*` is James's
+  `full song.wav`, which already leaves out the sample, and `lib/bounce.json`
+  scale is 1. It is mastered, so it differs a little from the stems summed flat
+  (about 22% residual). `npm run bounce` would overwrite it with an engine render;
+  don't run it unless that is the intent.
 - **Channel controls (when stems are on).** Every channel has Mute (red) and
   Solo (yellow) and a fader; every non-vault channel has a Pan knob in a small
   row under the 2x2 EQ/Send block. Solo is solo-in-place: non-soloed channels
@@ -82,8 +87,12 @@ which was abandoned after repeated failed 3D executions.
   material is behind `/vault`, which checks a signed cookie on the server
   (`lib/vault-access.ts`, `VAULT_PASSWORD` env var). Vault items live in
   `lib/vault-items.ts` and must never be imported by a client component.
-  The vault's Wall and Contact Sheet photos are private: they are served by the
-  server, never placed in `/public` or the repo.
+  The vault's photos, Demolition Wall clips and Unreleased previews are private:
+  they live in a private Vercel Blob store and are streamed by
+  `/api/vault-media/[...path]` only to a browser with the vault cookie. Never put
+  them in `/public` or the repo. Upload with `npm run vault:upload -- <folder>`
+  (needs `BLOB_READ_WRITE_TOKEN`). A missing file shows the Polaroid placeholder.
+  The Unreleased playlist is two placeholder cards until previews are uploaded.
 
 ## Image slots
 
@@ -95,7 +104,10 @@ All files are .webp except the icon and OG.
 | --- | --- | --- |
 | Hang Glider cover art (Master panel, session screen, transport bar) | `/public/cover/hang-glider.jpg` (set in `lib/images.ts`; a missing file shows the placeholder) | 1400x1400 |
 | Credits | `/public/credits/<slug>.webp` | square ~1000 |
-| On The Wall (vault, private: not in `/public`) | set in `lib/vault-items.ts` | square ~1000 |
+| On The Wall (Music page, public) | `/public/wall/<slug>.webp`, listed in `app/music/page.tsx` | square ~1000 |
+| Contact Sheet (vault, private) | Blob store `vault/contact/<slug>.webp` | square ~1000 |
+| Demolition Wall (vault, private, clips) | Blob store `vault/demolition/<slug>.mp4` | H.264, max 1280 |
+| Unreleased previews (vault, private) | Blob store `vault/unreleased/<name>.mp3` | compressed preview |
 | Bio | `/public/bio` | 4:5, 1200x1500 |
 | Booking portrait | `/public/bio/booking.webp` | 4:5, 1200x1500 |
 | Job site (AI for Contractors lane) | `/public/business/job-site.webp` | 1600x1000 |
@@ -119,8 +131,8 @@ Don't hand-style a page; extend the kit instead.
   develops the first time it scrolls into view, and tapping flips it to a
   handwritten note, with a one-line caption under the photo. Used for the
   Music credits (`PinBoard.tsx`, photos in `/public/credits`), the On The Wall
-  strip (studio and behind the scenes) and the Contact Sheet, both inside the
-  vault only (`lib/vault-items.ts`). The bio portrait goes in `/public/bio` via
+  strip on Music (`/public/wall`) and the Contact Sheet inside the vault
+  (`lib/vault-items.ts`). The bio portrait goes in `/public/bio` via
   `BIO_PHOTO`. Keep notes short so cards stay even.
 - **The session persists.** `SessionProvider` in the root layout owns the
   audio engine and the mix (knobs, faders, vault), so the song keeps playing

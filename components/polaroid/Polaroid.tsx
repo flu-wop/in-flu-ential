@@ -24,6 +24,7 @@ export default function Polaroid({ caption, sub, photo, placeholder, placeholder
   const ref = useRef<HTMLButtonElement>(null);
   const [developed, setDeveloped] = useState(false);
   const [flipped, setFlipped] = useState(false);
+  const [broken, setBroken] = useState(false); // photo file missing: show the placeholder
 
   // Develop once, the first time the photo scrolls into view.
   useEffect(() => {
@@ -60,9 +61,9 @@ export default function Polaroid({ caption, sub, photo, placeholder, placeholder
         <span className={s.inner}>
           <span className={s.front}>
             <span className={`${s.photo} ${developed ? s.developed : ""}`}>
-              {photo ? (
+              {photo && !broken ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={photo} alt="" loading="lazy" />
+                <img src={photo} alt="" loading="lazy" onError={() => setBroken(true)} />
               ) : (
                 <span className={placeholderKind === "label" ? s.phLabel : s.initials}>{placeholder}</span>
               )}

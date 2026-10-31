@@ -80,6 +80,7 @@ export default function SessionScreen({
 
     const tl = w - HEADER_W;
     const barW = tl / SESSION.bars;
+    const numEvery = barW >= 40 ? 1 : barW >= 20 ? 2 : barW >= 10 ? 4 : 8;
     // ruler
     g.fillStyle = "#1e1c17";
     g.fillRect(0, 0, w, RULER_H);
@@ -87,11 +88,14 @@ export default function SessionScreen({
     g.textBaseline = "middle";
     for (let b = 0; b < SESSION.bars; b++) {
       const x = HEADER_W + b * barW;
-      g.fillStyle = "#7d766a";
-      g.fillText(String(b + 1), x + 4, RULER_H / 2 + 1);
-      g.fillStyle = "#2c2a24";
+      // A long song has many bars: number every few so the ruler stays readable.
+      if (b % numEvery === 0) {
+        g.fillStyle = "#7d766a";
+        g.fillText(String(b + 1), x + 4, RULER_H / 2 + 1);
+      }
+      g.fillStyle = b % numEvery === 0 ? "#2c2a24" : "#24221d";
       g.fillRect(x, RULER_H, 1, h - RULER_H);
-      for (let q = 1; q < 4; q++) {
+      for (let q = 1; q < 4 && barW >= 24; q++) {
         g.fillStyle = "#211f1a";
         g.fillRect(x + (q * barW) / 4, RULER_H, 1, h - RULER_H);
       }

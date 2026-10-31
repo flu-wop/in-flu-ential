@@ -2,6 +2,8 @@ import { StudioPage, ChannelHeader, Panel, PanelText, Rows, Cta } from "@/compon
 import type { Metadata } from "next";
 import k from "@/components/studio/studio.module.css";
 import PinBoard, { type Credit } from "@/components/music/PinBoard";
+import PolaroidBoard from "@/components/polaroid/PolaroidBoard";
+import type { PolaroidItem } from "@/lib/polaroids";
 import s from "./music.module.css";
 
 // What was actually done on each: produced, recorded (engineered), or both.
@@ -14,6 +16,7 @@ export const metadata: Metadata = {
 const CREDITS: Credit[] = [
   {
     artist: "Curren$y",
+    photo: "/credits/curreny.webp",
     role: "In-House Producer / Engineer",
     description: "Production, engineering and sessions across multiple projects, including Hang Glider.",
     did: ["Produced", "Recorded"],
@@ -26,6 +29,7 @@ const CREDITS: Credit[] = [
   },
   {
     artist: "Wiz Khalifa",
+    photo: "/credits/wiz-khalifa.webp",
     role: "Producer",
     description: "Production on two records featuring Wiz Khalifa, one released and one unreleased.",
     did: ["Produced"],
@@ -38,41 +42,69 @@ const CREDITS: Credit[] = [
   },
   {
     artist: "NoCap",
+    photo: "/credits/nocap.webp",
     role: "Producer / Engineer",
     description: "Produced and recorded.",
     did: ["Produced", "Recorded"],
   },
   {
     artist: "Boosie Badazz",
+    photo: "/credits/boosie-badazz.webp",
     role: "Producer",
     description: "Production for the Baton Rouge legend.",
     did: ["Produced"],
   },
   {
     artist: "Kevin Gates",
+    photo: "/credits/kevin-gates.webp",
     role: "Recording Engineer",
     description: "Recording sessions.",
     did: ["Recorded"],
   },
   {
     artist: "Flau'jae",
+    photo: "/credits/flaujae.webp",
     role: "Recording Engineer",
     description: "Recording sessions.",
     did: ["Recorded"],
   },
   {
     artist: "MadeinTYO",
+    photo: "/credits/madeintyo.webp",
     role: "Recording Engineer",
     description: "Recording sessions.",
     did: ["Recorded"],
   },
   {
-    artist: "Donald Markowitz",
+    artist: "Harry Fraud",
+    photo: "/credits/harry-fraud.webp",
+    role: "Recording Engineer",
+    description: "Recording engineer on Vices, Curren$y and Harry Fraud.",
+    did: ["Recorded"],
+  },
+  {
+    artist: "Donald Markowitz x Lareezy",
+    photo: "/credits/donald-markowitz.webp",
     role: "Ongoing Collaborator",
     description: "Extensive, ongoing work together across records and Mid City Sound.",
     did: ["Produced", "Recorded"],
   },
 ];
+
+// On The Wall: more photos from the studio, pinned under the credits. Square,
+// ~1000x1000, in /public/wall/<slug>.webp.
+const WALL: PolaroidItem[] = [
+  ["alchemist", "Alchemist x Flu"],
+  ["zaytoven", "Zaytoven x Flu"],
+  ["ugly-god", "Ugly God x Flu"],
+  ["jay-elec", "Jay Elec x Flu"],
+  ["fuse808-mafia", "Fuse 808 Mafia x Flu"],
+  ["mac-phipps", "Mac Phipps x Disha x Flu"],
+  ["kwon-alexander", "Kwon Alexander x Flu"],
+  ["blac-chyna", "Blac Chyna x Flu"],
+  ["narduwar", "Narduwar x Flu"],
+  ["fee-banks", "Fee Banks x Flu"],
+].map(([slug, caption]) => ({ id: slug, caption, note: "", photo: `/wall/${slug}.webp` }));
 
 // The order is the order a record moves through: tracked, developed, placed, released.
 const SERVICES = [
@@ -99,7 +131,7 @@ const SERVICES = [
 ];
 
 // Portrait for the bio, e.g. "/bio/flu.webp" (4:5). Empty shows a placeholder.
-const BIO_PHOTO = "";
+const BIO_PHOTO = "/bio/flu.webp";
 
 export default function MusicPage() {
   return (
@@ -160,6 +192,10 @@ export default function MusicPage() {
 
       <Panel title="Session · Credits" meta="Tap a Polaroid to flip it">
         <PinBoard credits={CREDITS} />
+      </Panel>
+
+      <Panel title="On the Wall" meta="Studio and Behind the Scenes">
+        <PolaroidBoard items={WALL} />
       </Panel>
 
       <Panel title="Inserts · Services" meta="Signal flows A → D" heading="Music Services That Move Things">
