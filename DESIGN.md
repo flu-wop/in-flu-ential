@@ -91,7 +91,7 @@ which was abandoned after repeated failed 3D executions.
   they live in a private Vercel Blob store and are streamed by
   `/api/vault-media/[...path]` only to a browser with the vault cookie. Never put
   them in `/public` or the repo. Upload with `npm run vault:upload -- <folder>`
-  (needs `BLOB_READ_WRITE_TOKEN`). A missing file shows the Polaroid placeholder.
+  (needs `BLOB_READ_WRITE_TOKEN`; the store is `in-flu-ential-vault`, private, connected to the Vercel project). A missing file shows the Polaroid placeholder.
   The Unreleased playlist is two placeholder cards until previews are uploaded.
 
 ## Image slots
