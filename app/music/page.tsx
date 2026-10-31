@@ -90,10 +90,10 @@ const CREDITS: Credit[] = [
     did: ["Recorded"],
   },
   {
-    artist: "Donald Markowitz x LaReezy",
+    artist: "Mid City Sound",
     photo: "/credits/donald-markowitz.webp",
     role: "Ongoing Collaborator",
-    description: "Extensive, ongoing work together across records and Mid City Sound.",
+    description: "Extensive, ongoing work with Donald Markowitz and LaReezy across records and Mid City Sound.",
     did: ["Produced", "Recorded"],
   },
 ];
