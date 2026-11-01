@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
     if (typeof password !== "string") {
       return NextResponse.json({ unlocked: false }, { status: 400 });
     }
-    const a = Buffer.from(password);
-    const b = Buffer.from(secret);
+    const a = Buffer.from(password.trim());
+    const b = Buffer.from(secret.trim());
     const unlocked = a.length === b.length && timingSafeEqual(a, b);
 
     if (!unlocked) {

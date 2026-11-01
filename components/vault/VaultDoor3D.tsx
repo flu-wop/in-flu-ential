@@ -219,6 +219,7 @@ export default function VaultDoor3D({ onUnlock }: VaultDoor3DProps) {
   const [input, setInput] = useState("");
   const [phase, setPhase] = useState<"idle" | "wrong" | "unlocking" | "open">("idle");
   const [webglFailed, setWebglFailed] = useState(false);
+  const [lockedOut, setLockedOut] = useState(false);
   const openProgress = useRef(0);
   const dialSpin = useRef(0);
 
@@ -234,9 +235,10 @@ export default function VaultDoor3D({ onUnlock }: VaultDoor3DProps) {
       const res = await fetch("/api/vault-verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: input }),
+        body: JSON.stringify({ password: input.trim() }),
       });
       correct = res.ok;
+      setLockedOut(res.status === 429);
     } catch {
       correct = false;
     }
@@ -329,6 +331,9 @@ export default function VaultDoor3D({ onUnlock }: VaultDoor3DProps) {
                 onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
                 placeholder="· · · · · · · ·"
                 autoComplete="off"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
                 disabled={phase === "unlocking"}
                 className="w-full bg-transparent text-center text-[#F5EDD8] tracking-[0.4em] text-sm outline-none placeholder:text-[#A89880]/30 pb-2"
                 style={{
@@ -347,7 +352,7 @@ export default function VaultDoor3D({ onUnlock }: VaultDoor3DProps) {
                   className="text-[10px] tracking-[0.3em] uppercase text-red-400/70"
                   style={{ fontFamily: "DM Sans, sans-serif" }}
                 >
-                  Access Denied
+                  {lockedOut ? "Too many attempts · try again in 15 minutes" : "Access Denied"}
                 </motion.p>
               )}
             </AnimatePresence>
